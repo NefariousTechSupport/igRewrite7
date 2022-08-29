@@ -1,0 +1,41 @@
+# developer directories
+
+*/bin
+*/obj
+debug
+*/recovery
+.vscode
+.vs
+
+# exported assets
+
+*.dds
+*.obj
+*.dae
+*.fbx
+
+# original assets
+
+*.igz
+*.iga
+*.pak
+*.lng
+*.hkx
+*.hka
+*.hkp
+*.fmv
+*.fsb
+*.enc
+*.dep
+*.arc
+*.bld
+*.igx
+*.igb
+*.fb
+*.ELF
+*.rpx
+*.dol
+*.pkg
+*.vvl
+*.wav*
+smoke_config.xml

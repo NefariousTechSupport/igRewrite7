@@ -1,0 +1,11 @@
+global using igLibrary.Core;
+global using igLibrary.Math;
+global using igLibrary.Gfx;
+global using igLibrary.Graphics;
+global using igLibrary.Render;
+global using igLibrary;
+global using System;
+global using System.Numerics;
+global using System.Reflection;
+global using System.Runtime.InteropServices;
+global using System.Linq;
