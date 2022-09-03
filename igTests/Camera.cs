@@ -15,7 +15,7 @@ namespace igRewrite7
 
 		public static void CreatePerspective(float fov, float aspect)
 		{
-			ViewToClip = Matrix4.CreatePerspectiveFieldOfView(fov, aspect, 0.1f, 10000f);
+			ViewToClip = Matrix4.CreatePerspectiveFieldOfView(fov, aspect, 0.1f, 1000000f);
 		}
 	}
 }

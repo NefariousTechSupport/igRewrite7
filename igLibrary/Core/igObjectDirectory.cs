@@ -21,24 +21,48 @@ namespace igLibrary.Core
 		FileType type;
 
 		public igObjectDirectory(){}
+		public igObjectDirectory(string path, igName nameSpace)
+		{
+			_path = path;
+			_name = nameSpace;
+		}
 		public igObjectDirectory(string path)
 		{
 			_path = path;
-			string extension = Path.GetExtension(path);
-			_name.SetString(Path.GetFileNameWithoutExtension(path));
+			_name = new igName(Path.GetFileNameWithoutExtension(path).ToLower());
+		}
+		
+		public void ReadFile()
+		{
 			//change this to happen in igObjectLoader once that exists
-			switch(extension)
+			type = GetLoader();
+			switch(type)
 			{
-				//hopefully bld and pak don't open igas
-				case ".igz":
-				case ".bld":
-				case ".pak":
-					type = FileType.kIGZ;
-					igIGZ igz = new igIGZ(this, igFileContext.Singleton.Open(path));
+				case FileType.kIGZ:
+					igIGZ igz = new igIGZ(this, igFileContext.Singleton.Open(_path));
 					break;
 				default:
-					Console.WriteLine($"WARNING: {path} IS NOT AN IGOBJECT STREAM, SKIPPING...");
+					Console.WriteLine($"WARNING: {_path} IS NOT AN IGOBJECT STREAM, SKIPPING...");
 					break;
+			}
+		}
+		public static igObjectDirectory LoadDependancyDefault(string filePath, igName nameSpace)
+		{
+			return igObjectStreamManager.Singleton.Load(filePath, nameSpace);
+		}
+		public FileType GetLoader()
+		{
+			igFilePath path = new igFilePath();
+			path.Set(_path);
+			switch(path._fileExtension)
+			{
+				case ".igz":
+				case ".lng":
+				case ".pak":	//not to be confused with the archive extension
+				case ".bld":	//not to be confused with the archive extension
+					return FileType.kIGZ;
+				default:
+					throw new InvalidOperationException($"Invalid filetype {path._fileExtension}");
 			}
 		}
 	}

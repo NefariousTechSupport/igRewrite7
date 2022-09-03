@@ -6,9 +6,15 @@ namespace igRewrite7
 	public class CDrawable : IDrawableCommon
 	{
 		public List<Transform> transforms = new List<Transform>();
+		struct VertexAttribute
+		{
+			public int VBO;
+			public bool enabled;
+			public IG_VERTEX_USAGE usage;
+			public uint index;
+		}
+		List<VertexAttribute> attributes = new List<VertexAttribute>();
 		int VwBO;
-		int VpBO;
-		int VtcBO;
 		int VAO;
 		int EBO;
 		int indexCount;
@@ -19,12 +25,14 @@ namespace igRewrite7
 		{
 			Prepare();
 
-			gvb.GetBuffer(out float[] vPositions, IG_VERTEX_USAGE.POSITION);
-			gvb.GetBuffer(out float[] vTexCoords, IG_VERTEX_USAGE.TEXCOORD);
+			gvb.GetBuffer(out float[]? vPositions, IG_VERTEX_USAGE.POSITION);
+			gvb.GetBuffer(out float[]? vTexCoords, IG_VERTEX_USAGE.TEXCOORD);
+			gvb.GetBuffer(out float[]? vColours, IG_VERTEX_USAGE.COLOR);
 			gib.GetBuffer(out uint[] indices);
 
-			SetVertexPositions(vPositions);
-			SetVertexTexCoords(vTexCoords);
+			if(vPositions != null) SetVertexPositions(vPositions);
+			if(vTexCoords != null) SetVertexTexCoords(vTexCoords);
+			if(vColours != null)   SetVertexColours(vColours);
 			SetIndices(indices);
 			//SetMaterial(new Material(MaterialManager.materials["stdv;whitef"]));
 		}
@@ -48,23 +56,54 @@ namespace igRewrite7
 		//	1: vertex tex coords (2 floats)
 		public void SetVertexPositions(float[] vpositions)
 		{
-			VpBO = GL.GenBuffer();
-			GL.BindBuffer(BufferTarget.ArrayBuffer, VpBO);
+			VertexAttribute attr = new VertexAttribute();
+			attr.usage = IG_VERTEX_USAGE.POSITION;
+			attr.index = 0;
+			attr.enabled = true;
+			attr.VBO = GL.GenBuffer();
+
+			GL.BindBuffer(BufferTarget.ArrayBuffer, attr.VBO);
 			GL.BufferData(BufferTarget.ArrayBuffer, vpositions.Length * sizeof(float), vpositions, BufferUsageHint.StaticDraw);
 
 			GL.BindVertexArray(VAO);
-			GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
-			GL.EnableVertexAttribArray(0);
+			GL.VertexAttribPointer(attr.index, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
+			GL.EnableVertexAttribArray(attr.index);
+
+			attributes.Add(attr);
 		}
 		public void SetVertexTexCoords(float[] vtexcoords)
 		{
-			VtcBO = GL.GenBuffer();
-			GL.BindBuffer(BufferTarget.ArrayBuffer, VtcBO);
+			VertexAttribute attr = new VertexAttribute();
+			attr.usage = IG_VERTEX_USAGE.TEXCOORD;
+			attr.index = 1;
+			attr.enabled = true;
+			attr.VBO = GL.GenBuffer();
+
+			GL.BindBuffer(BufferTarget.ArrayBuffer, attr.VBO);
 			GL.BufferData(BufferTarget.ArrayBuffer, vtexcoords.Length * sizeof(float), vtexcoords, BufferUsageHint.StaticDraw);
 
 			GL.BindVertexArray(VAO);
-			GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
-			GL.EnableVertexAttribArray(1);
+			GL.VertexAttribPointer(attr.index, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
+			GL.EnableVertexAttribArray(attr.index);
+
+			attributes.Add(attr);
+		}
+		public void SetVertexColours(float[] vcolours)
+		{
+			VertexAttribute attr = new VertexAttribute();
+			attr.usage = IG_VERTEX_USAGE.COLOR;
+			attr.index = 2;
+			attr.enabled = true;
+			attr.VBO = GL.GenBuffer();
+
+			GL.BindBuffer(BufferTarget.ArrayBuffer, attr.VBO);
+			GL.BufferData(BufferTarget.ArrayBuffer, vcolours.Length * sizeof(float), vcolours, BufferUsageHint.StaticDraw);
+
+			GL.BindVertexArray(VAO);
+			GL.VertexAttribPointer(attr.index, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
+			GL.EnableVertexAttribArray(attr.index);
+
+			attributes.Add(attr);
 		}
 		public void SetMaterial(Material mat)
 		{
@@ -111,6 +150,9 @@ namespace igRewrite7
 		{
 			material.Use();
 			material.SetMatrix4x4("world", transform.GetLocalToWorldMatrix() * Camera.WorldToView * Camera.ViewToClip);
+
+			int index = attributes.FindIndex(x => x.usage == IG_VERTEX_USAGE.COLOR);
+			material.SetBool("useVColor", index >= 0);
 
 			GL.BindVertexArray(VAO);
 			GL.DrawElements(PrimitiveType.Triangles, indexCount, DrawElementsType.UnsignedInt, IntPtr.Zero);

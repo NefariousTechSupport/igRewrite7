@@ -48,9 +48,7 @@ namespace igLibrary.Core
 
 		public igArchive(string path)
 		{
-			sh = igFileContext.Singleton.Open(Path.ChangeExtension(path, "pak"))._stream;
-			//sh = new StreamHelper(File.Open(Path.ChangeExtension(path, "pak"), FileMode.Open, FileAccess.ReadWrite));
-			
+			sh = igFileContext.Singleton.Open(path)._stream;
 			uint magicNumber = sh.ReadUInt32();
 
 			if(magicNumber == 0x1A414749) sh._endianness = StreamHelper.Endianness.Little;

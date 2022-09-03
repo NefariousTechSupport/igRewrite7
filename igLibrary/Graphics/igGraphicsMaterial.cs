@@ -12,7 +12,7 @@ namespace igLibrary.Graphics
 		public igHandle _effectHandle;
 		[igField(typeof(igObjectRefMetaField<igObject>), 0x09, 0x04, 0x20, 0x30, "_commonState")]	//igMemoryCommandStream
 		public igObject _commonState;
-		[igField(typeof(igVectorMetaField<igObject>), 0x09, 0x05, 0x24, 0x38, "_techniques")]		//igMemoryCommandStream
+		[igField(typeof(igVectorMetaField<igObject, igObjectRefMetaField<igObject>>), 0x09, 0x05, 0x24, 0x38, "_techniques")]		//igMemoryCommandStream
 		public List<igObject> _techniques;
 		[igField(typeof(igObjectRefMetaField<igObject>), 0x09, 0x06, 0x30, 0x50, "_animations")]	//igGraphicsMaterialAnimationList
 		public igObject _animations;

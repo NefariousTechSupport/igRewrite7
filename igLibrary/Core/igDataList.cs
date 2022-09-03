@@ -54,50 +54,10 @@ namespace igLibrary.Core
 			T2 metafield = new T2();
 
 			int typeSize = metafield.Size(is64Bit);
-			/*if(typeof(T1).IsAssignableTo(typeof(igObject)) || typeof(T1) == typeof(string))
-			{
-				typeSize = igCore.GetSizeOfPointer(igz._platform);
-			}
-			else
-			{
-				typeSize = Marshal.SizeOf<T1>();
-			}*/
 			for(int i = 0; i < initialCount; i++)
 			{
 				object? appender = null;
 				igz._stream.Seek(_data.offset + (ulong)(typeSize * i));
-				/*if(typeof(T1).IsAssignableTo(typeof(igObject)))
-				{
-					ulong offset = igz.DeserializeOffset(igz.ReadRawOffset());
-					igz._stream.Seek(offset);
-					if(igz._offsetObjectList[offset].GetType().IsAssignableTo(typeof(T1)))
-					{
-						igz._offsetObjectList[offset].ReadFields(igz);
-						appender = igz._offsetObjectList[offset];
-					}
-					else
-					{
-						appender = null;
-					}
-				}
-				else if(typeof(T1) == typeof(uint))      appender = igz._stream.ReadUInt32();
-				else if(typeof(T1) == typeof(int))       appender = igz._stream.ReadInt32();
-				else if(typeof(T1) == typeof(ushort))    appender = igz._stream.ReadUInt16();
-				else if(typeof(T1) == typeof(short))     appender = igz._stream.ReadInt16();
-				else if(typeof(T1) == typeof(ulong))     appender = igz._stream.ReadUInt64();
-				else if(typeof(T1) == typeof(long))      appender = igz._stream.ReadInt64();
-				else if(typeof(T1) == typeof(float))     appender = igz._stream.ReadSingle();
-				else if(typeof(T1) == typeof(double))    appender = igz._stream.ReadDouble();
-				else if(typeof(T1) == typeof(string))    appender = igz._stream.ReadString();
-				else if(typeof(T1) == typeof(Vector3))   appender = new Vector3(igz._stream.ReadSingle(), igz._stream.ReadSingle(), igz._stream.ReadSingle());
-				else if(typeof(T1) == typeof(Matrix4x4)) appender = new Matrix4x4(
-					igz._stream.ReadSingle(), igz._stream.ReadSingle(), igz._stream.ReadSingle(), igz._stream.ReadSingle(),
-					igz._stream.ReadSingle(), igz._stream.ReadSingle(), igz._stream.ReadSingle(), igz._stream.ReadSingle(),
-					igz._stream.ReadSingle(), igz._stream.ReadSingle(), igz._stream.ReadSingle(), igz._stream.ReadSingle(),
-					igz._stream.ReadSingle(), igz._stream.ReadSingle(), igz._stream.ReadSingle(), igz._stream.ReadSingle()
-					);
-				else if(typeof(T1).IsValueType)  appender = igz._stream.ReadStruct(typeof(T1));*/
-
 				appender = metafield.ReadRawMemory(igz, is64Bit);
 
 				this.Append((T1)appender);

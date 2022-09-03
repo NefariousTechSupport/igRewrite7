@@ -1,21 +1,27 @@
 #version 440 core
 
-out vec4 color;
+out vec4 colour;
 
 in vec4 UVs;
+in vec4 vColour;
 
 uniform sampler2D albedo;
 uniform bool useTexture;
+uniform bool useVColour;
 
 void main()
 {
 	if(useTexture)
 	{
-		color = texture(albedo, vec2(UVs));
+		colour = texture(albedo, vec2(UVs));
+		if(useVColour)
+		{
+			colour *= vColour;
+		}
 		//if(color.a == 0) discard;
 	}
 	else
 	{
-		color = vec4(1.0, 0.0, 1.0, 1.0);
+		colour = vec4(1.0, 0.0, 1.0, 1.0);
 	}
 }

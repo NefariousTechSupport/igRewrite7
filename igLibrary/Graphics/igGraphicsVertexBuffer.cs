@@ -14,6 +14,6 @@ namespace igLibrary.Graphics
 		[igField(typeof(igSizeTypeMetaField), 0x09, 0x03, 0x14, 0x20, "_formatResource")]
 		public ulong _formatResource;
 
-		public void GetBuffer(out float[] buffer, IG_VERTEX_USAGE usage) => _vertexBuffer.GetBuffer(out buffer, usage);
+		public void GetBuffer(out float[]? buffer, IG_VERTEX_USAGE usage) => _vertexBuffer.GetBuffer(out buffer, usage);
 	}
 }

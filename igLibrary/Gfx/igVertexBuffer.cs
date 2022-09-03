@@ -23,7 +23,7 @@ namespace igLibrary.Gfx
 
 		private bool sscFunkiness;
 
-		public void GetBuffer(out float[] buffer, IG_VERTEX_USAGE usage)
+		public void GetBuffer(out float[]? buffer, IG_VERTEX_USAGE usage)
 		{
 			buffer = new float[_vertexCount * 4];
 
@@ -33,7 +33,8 @@ namespace igLibrary.Gfx
 
 			if(element._type == IG_VERTEX_TYPE.UNDEFINED_0 || element._type == IG_VERTEX_TYPE.UNDEFINED_1 || element._type == IG_VERTEX_TYPE.MAX || element._type == IG_VERTEX_TYPE.UNUSED)
 			{
-				throw new InvalidOperationException($"vertexType IG_VERTEX_TYPE_{element._type.ToString()} is invalid");
+				buffer = null;
+				return;
 			}
 
 			MethodInfo? unpackFunction = typeof(igVertexConversion).GetMethod($"unpack_{element._type.ToString()}");

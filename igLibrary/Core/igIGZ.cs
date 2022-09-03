@@ -30,8 +30,9 @@ namespace igLibrary.Core
 			_file = file;
 			_stream = _file._stream;
 			_stream.Seek(0);
-			Directory.CreateDirectory($"debug/{Path.GetDirectoryName(file._path)}");
-			File.WriteAllBytes("debug/" + file._path, (file._stream.BaseStream as MemoryStream).GetBuffer());
+
+			Directory.CreateDirectory($"debug/{Path.GetDirectoryName(file._path._nativePath)}");
+			File.WriteAllBytes("debug/" + file._path._nativePath, (file._stream.BaseStream as MemoryStream).GetBuffer());
 
 			uint magic = _stream.ReadUInt32();
 			if(magic == 0x015A4749) _stream._endianness = StreamHelper.Endianness.Big;
@@ -103,8 +104,17 @@ namespace igLibrary.Core
 						dir._dependancies.Capacity = (int)count;
 						for(uint j = 0; j < count; j++)
 						{
-							Tuple<string, string> dependancy = new Tuple<string, string>(_stream.ReadString(), _stream.ReadString());
-							dir._dependancies.Add(igObjectStreamManager.Singleton.GetDirectoryByName(dependancy.Item2));
+							string nameSpaceStr = _stream.ReadString();
+							string depPath = _stream.ReadString();
+							if(!depPath.StartsWith("<build>"))
+							{
+								igName nameSpace = new igName(nameSpaceStr.ToLower());
+								igObjectDirectory dependantDir = igObjectDirectory.LoadDependancyDefault(depPath, nameSpace);
+								if(dependantDir != null)
+								{
+									dir._dependancies.Add(dependantDir);
+								}
+							}
 						}
 						break;
 					case 0x44495845:

@@ -31,15 +31,30 @@ namespace igLibrary.Core
 			{"textures", "textures"},
 			{"ui", "ui"},
 			{"vfx", "vfx"},
-
 		};
 
-		static string _root = string.Empty;
+		public string _root { get; private set;}
+
+		public igFileContext()
+		{
+			_root = string.Empty;
+		}
+
+		public string GetMediaDirectory(string media)
+		{
+			string lower = media.ToLower();
+			if(_virtualDevices.ContainsKey(lower))
+			{
+				return _virtualDevices[lower];
+			}
+			else return media;
+		}
 
 		public void Initialize(string root)
 		{
 			igGfx.Initialize();
-			_root = root;
+			_root = root.TrimEnd('/');
+			_root = _root.TrimEnd('\\');
 			IG_CORE_PLATFORM[] platforms = Enum.GetValues<IG_CORE_PLATFORM>();
 			foreach(IG_CORE_PLATFORM platform in platforms)
 			{
@@ -49,56 +64,55 @@ namespace igLibrary.Core
 				else if(platform == IG_CORE_PLATFORM.ASPEN64) platformName = "aspenHigh";
 				else                                          platformName = igCore.GetPlatformString(platform);
 
-				if(File.Exists(_root + $"/permanent_{platformName}.pak"))
+				if(File.Exists($"{_root}/archives/permanent_{platformName}.pak"))
 				{
 					igArchiveManager.Singleton.AddArchiveToPool("permanent.pak");
+					igArchiveManager.Singleton.AddArchiveToPool("permanentdeveloper.pak");
 					igArchiveManager.Singleton.AddArchiveToPool($"permanent_{platformName}.pak");
 					igArchiveManager.Singleton.AddArchiveToPool($"shaders_{platformName}.pak");
 					igArchiveManager.Singleton.AddArchiveToPool($"loosefiles.pak");
-					igArchiveManager.Singleton.AddArchiveToPool($"CollectibleTrackerIcons.pak");
-					igArchiveManager.Singleton.AddArchiveToPool($"skystonesSmashPortraits.pak");
-					igArchiveManager.Singleton.AddArchiveToPool($"ToyCollectionMaterials.pak");
-					igArchiveManager.Singleton.AddArchiveToPool($"LevelIcons.pak");
-					igArchiveManager.Singleton.AddArchiveToPool($"Minimaps.pak");
-					igArchiveManager.Singleton.AddArchiveToPool($"TrophyBlueprints.pak");
+					//igArchiveManager.Singleton.AddArchiveToPool($"CollectibleTrackerIcons.pak");
+					//igArchiveManager.Singleton.AddArchiveToPool($"skystonesSmashPortraits.pak");
+					//igArchiveManager.Singleton.AddArchiveToPool($"ToyCollectionMaterials.pak");
+					//igArchiveManager.Singleton.AddArchiveToPool($"LevelIcons.pak");
+					//igArchiveManager.Singleton.AddArchiveToPool($"Minimaps.pak");
+					//igArchiveManager.Singleton.AddArchiveToPool($"TrophyBlueprints.pak");
 					igArchiveManager.Singleton.AddArchiveToPool($"soundbankdata.pak");
-					igArchiveManager.Singleton.AddArchiveToPool($"InstantPortraits.pak");
-					igArchiveManager.Singleton.AddArchiveToPool($"QuestIcons.pak");
-					igArchiveManager.Singleton.AddArchiveToPool($"PortalMasterPerkIcons.pak");
+					igArchiveManager.Singleton.AddArchiveToPool($"zoneinfos.pak");
+					//igArchiveManager.Singleton.AddArchiveToPool($"QuestIcons.pak");
+					//igArchiveManager.Singleton.AddArchiveToPool($"PortalMasterPerkIcons.pak");
 				}
 			}
 		}
 
 		public igFileDescriptor Open(string path)
 		{
-			Console.WriteLine($"Opening {path}");
-			if(path.StartsWith("<build>")) path = path.Substring(7);
-			string[] parts = path.Split(':');
-			if(parts.Length > 1)
-			{
-				if(_virtualDevices.ContainsKey(parts[0]))
-				{
-					path = _virtualDevices[parts[0]] + parts[1];
-				}
-			}
-			if(Exists(path)) return _fileDescriptorPool.First(x => x._path == path);
+			igFilePath fp = new igFilePath();
+			fp.Set(path);
+			int fdIndex = _fileDescriptorPool.FindIndex(x => x._path._path == fp._path);
+
+			if(fdIndex >= 0) return _fileDescriptorPool[fdIndex];
 			else
 			{
 				Stream ms;
-				if(parts.Length > 1)
+				if(igArchiveManager.Singleton.ExistsInOpenArchives(path))
 				{
 					ms = new MemoryStream();
 					igArchiveManager.Singleton.GetFile(path, ms);
 				}
 				else
 				{
-					ms = File.Open(_root + "/" + path, FileMode.Open);
+					if(File.Exists($"{_root}/{fp._path}"))
+					{
+						ms = File.Open(_root + "/" + fp._path, FileMode.Open);
+					}
+					else throw new FileNotFoundException($"Did not find {fp._path}");
 				}
-				_fileDescriptorPool.Add(new igFileDescriptor(ms, path.Split(':').Last().TrimStart('/', '\\')));
-				Console.WriteLine($"{_fileDescriptorPool.Last()._path} added to pool");
+				_fileDescriptorPool.Add(new igFileDescriptor(ms, fp._path));
+				Console.WriteLine($"{_fileDescriptorPool.Last()._path._path} added to pool");
 				return _fileDescriptorPool.Last();
 			}
 		}
-		public bool Exists(string path) => _fileDescriptorPool.Any(x => x._path == path);
+		public bool Exists(string path) => _fileDescriptorPool.Any(x => x._path._path == path);
 	}
 }

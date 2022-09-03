@@ -4,45 +4,55 @@ namespace igLibrary.Core
 	{
 		public Dictionary<string, igArchive> archives = new Dictionary<string, igArchive>();
 
+		public bool ExistsInOpenArchives(string path)
+		{
+			igFilePath fp = new igFilePath();
+			fp.Set(path);
+
+			bool fileFound = false;
+			foreach(KeyValuePair<string, igArchive> archive in archives)
+			{
+				if(archive.Value.HasFile(fp._path))
+				{
+					fileFound = true;
+					break;
+				}
+			}
+			return fileFound;
+		}
+
 		public void AddArchiveToPool(string archivePath)
 		{
+			igFilePath fp = new igFilePath();
+			fp.Set(archivePath);
+			if(fp._directory == string.Empty)
+			{
+				fp.Set($"archives/{archivePath}");
+			}
 			if(!archives.ContainsKey(archivePath))
 			{
-				igFileContext.Singleton.Open(Path.ChangeExtension(archivePath, "pak"));
-				igArchive archive = new igArchive(archivePath);
-				archives.Add(Path.GetFileNameWithoutExtension(archivePath), archive);
+				igArchive archive = new igArchive(fp._path);
+				archives.Add(Path.GetFileNameWithoutExtension(fp._path), archive);
 			}
 		}
 
 		public void GetFile(string filePath, Stream output)
 		{
-			string[] parts = filePath.Split(':');
-			if(parts.Length > 1)
+			igFilePath fp = new igFilePath();
+			fp.Set(filePath);
+
+			bool fileFound = false;
+			foreach(KeyValuePair<string, igArchive> archive in archives)
 			{
-				if(parts.Length > 2)
+				if(archive.Value.HasFile(fp._path))
 				{
-					parts = new string[2]{$"{parts[0]}:{parts[1]}", parts[2]};
+					archive.Value.ExtractFile(fp._path, output);
+					fileFound = true;
+					break;
 				}
-				if(!archives.ContainsKey(parts[0]))
-				{
-					AddArchiveToPool(parts[0]);
-				}
-				archives[Path.GetFileNameWithoutExtension(parts[0])].ExtractFile(parts[1].TrimStart('/', '\\'), output);
 			}
-			else
-			{
-				bool fileFound = false;
-				foreach(KeyValuePair<string, igArchive> archive in archives)
-				{
-					if(archive.Value.HasFile(filePath))
-					{
-						archive.Value.ExtractFile(filePath, output);
-						fileFound = true;
-						break;
-					}
-				}
-				if(!fileFound) throw new FileNotFoundException($"COULD NOT FIND {filePath}");
-			}
+			if(!fileFound) throw new FileNotFoundException($"COULD NOT FIND {filePath}");
+
 			output.Flush();
 		}
 	}

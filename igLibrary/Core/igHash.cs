@@ -7,7 +7,6 @@ namespace igLibrary.Core
 	{
 		public static uint Hash(string input)
 		{
-			Console.WriteLine($"hashing {input}");
 			return Fnv1a.Hash32(Encoding.ASCII.GetBytes(input));
 		}
 	}

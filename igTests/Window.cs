@@ -15,7 +15,8 @@ namespace igRewrite7
 		public Window(GameWindowSettings gws, NativeWindowSettings nws, string[] args) : base(gws, nws)
 		{
 			igFileContext.Singleton.Initialize(args[0]);
-			rootDir = igObjectStreamManager.Singleton.Load(args[1]);
+			igArchiveManager.Singleton.AddArchiveToPool(args[1]);
+			rootDir = igObjectStreamManager.Singleton.Load(args[2]);
 		}
 
 		protected override void OnLoad()
@@ -63,21 +64,27 @@ namespace igRewrite7
 			SwapBuffers();
 		}
 
+		float moveSpeed = 5;
+
 		protected override void OnUpdateFrame(FrameEventArgs args)
 		{
 			if(KeyboardState.IsKeyDown(Keys.Escape)) Close();
 
-			float moveSpeed = 5;
 			float sensitivity = 0.01f;
 
-			if(KeyboardState.IsKeyDown(Keys.LeftShift)) moveSpeed *= 10;
+			float mult = 1;
 
-			if(KeyboardState.IsKeyDown(Keys.W)) Camera.transform.position += Camera.transform.Forward * (float)args.Time * moveSpeed;
-			if(KeyboardState.IsKeyDown(Keys.A)) Camera.transform.position += Camera.transform.Right * (float)args.Time * moveSpeed;
-			if(KeyboardState.IsKeyDown(Keys.S)) Camera.transform.position -= Camera.transform.Forward * (float)args.Time * moveSpeed;
-			if(KeyboardState.IsKeyDown(Keys.D)) Camera.transform.position -= Camera.transform.Right * (float)args.Time * moveSpeed;
+			if(KeyboardState.IsKeyDown(Keys.LeftShift)) mult = 10;
+			moveSpeed += MouseState.ScrollDelta.Y;
+			moveSpeed = MathHelper.Clamp(moveSpeed, 0, 1000);
+
+			if(KeyboardState.IsKeyDown(Keys.W)) Camera.transform.position += Camera.transform.Forward * (float)args.Time * moveSpeed * mult;
+			if(KeyboardState.IsKeyDown(Keys.A)) Camera.transform.position += Camera.transform.Right * (float)args.Time * moveSpeed * mult;
+			if(KeyboardState.IsKeyDown(Keys.S)) Camera.transform.position -= Camera.transform.Forward * (float)args.Time * moveSpeed * mult;
+			if(KeyboardState.IsKeyDown(Keys.D)) Camera.transform.position -= Camera.transform.Right * (float)args.Time * moveSpeed * mult;
 
 			CursorGrabbed = MouseState.IsButtonDown(MouseButton.Right);
+
 
 			if(CursorGrabbed)
 			{
