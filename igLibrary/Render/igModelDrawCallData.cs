@@ -16,7 +16,7 @@ namespace igLibrary.Render
 		[igField(typeof(igObjectRefMetaField<igGraphicsVertexBuffer>), 0x09, 0x03, 0x34, 0x48, "_graphicsVertexBuffer")]
 		public igGraphicsVertexBuffer _graphicsVertexBuffer;
 	
-		[igField(typeof(igObjectRefMetaField<igGraphicsVertexBuffer>), 0x09, 0x04, 0x38, 0x50, "_graphicsIndexBuffer")]
+		[igField(typeof(igObjectRefMetaField<igGraphicsIndexBuffer>), 0x09, 0x04, 0x38, 0x50, "_graphicsIndexBuffer")]
 		public igGraphicsIndexBuffer _graphicsIndexBuffer;
 
 		[igField(typeof(igObjectRefMetaField<igObject>), 0x09, 0x05, 0x3C, 0x58, "_platformData")]

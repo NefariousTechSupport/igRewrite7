@@ -49,12 +49,20 @@ namespace igLibrary.Gfx
 			{
 				sh.Seek(_format._vertexSize * i + element._offset);
 				Vector4 v4 = (Vector4)unpackFunction.Invoke(null, unpackParams);
-				if(element._usage == IG_VERTEX_USAGE.POSITION && element._type == IG_VERTEX_TYPE.SHORT4N)
+				if(element._usage == IG_VERTEX_USAGE.POSITION)
 				{
-					buffer[i * 4 + 0] = v4.X / v4.W;
-					buffer[i * 4 + 1] = v4.Y / v4.W;
-					buffer[i * 4 + 2] = v4.Z / v4.W;
-					buffer[i * 4 + 3] = 1.0f;
+					if(element._type == IG_VERTEX_TYPE.SHORT4N)
+					{
+						buffer[i * 4 + 0] = v4.X / v4.W;
+						buffer[i * 4 + 1] = v4.Y / v4.W;
+						buffer[i * 4 + 2] = v4.Z / v4.W;
+						buffer[i * 4 + 3] = 1.0f;
+					}
+
+					//buffer[i * 4 + 0] = v4.X;
+					//buffer[i * 4 + 1] = v4.Z;
+					//buffer[i * 4 + 2] = v4.Y;
+					//buffer[i * 4 + 3] = v4.W;
 				}
 				else
 				{

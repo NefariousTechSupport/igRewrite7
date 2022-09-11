@@ -31,8 +31,15 @@ namespace igLibrary.Core
 			}
 			if(!archives.ContainsKey(archivePath))
 			{
-				igArchive archive = new igArchive(fp._path);
-				archives.Add(Path.GetFileNameWithoutExtension(fp._path), archive);
+				try
+				{
+					igArchive archive = new igArchive(fp._path);
+					archives.Add(Path.GetFileNameWithoutExtension(fp._path), archive);
+				}
+				catch(FileNotFoundException)		//There's a chance a pak is missing on the ios ports of ssc
+				{
+					Console.WriteLine($"WARNING: {archivePath} IS MISSING");
+				}
 			}
 		}
 

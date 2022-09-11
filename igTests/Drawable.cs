@@ -20,7 +20,10 @@ namespace igRewrite7
 		int indexCount;
 		Material material;
 
-		public CDrawable(){}
+		public CDrawable()
+		{
+			Prepare();
+		}
 		public CDrawable(igGraphicsVertexBuffer gvb, igGraphicsIndexBuffer gib)
 		{
 			Prepare();
@@ -152,7 +155,7 @@ namespace igRewrite7
 			material.SetMatrix4x4("world", transform.GetLocalToWorldMatrix() * Camera.WorldToView * Camera.ViewToClip);
 
 			int index = attributes.FindIndex(x => x.usage == IG_VERTEX_USAGE.COLOR);
-			material.SetBool("useVColor", index >= 0);
+			material.SetBool("useVColour", index >= 0);
 
 			GL.BindVertexArray(VAO);
 			GL.DrawElements(PrimitiveType.Triangles, indexCount, DrawElementsType.UnsignedInt, IntPtr.Zero);

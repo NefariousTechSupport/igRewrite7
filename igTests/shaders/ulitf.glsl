@@ -23,5 +23,9 @@ void main()
 	else
 	{
 		colour = vec4(1.0, 0.0, 1.0, 1.0);
+		if(useVColour)
+		{
+			colour = vColour;
+		}
 	}
 }

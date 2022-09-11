@@ -3,6 +3,7 @@ namespace igLibrary.Core
 	public static class igCore
 	{
 		public static Dictionary<string, Type> RegisteredTypes = GetRegisteredTypes();
+		public static IG_CORE_PLATFORM platform;
 
 		private static Dictionary<string, Type> GetRegisteredTypes()
 		{
@@ -19,6 +20,10 @@ namespace igLibrary.Core
 
 		public static string GetPlatformString(IG_CORE_PLATFORM platform)
 		{
+			     if(platform == IG_CORE_PLATFORM.WIN32)   return "win";
+			else if(platform == IG_CORE_PLATFORM.ASPEN)   return "aspenLow";
+			else if(platform == IG_CORE_PLATFORM.ASPEN64) return "aspenHigh";
+			else
 			switch(platform)
 			{
 				case IG_CORE_PLATFORM.DEFAULT: return "unknown";
@@ -41,62 +46,63 @@ namespace igLibrary.Core
 				default:                       return string.Empty;
 			}
 		}
-		public static IG_CORE_PLATFORM GetPlatform(uint version, uint platform)
+		public static IG_CORE_PLATFORM GetPlatform(uint version, uint rawPlatform)
 		{
 			switch(version)
 			{
 				case 0x06:
-					switch(platform)
+					switch(rawPlatform)
 					{
-						case 0x00: return IG_CORE_PLATFORM.DEFAULT;
-						case 0x01: return IG_CORE_PLATFORM.WIN32;
-						case 0x02: return IG_CORE_PLATFORM.WII;
-						case 0x03: return IG_CORE_PLATFORM.DEPRECATED;
-						case 0x04: return IG_CORE_PLATFORM.ASPEN;
-						case 0x05: return IG_CORE_PLATFORM.XENON;
-						case 0x06: return IG_CORE_PLATFORM.PS3;
-						case 0x07: return IG_CORE_PLATFORM.OSX;
-						case 0x08: return IG_CORE_PLATFORM.WIN64;
-						case 0x09: return IG_CORE_PLATFORM.CAFE;
-						case 0x0A: return IG_CORE_PLATFORM.NGP;
-						case 0x0B: return IG_CORE_PLATFORM.ANDROID;
-						case 0x0C: return IG_CORE_PLATFORM.MARMALADE;
-						case 0x0D: return IG_CORE_PLATFORM.MAX;
+						case 0x00: platform = IG_CORE_PLATFORM.DEFAULT; break;
+						case 0x01: platform = IG_CORE_PLATFORM.WIN32; break;
+						case 0x02: platform = IG_CORE_PLATFORM.WII; break;
+						case 0x03: platform = IG_CORE_PLATFORM.DEPRECATED; break;
+						case 0x04: platform = IG_CORE_PLATFORM.ASPEN; break;
+						case 0x05: platform = IG_CORE_PLATFORM.XENON; break;
+						case 0x06: platform = IG_CORE_PLATFORM.PS3; break;
+						case 0x07: platform = IG_CORE_PLATFORM.OSX; break;
+						case 0x08: platform = IG_CORE_PLATFORM.WIN64; break;
+						case 0x09: platform = IG_CORE_PLATFORM.CAFE; break;
+						case 0x0A: platform = IG_CORE_PLATFORM.NGP; break;
+						case 0x0B: platform = IG_CORE_PLATFORM.ANDROID; break;
+						case 0x0C: platform = IG_CORE_PLATFORM.MARMALADE; break;
+						case 0x0D: platform = IG_CORE_PLATFORM.MAX; break;
 					}
 					break;
 				case 0x07:
 				case 0x08:
 				case 0x09:
-					switch(platform)
+					switch(rawPlatform)
 					{
-						case 0x00: return IG_CORE_PLATFORM.DEFAULT;
-						case 0x01: return IG_CORE_PLATFORM.WIN32;
-						case 0x02: return IG_CORE_PLATFORM.WII;
-						case 0x03: return IG_CORE_PLATFORM.DURANGO;
-						case 0x04: return IG_CORE_PLATFORM.ASPEN;
-						case 0x05: return IG_CORE_PLATFORM.XENON;
-						case 0x06: return IG_CORE_PLATFORM.PS3;
-						case 0x07: return IG_CORE_PLATFORM.OSX;
-						case 0x08: return IG_CORE_PLATFORM.WIN64;
-						case 0x09: return IG_CORE_PLATFORM.CAFE;
-						case 0x0A: return IG_CORE_PLATFORM.RASPI;
-						case 0x0B: return IG_CORE_PLATFORM.ANDROID;
+						case 0x00: platform = IG_CORE_PLATFORM.DEFAULT; break;
+						case 0x01: platform = IG_CORE_PLATFORM.WIN32; break;
+						case 0x02: platform = IG_CORE_PLATFORM.WII; break;
+						case 0x03: platform = IG_CORE_PLATFORM.DURANGO; break;
+						case 0x04: platform = IG_CORE_PLATFORM.ASPEN; break;
+						case 0x05: platform = IG_CORE_PLATFORM.XENON; break;
+						case 0x06: platform = IG_CORE_PLATFORM.PS3; break;
+						case 0x07: platform = IG_CORE_PLATFORM.OSX; break;
+						case 0x08: platform = IG_CORE_PLATFORM.WIN64; break;
+						case 0x09: platform = IG_CORE_PLATFORM.CAFE; break;
+						case 0x0A: platform = IG_CORE_PLATFORM.RASPI; break;
+						case 0x0B: platform = IG_CORE_PLATFORM.ANDROID; break;
 						case 0x0C:
-							if(version == 0x07)      return IG_CORE_PLATFORM.MARMALADE;
-							else if(version == 0x08) return IG_CORE_PLATFORM.DEPRECATED;
-							else                     return IG_CORE_PLATFORM.ASPEN64;
-						case 0x0D: return IG_CORE_PLATFORM.LGTV;
-						case 0x0E: return IG_CORE_PLATFORM.PS4;
-						case 0x0F: return IG_CORE_PLATFORM.WP8;
-						case 0x10: return IG_CORE_PLATFORM.LINUX;
-						case 0x11: return IG_CORE_PLATFORM.MAX;
+							if(version == 0x07)      platform = IG_CORE_PLATFORM.MARMALADE;
+							else if(version == 0x08) platform = IG_CORE_PLATFORM.DEPRECATED;
+							else                     platform = IG_CORE_PLATFORM.ASPEN64;
+							break;
+						case 0x0D: platform = IG_CORE_PLATFORM.LGTV; break;
+						case 0x0E: platform = IG_CORE_PLATFORM.PS4; break;
+						case 0x0F: platform = IG_CORE_PLATFORM.WP8; break;
+						case 0x10: platform = IG_CORE_PLATFORM.LINUX; break;
+						case 0x11: platform = IG_CORE_PLATFORM.MAX; break;
 					}
 					break;
 				default:
 					Console.WriteLine($"WARNING: IG_CORE_PLATFORM FOR VERSION {version} NOT IMPLEMENTED");
-					return IG_CORE_PLATFORM.DEFAULT;
+					break;
 			}
-			return IG_CORE_PLATFORM.DEFAULT;
+			return platform;
 		}
 		public static bool IsPlatform64Bit(IG_CORE_PLATFORM platform)
 		{

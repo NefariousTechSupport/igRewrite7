@@ -19,7 +19,7 @@ namespace igLibrary.Core
 					if(is64Bit) igz._stream.Seek(objPos + metafields[j]._metaField._offset64);
 					else        igz._stream.Seek(objPos + metafields[j]._metaField._offset32);
 
-					Console.WriteLine($"Processing {GetType().Name} @ {objPos.ToString("X08")} in {igz._file._path}, metafield {metafields[j]._metaField._name} @ {igz._stream.BaseStream.Position.ToString("X08")}");
+					Console.WriteLine($"Processing {GetType().Name} @ {objPos.ToString("X08")} in {igz._file._path._path}, metafield {metafields[j]._metaField._name} @ {igz._stream.BaseStream.Position.ToString("X08")}");
 					fields[i].SetValue(this, metafields[j].ReadIGZMemory(igz, is64Bit));
 
 					break;

@@ -40,6 +40,11 @@ namespace igLibrary.Core
 			}
 			_mediaDirectory = igFileContext.Singleton.GetMediaDirectory(_media);
 			int finalDir = -1;
+			if(_media == "cwd")
+			{
+				string cwdDir = $"/Temporary/BuildServer/{igCore.GetPlatformString(igCore.platform)}/Output";
+				mediaIndex += cwdDir.Length;
+			}
 			_directory = path.Substring(mediaIndex + 1);
 			for(int i = 0; i < _directory.Length; i++)
 			{
@@ -54,8 +59,16 @@ namespace igLibrary.Core
 			{
 				if(path[i] == '.') extensionStart = i;
 			}
-			_file = path.Substring(fileStart, extensionStart - fileStart);
-			_extension = path.Substring(extensionStart);
+			if(extensionStart >= 0)
+			{
+				_file = path.Substring(fileStart, extensionStart - fileStart);
+				_extension = path.Substring(extensionStart);
+			}
+			else
+			{
+				_file = path.Substring(fileStart);
+				_extension = string.Empty;				
+			}
 
 			_fileExtension = string.Empty;
 			if(_extension.Length > 0)

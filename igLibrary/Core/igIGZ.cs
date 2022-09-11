@@ -3,12 +3,16 @@ namespace igLibrary.Core
 	public class igIGZ
 	{
 		public List<string> _stringList = new List<string>();
-		public List<string> _vtableList = new List<string>();
+		public List<Type> _vtableList = new List<Type>();
 		public List<ulong> _runtimeVtableList = new List<ulong>();
+		public List<ulong> _runtimeOffsetList = new List<ulong>();
 		public Dictionary<ulong, igObject> _offsetObjectList = new Dictionary<ulong, igObject>();
 		public List<ulong> _runtimeObjectListList = new List<ulong>();
 		public List<ulong> _runtimeHandleList = new List<ulong>();
 		public List<ulong> _runtimeExternals = new List<ulong>();
+		public List<ulong> _runtimePID = new List<ulong>();
+		public List<ulong> _runtimeNamedExternals = new List<ulong>();
+		public List<ulong> _runtimeStrings = new List<ulong>();
 		public List<igHandle> _externalList = new List<igHandle>();
 		public List<igHandle> _namedHandleList = new List<igHandle>();
 		public List<igHandle> _unresolvedNames = new List<igHandle>();
@@ -78,18 +82,25 @@ namespace igLibrary.Core
 
 				switch(magic)
 				{
-					case 0x54454D54:
+					case 0x54454D54:							//TMET
 						_vtableList.Capacity = (int)count;
 						for(uint j = 0; j < count; j++)
 						{
 							long basePos = _stream.BaseStream.Position;
-							string data = _stream.ReadString();
-							_vtableList.Add(data);
+							string vtableName = _stream.ReadString();
+							if(igCore.RegisteredTypes.ContainsKey(vtableName))
+							{
+								_vtableList.Add(igCore.RegisteredTypes[vtableName]);
+							}
+							else
+							{
+								_vtableList.Add(typeof(igObject));
+							}
 							int bits = (_version > 7) ? 2 : 1;
-							_stream.Seek(basePos + bits + (data.Length & (uint)(-bits)));
+							_stream.Seek(basePos + bits + (vtableName.Length & (uint)(-bits)));
 						}
 						break;
-					case 0x52545354:
+					case 0x52545354:							//TSTR
 						_stringList.Capacity = (int)count;
 						for(uint j = 0; j < count; j++)
 						{
@@ -100,25 +111,28 @@ namespace igLibrary.Core
 							_stream.Seek(basePos + bits + (data.Length & (uint)(-bits)));
 						}
 						break;
-					case 0x50454454:
+					case 0x50454454:							//TDEP
 						dir._dependancies.Capacity = (int)count;
 						for(uint j = 0; j < count; j++)
 						{
 							string nameSpaceStr = _stream.ReadString();
 							string depPath = _stream.ReadString();
-							if(!depPath.StartsWith("<build>"))
+							if(depPath.StartsWith("<build>"))
 							{
-								igName nameSpace = new igName(nameSpaceStr.ToLower());
-								igObjectDirectory dependantDir = igObjectDirectory.LoadDependancyDefault(depPath, nameSpace);
-								if(dependantDir != null)
-								{
-									dir._dependancies.Add(dependantDir);
-								}
+								continue;
+								//depPath = depPath.Substring(7);
+							}
+
+							igName nameSpace = new igName(nameSpaceStr.ToLower());
+							igObjectDirectory? dependantDir = igObjectDirectory.LoadDependancyDefault(depPath, nameSpace);
+							if(dependantDir != null)
+							{
+								dir._dependancies.Add(dependantDir);
 							}
 						}
 						break;
-					case 0x44495845:
-						_namedExternalList.SetCapacity(count);
+					case 0x44495845:							//EXID
+						_externalList.Capacity = (int)count;
 						for(uint j = 0; j < count; j++)
 						{
 							igHandleName depName = new igHandleName();
@@ -147,10 +161,10 @@ namespace igLibrary.Core
 								}
 							}
 							finish:
-								_namedExternalList.Append(obj);
+								_externalList.Add(new igHandle(depName));
 						}
 						break;
-					case 0x4D4E5845:
+					case 0x4D4E5845:							//EXNM
 						for(uint j = 0; j < count; j++)
 						{
 							igHandleName depHandleName = new igHandleName();
@@ -195,7 +209,9 @@ namespace igLibrary.Core
 
 							if((rawDepHNameNS & 0x80000000) != 0)
 							{
-								_namedHandleList.Add(new igHandle(depHandleName));
+								igHandle hnd = new igHandle(depHandleName);
+								_namedHandleList.Add(hnd);
+								_namedExternalList.Append(obj);
 							}
 							else
 							{
@@ -206,12 +222,14 @@ namespace igLibrary.Core
 								}
 								else
 								{
-									_namedHandleList.Add(new igHandle(depHandleName));
+									igHandle hnd = new igHandle(depHandleName);
+									_namedHandleList.Add(hnd);
+									_namedExternalList.Append(obj);
 								}
 							}
 						}
 						break;
-					case 0x4E484D54:
+					case 0x4E484D54:							//TMHN
 						_thumbnails.Capacity = (int)count;
 						for(uint j = 0; j < count; j++)
 						{
@@ -220,7 +238,7 @@ namespace igLibrary.Core
 							_thumbnails.Add(mem);
 						}
 						break;
-					case 0x4D414E4F:
+					case 0x4D414E4F:							//ONAM
 						dir._useNameList = true;
 						nameListOffset = DeserializeOffset(_stream.ReadUInt32());
 						igNameList nameList = _offsetObjectList[nameListOffset] as igNameList;
@@ -228,20 +246,32 @@ namespace igLibrary.Core
 						nameList.ReadFields(this);
 						dir._nameList = nameList;
 						break;
-					case 0x42545652:
+					case 0x42545652:							//RVTB
 						UnpackCompressedInts(_runtimeVtableList, _stream.ReadBytes(length - start), count);
 						InstantiateAndAppendObjects();
 						break;
-					case 0x544F4F52:
+					case 0x544F4F52:							//ROOT
 						UnpackCompressedInts(_runtimeObjectListList, _stream.ReadBytes(length - start), count);
 						break;
-					case 0x444E4852:
+					case 0x444E4852:							//RHND
 						UnpackCompressedInts(_runtimeHandleList, _stream.ReadBytes(length - start), count);
 						break;
-					case 0x54584552:
+					case 0x54584552:							//REXT
 						UnpackCompressedInts(_runtimeExternals, _stream.ReadBytes(length - start), count);
 						break;
-
+					case 0x53464F52:							//ROFS
+						UnpackCompressedInts(_runtimeOffsetList, _stream.ReadBytes(length - start), count);
+						break;
+					case 0x44495052:							//RPID
+						UnpackCompressedInts(_runtimePID, _stream.ReadBytes(length - start), count);
+						break;
+					case 0x58454E52:							//RNEX
+						UnpackCompressedInts(_runtimeNamedExternals, _stream.ReadBytes(length - start), count);
+						break;
+					case 0x54545352:							//RSTT
+					case 0x52545352:							//RSTR
+						UnpackCompressedInts(_runtimeStrings, _stream.ReadBytes(length - start), count);
+						break;
 				}
 
 				bytesProcessed += length;
@@ -336,15 +366,7 @@ namespace igLibrary.Core
 		public igObject InstantiateObject(ulong offset)
 		{
 			_stream.Seek(offset);
-			string vtableName = _vtableList[(int)ReadRawOffset()];
-			if(igCore.RegisteredTypes.ContainsKey(vtableName))
-			{
-				return (igObject)Activator.CreateInstance(igCore.RegisteredTypes[vtableName]);
-			}
-			else
-			{
-				return new igObject();
-			}
+			return (igObject)Activator.CreateInstance(_vtableList[(int)ReadRawOffset()]);
 		}
 	}
 }

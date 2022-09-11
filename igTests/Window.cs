@@ -12,6 +12,8 @@ namespace igRewrite7
 
 		Entity e;
 
+		CDrawable quad;
+
 		public Window(GameWindowSettings gws, NativeWindowSettings nws, string[] args) : base(gws, nws)
 		{
 			igFileContext.Singleton.Initialize(args[0]);
@@ -35,11 +37,45 @@ namespace igRewrite7
 
 			Camera.CreatePerspective(MathHelper.PiOver2, ClientSize.X / (float)ClientSize.Y);
 
-			e = new Entity();
-			e.transform = new Transform();
-			if(rootDir._objectList[0] is igModelInfo mi) e.drawable = new CDrawableListList(mi);
-			else if(rootDir._objectList[1] is CGraphicsSkinInfo gsi) e.drawable = new CDrawableListList(gsi);
-			e.name = "idk lol";
+			quad = new CDrawable();
+			quad.SetVertexPositions(new float[]
+			{
+				-1, -1,  0, 1,
+				-1,  1,  0, 1,
+				 1,  1,  0, 1,
+				 1, -1,  0, 1,
+			});
+			quad.SetVertexTexCoords(new float[]
+			{
+				0, 0, 0, 1,
+				0, 1, 0, 1,
+				1, 1, 0, 1,
+				1, 0, 0, 1,
+			});
+			quad.SetVertexColours(new float[]
+			{
+				1, 0, 0, 1,
+				0, 1, 0, 1,
+				1, 1, 0, 1,
+				0, 0, 0, 1
+			});
+			quad.SetIndices(new uint[]
+			{
+				0, 1, 2,
+				2, 3, 0
+			});
+			quad.SetMaterial(new Material(MaterialManager.materials["stdv;ulitf"]));
+
+			EntityManager.Singleton.Load(rootDir);
+
+			igObjectStreamManager o = igObjectStreamManager.Singleton;
+
+			//e = new Entity();
+			//e.transform = new Transform();
+			//if(rootDir._objectList[0] is igModelInfo mi) e.drawable = new CDrawableListList(mi);
+			//else if(rootDir._objectList[1] is CGraphicsSkinInfo gsi) e.drawable = new CDrawableListList(gsi);
+			//e.name = "idk lol";
+			//EntityManager.Singleton.entities.Add(e);
 
 			gui = new GUI(this);
 		}
@@ -55,7 +91,13 @@ namespace igRewrite7
 
 			EntityManager.Singleton.Render();
 
-			e.Draw();
+			quad.Draw(new Transform());
+			if(e != null)
+			{
+				e.Draw();
+			}
+
+			gui.DrawEntityWindow();
 
 			gui.Tick();
 

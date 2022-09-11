@@ -67,7 +67,23 @@ namespace igRewrite7
 				world.Normalize();
 				string entityNames = string.Empty;
 				ImGui.SetTooltip(entityNames);
-			}			
+			}
+		}
+
+		public void DrawEntityWindow()
+		{
+			ImGui.Begin("Regions", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.AlwaysVerticalScrollbar);
+			for(int i = 0; i < EntityManager.Singleton.entities.Count; i++)
+			{
+				ImGui.PushID($"{i}");
+				if(ImGui.Button($"Entity {i}"))
+				{
+					Camera.transform.position = -EntityManager.Singleton.entities[i].transform.position;
+					selectedEntity = EntityManager.Singleton.entities[i];
+				}
+				ImGui.PopID();
+			}
+			ImGui.End();
 		}
 
 		public void KeyPress(int c)

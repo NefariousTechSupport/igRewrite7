@@ -15,7 +15,8 @@ namespace igLibrary.Core
 			kIGB,
 			kIGX,
 			kDataStream,
-			kIGZ
+			kIGZ,
+			kInvalid,	//This isn't real
 		}
 
 		FileType type;
@@ -35,7 +36,7 @@ namespace igLibrary.Core
 		public void ReadFile()
 		{
 			//change this to happen in igObjectLoader once that exists
-			type = GetLoader();
+			type = GetLoader(_path);
 			switch(type)
 			{
 				case FileType.kIGZ:
@@ -46,14 +47,14 @@ namespace igLibrary.Core
 					break;
 			}
 		}
-		public static igObjectDirectory LoadDependancyDefault(string filePath, igName nameSpace)
+		public static igObjectDirectory? LoadDependancyDefault(string filePath, igName nameSpace)
 		{
 			return igObjectStreamManager.Singleton.Load(filePath, nameSpace);
 		}
-		public FileType GetLoader()
+		public static FileType GetLoader(string filePath)
 		{
 			igFilePath path = new igFilePath();
-			path.Set(_path);
+			path.Set(filePath);
 			switch(path._fileExtension)
 			{
 				case ".igz":
@@ -62,7 +63,8 @@ namespace igLibrary.Core
 				case ".bld":	//not to be confused with the archive extension
 					return FileType.kIGZ;
 				default:
-					throw new InvalidOperationException($"Invalid filetype {path._fileExtension}");
+					return FileType.kInvalid;
+					//throw new InvalidOperationException($"Invalid filetype {path._fileExtension}");
 			}
 		}
 	}

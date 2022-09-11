@@ -11,7 +11,8 @@ namespace igLibrary.Core
 		public override object ReadRawMemory(igIGZ igz, bool is64Bit)
 		{
 			ulong pos = (ulong)igz._stream.BaseStream.Position;
-			if(!igz._runtimeHandleList.Any(x => x == pos)) throw new FileLoadException("igHandleMetaField not in RHND, this could be normal");	//check
+			//if(!igz._runtimeHandleList.Any(x => x == pos)) throw new FileLoadException("igHandleMetaField not in RHND, this could be normal");	//check
+			if(!igz._runtimeHandleList.Any(x => x == pos)) return igHandle.NullHandle;
 			uint raw = igz._stream.ReadUInt32();		//idk why this is a uint, if any bugs occur on 64bit big endian platforms this could be why
 			if((raw & 0x80000000) != 0)
 			{

@@ -72,6 +72,11 @@ namespace igLibrary.Core
 			this.FromMemory(igz, igCore.IsPlatform64Bit(igz._platform));
 		}
 
+		public List<T1> ToCSList()
+		{
+			return list;
+		}
+
 		public igDataList() : base(){}
 	}
 	public class igDataList : igDataList<byte, igUnsignedCharMetaField>{}

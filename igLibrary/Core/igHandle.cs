@@ -4,11 +4,13 @@ namespace igLibrary.Core
 	{
 		public igHandleName _handleName;
 
+		public static igHandle NullHandle => new igHandle();
+
 		public igHandle(igHandleName name)
 		{
 			_handleName = name;
 		}
-		public T GetObject<T>() where T : igObject
+		public T? GetObject<T>() where T : igObject
 		{
 			Dictionary<uint, igObjectDirectory> dirs = igObjectStreamManager.Singleton._directories;
 			if(dirs.ContainsKey(_handleName._ns._hash))
@@ -18,7 +20,7 @@ namespace igLibrary.Core
 				{
 					if(dir._nameList[i]._hash == _handleName._name._hash)
 					{
-						return (T)dir._objectList[i];
+						return dir._objectList[i] as T;
 					}
 				}				
 			}

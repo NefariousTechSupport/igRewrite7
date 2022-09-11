@@ -10,15 +10,9 @@ namespace igLibrary.Core
 		}
 		public igObjectDirectory Load(string path)
 		{
-			//igArchiveManager.Singleton.GetFile(path, directoryStream);
-			igFileDescriptor fd = igFileContext.Singleton.Open(path);
-			if(fd == null) return null;
-			igObjectDirectory objDir = new igObjectDirectory(fd._path._path);
-			AddObjectDirectory(objDir);
-			objDir.ReadFile();
-			return objDir;
+			return Load(path, new igName(Path.GetFileNameWithoutExtension(path)));
 		}
-		public igObjectDirectory Load(string filePath, igName nameSpace)
+		public igObjectDirectory? Load(string filePath, igName nameSpace)
 		{
 			Console.Write($"igObjectStreamManager was asked to load {filePath}...");
 			if(_directories.ContainsKey(nameSpace._hash))
@@ -28,10 +22,28 @@ namespace igLibrary.Core
 			}
 			Console.Write($"was not previously loaded.\n");
 
-			igObjectDirectory objDir = new igObjectDirectory(filePath, nameSpace);
-			AddObjectDirectory(objDir);
-			objDir.ReadFile();
-			return objDir;
+			igFilePath fp = new igFilePath();
+			fp.Set(filePath);
+
+			if(fp._fileExtension == ".igz" || fp._fileExtension == ".lng")
+			{
+				igObjectDirectory objDir = new igObjectDirectory(filePath, nameSpace);
+				AddObjectDirectory(objDir);
+				objDir.ReadFile();
+				return objDir;
+			}
+			else
+			{
+				if(fp._fileExtension == ".bk2")
+				{
+					try
+					{
+						igArchiveManager.Singleton.AddArchiveToPool($"{fp._file}.pak");
+					}
+					catch(Exception){}
+				}
+				return null;
+			}
 		}
 	}
 }
