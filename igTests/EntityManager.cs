@@ -130,6 +130,7 @@ namespace igRewrite7
 		public IDrawableCommon drawable;
 		public int id;
 		public string name = string.Empty;
+		public bool draw;
 
 		public Transform transform;
 
@@ -139,6 +140,7 @@ namespace igRewrite7
 		public Entity(){}
 		public Entity(igEntity ce)
 		{
+			draw = ce._isHidden && ce._isVisible;
 			Vector3 eulerRot = Vector3.Zero;
 			if(ce is CActor ca)
 			{
@@ -152,6 +154,7 @@ namespace igRewrite7
 			else if(ce is CGameEntity cge)
 			{
 				CGameEntityData cged = (CGameEntityData)cge._entityData;
+				if(cged == null) return;
 				drawable = AssetManager.Singleton.LoadDrawable(cged._modelName, false);
 				if(drawable == null)
 				{
@@ -173,6 +176,7 @@ namespace igRewrite7
 		}
 		public Entity(CStaticEntity cse)
 		{
+			draw = true;
 			drawable = AssetManager.Singleton.LoadDrawable(cse._entityData._modelName, false);
 			Vector3 rot = Utils.ToOpenTKVector3(cse._rotation);
 			rot.X = MathHelper.DegreesToRadians(rot.X);
@@ -187,7 +191,7 @@ namespace igRewrite7
 		}
 		public void Draw()
 		{
-			drawable.Draw(transform);
+			if(draw) drawable.Draw(transform);
 		}
 		public bool IntersectsRay(Vector3 dir, Vector3 position)
 		{

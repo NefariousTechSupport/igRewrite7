@@ -44,3 +44,4 @@ debug
 *.vvl
 *.wav*
 smoke_config.xml
+igTests/imgui.ini

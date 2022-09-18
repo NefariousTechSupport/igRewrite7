@@ -46,7 +46,7 @@ namespace igLibrary.Gfx
 				Console.WriteLine($"{vertexCount.ToString("X08")} vertices");
 				Console.WriteLine($"{indexCount.ToString("X08")} indices");
 
-				uint stride = (uint)segment._spuVertexes0.size / vertexCount;
+				uint stride = ((uint)segment._spuVertexes0.size / (vertexCount * 4)) * 4;
 
 				//Console.WriteLine($"_spuVertexes0    at {segment._spuVertexes0.dataOffset.ToString("X08")}, Length {segment._spuVertexes0.dataLength.ToString("X08")}, stride {(segment._spuVertexes0.dataLength / vertexCount).ToString("X08")}");
 				//Console.WriteLine($"_spuVertexes1    at {segment._spuVertexes1.dataOffset.ToString("X08")}, Length {segment._spuVertexes1.dataLength.ToString("X08")}, stride {(segment._spuVertexes1.dataLength / vertexCount).ToString("X08")}");
@@ -55,11 +55,19 @@ namespace igLibrary.Gfx
 				StreamHelper posvertexsh = null;
 				posvertexsh = new StreamHelper(new MemoryStream(segment._spuVertexes0.buffer), StreamHelper.Endianness.Big);
 				StreamHelper uvvertexsh = new StreamHelper(new MemoryStream(segment._rsxOnlyVertexes.buffer), StreamHelper.Endianness.Big);
-				//StreamHelper normalvertexsh = new StreamHelper(new MemoryStream(segment._spuVertexes1.buffer), StreamHelper.Endianness.Big);
+				StreamHelper rsxStreamDescStream = new StreamHelper(new MemoryStream(segment._rsxOnlyStreamDesc.buffer), StreamHelper.Endianness.Big);
+				igPS3EdgeGeometrySegment.StreamDesc[] rsxOnlyDescs = rsxStreamDescStream.ReadStructArray<igPS3EdgeGeometrySegment.StreamDesc>(segment._rsxOnlyStreamDescSize / 0x10u);
 
-				string vertext = string.Empty;	//I like to think i'm funny by naming this vertext
-				string faceText = string.Empty;
-
+				bool uvFailure = false;
+				byte uvOffset = 0;
+				if(rsxOnlyDescs.Length > 0)
+				{
+					uvFailure = !rsxOnlyDescs.Any(x => x.type == 3);
+					if(!uvFailure)
+					{
+						uvOffset = rsxOnlyDescs.First(x => x.type == 3).offset;
+					}
+				}
 				bool useNormals = false;
 				if(segment._spuVertexes1.size / vertexCount < 0x06)
 				{
@@ -87,21 +95,16 @@ namespace igLibrary.Gfx
 						vPositions[i][j * 4 + 3] = 1.0f;
 					}
 
-					if(version == 0x07)
-					{
-						//DKDave on the xentax discord helped me out with uvs
-						uvvertexsh.Seek(0x0C * j + 0x08);
-					}
-					else
-					{
-						uvvertexsh.Seek((segment._rsxOnlyVertexes.size / vertexCount) * j);
-					}
 
-					Vector4 uv = igVertexConversion.unpack_HALF2(uvvertexsh);
-					vTexCoords[i][j * 4 + 0] = uv.X;
-					vTexCoords[i][j * 4 + 1] = uv.Y;
-					vTexCoords[i][j * 4 + 2] = uv.Z;
-					vTexCoords[i][j * 4 + 3] = uv.W;
+					if(!uvFailure)
+					{
+						uvvertexsh.Seek((segment._rsxOnlyVertexes.size / vertexCount) * j + uvOffset);
+						Vector4 uv = igVertexConversion.unpack_HALF2(uvvertexsh);
+						vTexCoords[i][j * 4 + 0] = uv.X;
+						vTexCoords[i][j * 4 + 1] = uv.Y;
+						vTexCoords[i][j * 4 + 2] = uv.Z;
+						vTexCoords[i][j * 4 + 3] = uv.W;
+					}
 				}
 
 				posvertexsh.Close();

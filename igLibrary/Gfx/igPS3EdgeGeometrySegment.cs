@@ -52,7 +52,15 @@ namespace igLibrary.Gfx
 		public igMemory _blendShapeData;
 		[igField(typeof(igVectorMetaField<ulong, igRawRefMetaField>), 0xFF, 0x18, 0xA0, 0x00, "_blendShapes")]
 		public List<ulong> _blendShapes;
-		[igField(typeof(igUnsignedIntMetaField), 0xFF, 0x19, 0xAC, 0x00, "_enableZeroPixelCull")]
-		public uint _enableZeroPixelCull;
+		[igField(typeof(igUnsignedIntMetaField), 0xFF, 0x19, 0xAC, 0x00, "_speedTreeType")]
+		public uint _speedTreeType;
+
+		//No idea if this is accurate
+		[StructLayout(LayoutKind.Explicit, Size = 0x10)]
+		public struct StreamDesc
+		{
+			[FieldOffset(0x08)] public byte offset;
+			[FieldOffset(0x09)] public byte type;
+		}
 	}
 }
