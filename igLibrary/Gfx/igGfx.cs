@@ -1,3 +1,16 @@
+/*
+	"I'm just hoping we can get SF textures extracted soon, considering that's what we have leftover from shapeshifters"
+		-Eon#9251 (User ID: 327591396343283713), 18/12/2021 at 16:22 GMT
+
+	"i got textures from sg, stt, and ssc, ssf is pretty easy to add"
+		-Neffy#5039 (User ID: 909500422006390874), 18/12/2021 at 16:23 GMT
+
+	"if y'all want ssf texture extraction you're gonna have to cry cos this wayyy more complicated than i thought"
+		-Neffy#5039 (User ID: 909500422006390874), 18/12/2021 at 18:33 GMT
+
+	Why did you do this to me Eon?!
+*/
+
 namespace igLibrary.Gfx
 {
 	public static class igGfx
@@ -12,6 +25,7 @@ namespace igLibrary.Gfx
 			metaimages._objectList = new igObjectList();
 			metaimages._nameList = new igNameList();
 
+			#region ios
 			igMetaImage pvrtc2_alpha = new igMetaImage();
 			pvrtc2_alpha._bitsPerPixel = 2;
 			pvrtc2_alpha._isSrgb = false;
@@ -161,6 +175,132 @@ namespace igLibrary.Gfx
 			pvrtc2_srgb_aspen._functions.Add(igMetaImage.igImage2Conversion_pvrtc2_generic);
 			metaimages._objectList.Append(pvrtc2_srgb_aspen);
 			metaimages._nameList.Append(new igName("pvrtc2_srgb_aspen"));
+
+			#endregion
+
+			#region ps3
+
+			igMetaImage dxt1_big_ps3 = new igMetaImage();
+			dxt1_big_ps3._bitsPerPixel = 2;
+			dxt1_big_ps3._isSrgb = false;
+			dxt1_big_ps3._isFloatingPoint = false;
+			dxt1_big_ps3._isTile = false;
+			dxt1_big_ps3._name = "dxt1_big_ps3";
+			dxt1_big_ps3._functions.Add(igMetaImage.igImage2Conversion_dxt1_generic);
+			metaimages._objectList.Append(dxt1_big_ps3);
+			metaimages._nameList.Append(new igName("dxt1_big_ps3"));
+
+			igMetaImage dxt1_srgb_big_ps3 = new igMetaImage();
+			dxt1_srgb_big_ps3._bitsPerPixel = 2;
+			dxt1_srgb_big_ps3._isSrgb = true;
+			dxt1_srgb_big_ps3._isFloatingPoint = false;
+			dxt1_srgb_big_ps3._isTile = false;
+			dxt1_srgb_big_ps3._name = "dxt1_srgb_big_ps3";
+			dxt1_srgb_big_ps3._functions.Add(igMetaImage.igImage2Conversion_dxt1_generic);
+			metaimages._objectList.Append(dxt1_srgb_big_ps3);
+			metaimages._nameList.Append(new igName("dxt1_srgb_big_ps3"));
+
+			igMetaImage dxt1_tile_big_ps3 = new igMetaImage();
+			dxt1_tile_big_ps3._bitsPerPixel = 2;
+			dxt1_tile_big_ps3._isSrgb = false;
+			dxt1_tile_big_ps3._isFloatingPoint = false;
+			dxt1_tile_big_ps3._isTile = true;
+			dxt1_tile_big_ps3._name = "dxt1_tile_big_ps3";
+			dxt1_tile_big_ps3._functions.Add(igMetaImage.igImage2Conversion_dxt1_generic);
+			metaimages._objectList.Append(dxt1_tile_big_ps3);
+			metaimages._nameList.Append(new igName("dxt1_tile_big_ps3"));
+
+			igMetaImage dxt1_srgb_tile_big_ps3 = new igMetaImage();
+			dxt1_srgb_tile_big_ps3._bitsPerPixel = 2;
+			dxt1_srgb_tile_big_ps3._isSrgb = true;
+			dxt1_srgb_tile_big_ps3._isFloatingPoint = false;
+			dxt1_srgb_tile_big_ps3._isTile = true;
+			dxt1_srgb_tile_big_ps3._name = "dxt1_srgb_tile_big_ps3";
+			dxt1_srgb_tile_big_ps3._functions.Add(igMetaImage.igImage2Conversion_dxt1_generic);
+			metaimages._objectList.Append(dxt1_srgb_tile_big_ps3);
+			metaimages._nameList.Append(new igName("dxt1_srgb_tile_big_ps3"));
+
+			igMetaImage dxt3_big_ps3 = new igMetaImage();
+			dxt3_big_ps3._bitsPerPixel = 4;
+			dxt3_big_ps3._isSrgb = false;
+			dxt3_big_ps3._isFloatingPoint = false;
+			dxt3_big_ps3._isTile = false;
+			dxt3_big_ps3._name = "dxt3_big_ps3";
+			dxt3_big_ps3._functions.Add(igMetaImage.igImage2Conversion_dxt3_generic);
+			metaimages._objectList.Append(dxt3_big_ps3);
+			metaimages._nameList.Append(new igName("dxt3_big_ps3"));
+
+			igMetaImage dxt3_srgb_big_ps3 = new igMetaImage();
+			dxt3_srgb_big_ps3._bitsPerPixel = 4;
+			dxt3_srgb_big_ps3._isSrgb = true;
+			dxt3_srgb_big_ps3._isFloatingPoint = false;
+			dxt3_srgb_big_ps3._isTile = false;
+			dxt3_srgb_big_ps3._name = "dxt3_srgb_big_ps3";
+			dxt3_srgb_big_ps3._functions.Add(igMetaImage.igImage2Conversion_dxt3_generic);
+			metaimages._objectList.Append(dxt3_srgb_big_ps3);
+			metaimages._nameList.Append(new igName("dxt3_srgb_big_ps3"));
+
+			igMetaImage dxt3_tile_big_ps3 = new igMetaImage();
+			dxt3_tile_big_ps3._bitsPerPixel = 4;
+			dxt3_tile_big_ps3._isSrgb = false;
+			dxt3_tile_big_ps3._isFloatingPoint = false;
+			dxt3_tile_big_ps3._isTile = true;
+			dxt3_tile_big_ps3._name = "dxt3_tile_big_ps3";
+			dxt3_tile_big_ps3._functions.Add(igMetaImage.igImage2Conversion_dxt3_generic);
+			metaimages._objectList.Append(dxt3_tile_big_ps3);
+			metaimages._nameList.Append(new igName("dxt3_tile_big_ps3"));
+
+			igMetaImage dxt3_srgb_tile_big_ps3 = new igMetaImage();
+			dxt3_srgb_tile_big_ps3._bitsPerPixel = 4;
+			dxt3_srgb_tile_big_ps3._isSrgb = true;
+			dxt3_srgb_tile_big_ps3._isFloatingPoint = false;
+			dxt3_srgb_tile_big_ps3._isTile = true;
+			dxt3_srgb_tile_big_ps3._name = "dxt3_srgb_tile_big_ps3";
+			dxt3_srgb_tile_big_ps3._functions.Add(igMetaImage.igImage2Conversion_dxt3_generic);
+			metaimages._objectList.Append(dxt3_srgb_tile_big_ps3);
+			metaimages._nameList.Append(new igName("dxt3_srgb_tile_big_ps3"));
+
+			igMetaImage dxt5_big_ps3 = new igMetaImage();
+			dxt5_big_ps3._bitsPerPixel = 4;
+			dxt5_big_ps3._isSrgb = false;
+			dxt5_big_ps3._isFloatingPoint = false;
+			dxt5_big_ps3._isTile = false;
+			dxt5_big_ps3._name = "dxt5_big_ps3";
+			dxt5_big_ps3._functions.Add(igMetaImage.igImage2Conversion_dxt5_generic);
+			metaimages._objectList.Append(dxt5_big_ps3);
+			metaimages._nameList.Append(new igName("dxt5_big_ps3"));
+
+			igMetaImage dxt5_srgb_big_ps3 = new igMetaImage();
+			dxt5_srgb_big_ps3._bitsPerPixel = 4;
+			dxt5_srgb_big_ps3._isSrgb = true;
+			dxt5_srgb_big_ps3._isFloatingPoint = false;
+			dxt5_srgb_big_ps3._isTile = false;
+			dxt5_srgb_big_ps3._name = "dxt5_srgb_big_ps3";
+			dxt5_srgb_big_ps3._functions.Add(igMetaImage.igImage2Conversion_dxt5_generic);
+			metaimages._objectList.Append(dxt5_srgb_big_ps3);
+			metaimages._nameList.Append(new igName("dxt5_srgb_big_ps3"));
+
+			igMetaImage dxt5_tile_big_ps3 = new igMetaImage();
+			dxt5_tile_big_ps3._bitsPerPixel = 4;
+			dxt5_tile_big_ps3._isSrgb = false;
+			dxt5_tile_big_ps3._isFloatingPoint = false;
+			dxt5_tile_big_ps3._isTile = true;
+			dxt5_tile_big_ps3._name = "dxt5_tile_big_ps3";
+			dxt5_tile_big_ps3._functions.Add(igMetaImage.igImage2Conversion_dxt5_generic);
+			metaimages._objectList.Append(dxt5_tile_big_ps3);
+			metaimages._nameList.Append(new igName("dxt5_tile_big_ps3"));
+
+			igMetaImage dxt5_srgb_tile_big_ps3 = new igMetaImage();
+			dxt5_srgb_tile_big_ps3._bitsPerPixel = 4;
+			dxt5_srgb_tile_big_ps3._isSrgb = true;
+			dxt5_srgb_tile_big_ps3._isFloatingPoint = false;
+			dxt5_srgb_tile_big_ps3._isTile = true;
+			dxt5_srgb_tile_big_ps3._name = "dxt5_srgb_tile_big_ps3";
+			dxt5_srgb_tile_big_ps3._functions.Add(igMetaImage.igImage2Conversion_dxt5_generic);
+			metaimages._objectList.Append(dxt5_srgb_tile_big_ps3);
+			metaimages._nameList.Append(new igName("dxt5_srgb_tile_big_ps3"));
+
+			#endregion
 
 			igObjectStreamManager.Singleton.AddObjectDirectory(metaimages);
 		}

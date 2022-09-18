@@ -40,6 +40,17 @@ namespace igRewrite7
 			//SetMaterial(new Material(MaterialManager.materials["stdv;whitef"]));
 		}
 
+		public CDrawable(float[] vPositions, float[] vTexCoords, float[] vColours, uint[] indices)
+		{
+			Prepare();
+
+			if(vPositions != null) SetVertexPositions(vPositions);
+			if(vTexCoords != null) SetVertexTexCoords(vTexCoords);
+			if(vColours != null)   SetVertexColours(vColours);
+			SetIndices(indices);
+			//SetMaterial(new Material(MaterialManager.materials["stdv;whitef"]));
+		}
+
 		public void Prepare()
 		{
 			VAO = GL.GenVertexArray();
@@ -183,9 +194,10 @@ namespace igRewrite7
 	{
 		public CDrawableList(igModelDrawCallData mdcd)
 		{
+			CDrawable drawable;
 			if(mdcd._platformData == null)
 			{
-				CDrawable drawable = new CDrawable(mdcd._graphicsVertexBuffer, mdcd._graphicsIndexBuffer);
+				drawable = new CDrawable(mdcd._graphicsVertexBuffer, mdcd._graphicsIndexBuffer);
 				igGraphicsMaterial? gm = mdcd._materialHandle.GetObject<igGraphicsMaterial>();
 				if(gm == null)
 				{
@@ -193,11 +205,35 @@ namespace igRewrite7
 				}
 				else
 				{
-					drawable.SetMaterial(new Material(MaterialManager.materials["stdv;ulitf"], mdcd._materialHandle.GetObject<igGraphicsMaterial>()));
+					drawable.SetMaterial(new Material(MaterialManager.materials["stdv;ulitf"], gm));
 				}
 				this.Add(drawable);
 			}
-			else throw new NotImplementedException("UNSUPPORTED GFX PLATFORM");
+			else
+			{
+				if(mdcd._platformData is igPS3EdgeGeometry edgeGeometry)
+				{
+					edgeGeometry.ExtractGeometry(out uint[][] indices, out float[][] vPositions, out float[][] vTexCoords);
+					igGraphicsMaterial? gm = mdcd._materialHandle.GetObject<igGraphicsMaterial>();
+					Material mat;
+					if(gm == null)
+					{
+						mat = new Material(MaterialManager.materials["stdv;ulitf"], null, PrimitiveType.Triangles);
+					}
+					else
+					{
+						mat = new Material(MaterialManager.materials["stdv;ulitf"], gm);
+					}
+					for(int i = 0; i < edgeGeometry._count; i++)
+					{
+						drawable = new CDrawable(vPositions[i], vTexCoords[i], null, indices[i]);
+						drawable.SetMaterial(mat);
+						this.Add(drawable);
+					}
+				}
+				else throw new NotImplementedException("GFX PLATFORM UNSUPPORTED");
+			}
+
 		}
 
 		public void AddDrawCall(Transform transform)

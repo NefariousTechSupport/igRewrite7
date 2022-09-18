@@ -19,5 +19,35 @@ namespace igLibrary.Gfx
 			Pvrtc.PvrtcDecoder dec = new Pvrtc.PvrtcDecoder();
 			return dec.DecompressPVRTC(memory.buffer, width, height, true);
 		}
+		public static byte[] igImage2Conversion_dxt1_generic(igMemory memory, ushort width, ushort height, ushort levelCount)
+		{
+			byte[] buffer = new byte[4 * width * height];
+			Dxt.DxtDecoder.DecompressDXT1(memory.buffer, width, height, buffer);
+			for(int i = 0; i < buffer.Length >> 2; i++)
+			{
+				Array.Reverse(buffer, i << 2, 3);
+			}
+			return buffer;
+		}
+		public static byte[] igImage2Conversion_dxt3_generic(igMemory memory, ushort width, ushort height, ushort levelCount)
+		{
+			byte[] buffer = new byte[4 * width * height];
+			Dxt.DxtDecoder.DecompressDXT3(memory.buffer, width, height, buffer);
+			for(int i = 0; i < buffer.Length >> 2; i++)
+			{
+				Array.Reverse(buffer, i << 2, 3);
+			}
+			return buffer;
+		}
+		public static byte[] igImage2Conversion_dxt5_generic(igMemory memory, ushort width, ushort height, ushort levelCount)
+		{
+			byte[] buffer = new byte[4 * width * height];
+			Dxt.DxtDecoder.DecompressDXT5(memory.buffer, width, height, buffer);
+			for(int i = 0; i < buffer.Length >> 2; i++)
+			{
+				Array.Reverse(buffer, i << 2, 3);
+			}
+			return buffer;
+		}
 	}
 }

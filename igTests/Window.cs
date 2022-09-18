@@ -66,10 +66,10 @@ namespace igRewrite7
 			});
 			quad.SetMaterial(new Material(MaterialManager.materials["stdv;ulitf"]));
 
-			EntityManager.Singleton.Load(rootDir);
 
 			igObjectStreamManager o = igObjectStreamManager.Singleton;
 
+			EntityManager.Singleton.Load(rootDir);
 			//e = new Entity();
 			//e.transform = new Transform();
 			//if(rootDir._objectList[0] is igModelInfo mi) e.drawable = new CDrawableListList(mi);

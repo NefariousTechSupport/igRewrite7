@@ -1,6 +1,6 @@
 namespace igLibrary.Core
 {
-	[AttributeUsage(AttributeTargets.Field, Inherited = true)]
+	[AttributeUsage(AttributeTargets.Field, Inherited = true, AllowMultiple = true)]
 	public class igField : Attribute
 	{
 		public igMetaField _metaField;

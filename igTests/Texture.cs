@@ -61,6 +61,8 @@ namespace igRewrite7
 				return;
 			}
 
+			//File.WriteAllBytes(image._name, data);
+
 			fixed(byte* b = data)
 			{
 				uint offset = 0;

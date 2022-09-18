@@ -117,6 +117,6 @@ namespace igLibrary.Gfx
 		}
 		//public static Vector4 unpack_UDEC3_OES(StreamHelper sh) =>              new Vector4(sh.ReadSingle(), 0, 0, 1);
 		//public static Vector4 unpack_DEC3N_OES(StreamHelper sh) =>              new Vector4(sh.ReadSingle(), 0, 0, 1);
-		//public static Vector4 unpack_SHORT4N_EDGE(StreamHelper sh) =>           new Vector4(sh.ReadSingle(), 0, 0, 1);
+		public static Vector4 unpack_SHORT4N_EDGE(StreamHelper sh) =>           unpack_SHORT4N(sh);
 	}
 }

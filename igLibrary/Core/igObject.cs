@@ -14,7 +14,7 @@ namespace igLibrary.Core
 				for(int j = 0; j < metafields.Length; j++)
 				{
 					if(metafields[j]._metaField._version != igz._version && metafields[j]._metaField._version != 0xFF) continue;
-					if(metafields[j]._metaField._overrides.Length > 0 && metafields[j]._metaField._overrides.Any(x => x == igz._platform)) continue;
+					if(metafields[j]._metaField._overrides.Length > 0 && !metafields[j]._metaField._overrides.Any(x => x == igz._platform)) continue;
 
 					if(is64Bit) igz._stream.Seek(objPos + metafields[j]._metaField._offset64);
 					else        igz._stream.Seek(objPos + metafields[j]._metaField._offset32);

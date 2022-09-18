@@ -278,14 +278,6 @@ namespace igLibrary.Core
 					case 0x54545352:							//RSTT
 					case 0x52545352:							//RSTR
 						UnpackCompressedInts(_runtimeStrings, _stream.ReadBytes(length - start), count);
-						for(int j = 0; j < count; j++)
-						{
-							string str = _stringList[(int)_stream.ReadUInt32((uint)_runtimeStrings[j])];
-							if(str.Contains("Intro1_Art"))
-							{
-								Console.WriteLine($"{str} @ {_runtimeStrings[j].ToString("X08")}");
-							}
-						}
 						break;
 				}
 
