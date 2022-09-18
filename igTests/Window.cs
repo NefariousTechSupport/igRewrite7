@@ -106,7 +106,7 @@ namespace igRewrite7
 			SwapBuffers();
 		}
 
-		float moveSpeed = 5;
+		float moveSpeed = 50;
 
 		protected override void OnUpdateFrame(FrameEventArgs args)
 		{
@@ -132,9 +132,10 @@ namespace igRewrite7
 			{
 				freecamLocal += MouseState.Delta.Yx * sensitivity;
 
-				freecamLocal.X = MathHelper.Clamp(freecamLocal.X, -MathHelper.PiOver2 + 0.0001f, MathHelper.PiOver2 - 0.0001f);
+				freecamLocal.X = MathHelper.Clamp(freecamLocal.X, -MathHelper.Pi + 0.0001f, 0);
 
-				Camera.transform.rotation = Quaternion.FromAxisAngle(Vector3.UnitX, freecamLocal.X) * Quaternion.FromAxisAngle(Vector3.UnitY, freecamLocal.Y);
+				//Camera.transform.rotation = Quaternion.FromAxisAngle(Vector3.UnitX, freecamLocal.X) * Quaternion.FromAxisAngle(Vector3.UnitY, freecamLocal.Y);
+				Camera.transform.rotation = Quaternion.FromAxisAngle(Vector3.UnitX, freecamLocal.X) * Quaternion.FromAxisAngle(Vector3.UnitZ, freecamLocal.Y);
 			}
 			else
 			{

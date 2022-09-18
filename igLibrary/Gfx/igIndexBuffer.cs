@@ -21,7 +21,7 @@ namespace igLibrary.Gfx
 
 		private StreamHelper.Endianness endianness;
 
-		public void GetBuffer(out uint[] indices)
+		public void GetBuffer(out uint[] indices, uint vertexCount)
 		{
 			indices = new uint[_indexCount];
 
@@ -29,7 +29,7 @@ namespace igLibrary.Gfx
 
 			for(int i = 0; i < _indexCount; i++)
 			{
-				if(_indexCount <= 0xFFFF) indices[i] = sh.ReadUInt16();
+				if(vertexCount <= 0xFFFF) indices[i] = sh.ReadUInt16();
 				else                      indices[i] = sh.ReadUInt32();
 			}
 

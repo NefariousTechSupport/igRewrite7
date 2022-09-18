@@ -76,7 +76,7 @@ namespace igLibrary.Render
 		{
 			if(_graphicsIndexBuffer != null)
 			{
-				_graphicsIndexBuffer.GetBuffer(out indices);
+				_graphicsIndexBuffer.GetBuffer(out indices, _graphicsVertexBuffer._vertexBuffer._vertexCount);
 			}
 			else
 			{

@@ -26,17 +26,23 @@ namespace igLibrary.Core
 		public StreamHelper _stream;
 		public uint _fixups;
 		public uint[] _loadedPointers = new uint[0x1F];
-		private ulong nameListOffset = 0;
+		public ulong nameListOffset;
+		private bool _readDependancies;
 		
-		public igIGZ(igObjectDirectory dir, igFileDescriptor file)
+		public igIGZ(igObjectDirectory dir, igFileDescriptor file, bool readDependancies)
 		{
 			if(file._stream.BaseStream.Length < 0x800) throw new InvalidDataException($"file {file._path} is not large enough with only {file._stream.BaseStream.Length.ToString("X08")} instead pf 0x00000800.");
 			_file = file;
 			_stream = _file._stream;
 			_stream.Seek(0);
+			_readDependancies = readDependancies;
 
-			Directory.CreateDirectory($"debug/{Path.GetDirectoryName(file._path._nativePath)}");
-			File.WriteAllBytes("debug/" + file._path._nativePath, (file._stream.BaseStream as MemoryStream).GetBuffer());
+			/*try
+			{
+				Directory.CreateDirectory($"debug/{Path.GetDirectoryName(file._path._nativePath)}");
+				File.WriteAllBytes("debug/" + file._path._nativePath, (file._stream.BaseStream as MemoryStream).GetBuffer());
+			}
+			catch(Exception){}*/
 
 			uint magic = _stream.ReadUInt32();
 			if(magic == 0x015A4749) _stream._endianness = StreamHelper.Endianness.Big;
@@ -112,6 +118,7 @@ namespace igLibrary.Core
 						}
 						break;
 					case 0x50454454:							//TDEP
+						if(!_readDependancies) break;
 						dir._dependancies.Capacity = (int)count;
 						for(uint j = 0; j < count; j++)
 						{
@@ -144,10 +151,10 @@ namespace igLibrary.Core
 							igObject? obj = null;
 							if(!igObjectStreamManager.Singleton._directories.Any(x => x.Value._name._hash == depName._ns._hash))
 							{
-								Console.WriteLine($"igIGZ EXID load: Failed to find {depName._ns._hash.ToString("X08")}");
+								Console.WriteLine($"igIGZ EXID load: Failed to find {depName._ns._hash.ToString("X08")}, referenced in {_file._path._path}");
 								goto finish;
 							}
-							Console.WriteLine($"igIGZ EXID load: Successfully found {depName._ns._hash.ToString("X08")}");
+							Console.WriteLine($"igIGZ EXID load: Successfully found {depName._ns._hash.ToString("X08")}, referenced in {_file._path._path}");
 							igObjectDirectory dependantDir = igObjectStreamManager.Singleton._directories.First(x => x.Value._name._hash == depName._ns._hash).Value;
 							if(dependantDir._useNameList)
 							{
@@ -188,11 +195,11 @@ namespace igLibrary.Core
 							igObject? obj = null;
 							if(!dir._dependancies.Any(x => x._name._hash == depHandleName._ns._hash))
 							{
-								Console.WriteLine($"igIGZ EXNM load: Failed to find namespace {depHandleName._ns._string}");
+								Console.WriteLine($"igIGZ EXNM load: Failed to find namespace {depHandleName._ns._string}, referenced in {_file._path._path}");
 							}
 							else
 							{
-								Console.WriteLine($"igIGZ EXNM load: Successfully found namespace {depHandleName._ns._string}");
+								Console.WriteLine($"igIGZ EXNM load: Successfully found namespace {depHandleName._ns._string}, referenced in {_file._path._path}");
 								igObjectDirectory dependantDir = dir._dependancies.First(x => x._name._hash == depHandleName._ns._hash);
 								if(dependantDir._useNameList)
 								{
@@ -271,6 +278,14 @@ namespace igLibrary.Core
 					case 0x54545352:							//RSTT
 					case 0x52545352:							//RSTR
 						UnpackCompressedInts(_runtimeStrings, _stream.ReadBytes(length - start), count);
+						for(int j = 0; j < count; j++)
+						{
+							string str = _stringList[(int)_stream.ReadUInt32((uint)_runtimeStrings[j])];
+							if(str.Contains("Intro1_Art"))
+							{
+								Console.WriteLine($"{str} @ {_runtimeStrings[j].ToString("X08")}");
+							}
+						}
 						break;
 				}
 

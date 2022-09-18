@@ -31,7 +31,7 @@ namespace igRewrite7
 			gvb.GetBuffer(out float[]? vPositions, IG_VERTEX_USAGE.POSITION);
 			gvb.GetBuffer(out float[]? vTexCoords, IG_VERTEX_USAGE.TEXCOORD);
 			gvb.GetBuffer(out float[]? vColours, IG_VERTEX_USAGE.COLOR);
-			gib.GetBuffer(out uint[] indices);
+			gib.GetBuffer(out uint[] indices, gvb._vertexBuffer._vertexCount);
 
 			if(vPositions != null) SetVertexPositions(vPositions);
 			if(vTexCoords != null) SetVertexTexCoords(vTexCoords);

@@ -16,6 +16,7 @@ namespace igLibrary.Core
 			if(dirs.ContainsKey(_handleName._ns._hash))
 			{
 				igObjectDirectory dir = dirs[_handleName._ns._hash];
+				if(dir._useNameList == false) return null;
 				for(int i = 0; i < dir._nameList._count; i++)
 				{
 					if(dir._nameList[i]._hash == _handleName._name._hash)

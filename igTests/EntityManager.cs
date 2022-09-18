@@ -8,6 +8,9 @@ namespace igRewrite7
 
 		public List<Entity> entities = new List<Entity>();
 
+		private Dictionary<string, igObjectDirectory> loadedDirs = new Dictionary<string, igObjectDirectory>();
+		public Dictionary<string, List<Entity>> loadedEntities = new Dictionary<string, List<Entity>>();
+
 		public void Load(igObjectDirectory dir)
 		{
 			CDrawable quad = new CDrawable();
@@ -39,18 +42,44 @@ namespace igRewrite7
 			});
 			quad.SetMaterial(new Material(MaterialManager.materials["stdv;ulitf"]));
 
-			LoadEntities(dir._objectList.ToCSList(), quad);
+			igStringRefList stringRefs = dir._objectList[0] as igStringRefList;
+			
+			for(int i = 0; i < stringRefs._count; i++)
+			{
+				try
+				{
+					igObjectDirectory mapDir = igObjectStreamManager.Singleton.Load(stringRefs[i]);
+					if(mapDir != null)
+					{
+						LoadEntities(mapDir, quad);
+					}
+				}
+				catch(FileNotFoundException){}
+			}
 		}
 
-		private void LoadEntities(List<igObject> objs, IDrawableCommon nullModel)
+		private void LoadEntities(igObjectDirectory dir, IDrawableCommon nullModel)
 		{
+			if(loadedEntities.ContainsKey(dir._path)) return;
+			loadedEntities.Add(dir._path, new List<Entity>());
+			/*loadedDirs.Add(dir._path, dir);
+			for(int i = 0; i < dir._dependancies.Count; i++)
+			{
+				if(!loadedDirs.ContainsKey(dir._dependancies[i]._path))
+				{
+					LoadEntities(dir._dependancies[i], nullModel);
+				}
+			}*/
+			List<igObject> objs = dir._objectList.ToCSList();
 			for(int i = 0; i < objs.Count; i++)
 			{
 				if(objs[i] is igEntity ent)
 				{
 					Entity e = new Entity(objs[i] as igEntity);
 					if(e.drawable == null) e.drawable = nullModel;
+					e.name = dir._nameList[i]._string;
 					entities.Add(e);
+					loadedEntities[dir._path].Add(e);
 					/*if(ent._entityData != null)
 					{
 						if(ent._entityData._componentData != null)
@@ -73,7 +102,9 @@ namespace igRewrite7
 				{
 					Entity e = new Entity(cse);
 					if(e.drawable == null) e.drawable = nullModel;
+					e.name = dir._nameList[i]._string;
 					entities.Add(e);					
+					loadedEntities[dir._path].Add(e);
 				}
 			}
 		}
@@ -150,7 +181,11 @@ namespace igRewrite7
 		public Entity(CStaticEntity cse)
 		{
 			drawable = AssetManager.Singleton.LoadDrawable(cse._entityData._modelName, false);
-			transform = new Transform(Utils.ToOpenTKVector3(cse._position), Utils.ToOpenTKVector3(cse._rotation), Utils.ToOpenTKVector3(cse._scale));
+			Vector3 rot = Utils.ToOpenTKVector3(cse._rotation);
+			rot.X = MathHelper.DegreesToRadians(rot.X);
+			rot.Y = MathHelper.DegreesToRadians(rot.Y);
+			rot.Z = MathHelper.DegreesToRadians(rot.Z);
+			transform = new Transform(Utils.ToOpenTKVector3(cse._position), rot, Utils.ToOpenTKVector3(cse._scale));
 		}
 		public void SetPosition(Vector3 position)
 		{

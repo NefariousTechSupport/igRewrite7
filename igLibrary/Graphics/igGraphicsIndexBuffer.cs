@@ -11,7 +11,7 @@ namespace igLibrary.Graphics
 		[igField(typeof(igSizeTypeMetaField), 0x09, 0x02, 0x10, 0x18, "_resource")]
 		public ulong _resource;
 
-		public void GetBuffer(out uint[] indices) => _indexBuffer.GetBuffer(out indices);
+		public void GetBuffer(out uint[] indices, uint vertexCount) => _indexBuffer.GetBuffer(out indices, vertexCount);
 
 	}
 }

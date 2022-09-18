@@ -15,7 +15,7 @@ namespace igLibrary.Core
 		[igField(typeof(igFloatMetaField), 0xFF, 0x04, 0x20, 0x38, "_loadFactor")]
 		public float _loadFactor;
 
-		public Dictionary<uint, U> internalHashTable = new Dictionary<uint, U>();
+		public Dictionary<T, U> internalHashTable = new Dictionary<T, U>();
 
 		public override void ReadFields(igIGZ igz)
 		{
@@ -24,7 +24,7 @@ namespace igLibrary.Core
 			internalHashTable.Clear();
 			int initialCount = (int)_hashItemCount;
 			_hashItemCount = 0;
-			igUnsignedIntMetaField keyMetaField = new igUnsignedIntMetaField();
+			TM keyMetaField = new TM();
 			int keySize = keyMetaField.Size(is64Bit);
 
 			UM valueMetaField = new UM();
@@ -32,9 +32,12 @@ namespace igLibrary.Core
 
 			for(int i = 0; i < initialCount; i++)
 			{
-				uint appenderKey;
+				T appenderKey;
 				igz._stream.Seek(_keys.offset + (ulong)(keySize * i));
-				appenderKey = (uint)keyMetaField.ReadRawMemory(igz, is64Bit);
+				if((ulong)(keySize * i) >= _keys.size) break;
+				appenderKey = (T)keyMetaField.ReadRawMemory(igz, is64Bit);
+
+				if(appenderKey == null) continue;
 
 				U appenderValue;
 				igz._stream.Seek(_values.offset + (ulong)(valueSize * i));
