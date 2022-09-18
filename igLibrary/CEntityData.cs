@@ -2,15 +2,15 @@ namespace igLibrary
 {
 	public class CEntityData : Entity.igEntityData
 	{
-		[igField(typeof(igUnsignedIntMetaField), 0x09, 0x00, 0x00, 0x1C, "_entityFlags")]
+		[igField(typeof(igUnsignedIntMetaField), 0x09, 0x00, 0x10, 0x1C, "_entityFlags")]
 		public uint _entityFlags;
-		[igField(typeof(igUnsignedIntMetaField), 0x09, 0x00, 0x00, 0x20, "_actionEntityFlags")]
+		[igField(typeof(igUnsignedIntMetaField), 0x09, 0x01, 0x14, 0x20, "_actionEntityFlags")]
 		public uint _actionEntityFlags;
-		[igField(typeof(igEnumMetaField<EEntityTeam>), 0x09, 0x00, 0x00, 0x24, "_team")]
+		[igField(typeof(igEnumMetaField<EEntityTeam>), 0x09, 0x02, 0x18, 0x24, "_team")]
 		public EEntityTeam _team;
-		[igField(typeof(igEnumMetaField<EEntityTeamFaction>), 0x09, 0x00, 0x00, 0x28, "_teamFaction")]
+		[igField(typeof(igEnumMetaField<EEntityTeamFaction>), 0x09, 0x03, 0x1C, 0x28, "_teamFaction")]
 		public EEntityTeamFaction _teamFaction;
-		[igField(typeof(igObjectRefMetaField<igObject>), 0x09, 0x00, 0x00, 0x30, "_tags")]
+		[igField(typeof(igObjectRefMetaField<igObject>), 0x09, 0x04, 0x20, 0x30, "_tags")]
 		public igObject _tags;	//CEntityTagSet
 
 		public enum EEntityTeam : int

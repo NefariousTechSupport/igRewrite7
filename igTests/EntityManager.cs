@@ -44,6 +44,7 @@ namespace igRewrite7
 
 			igStringRefList stringRefs = dir._objectList[0] as igStringRefList;
 			
+			//Parallel.For(0, stringRefs._count, (i, p) => LoadDirectory(stringRefs[(int)i], quad));
 			for(int i = 0; i < stringRefs._count; i++)
 			{
 				try
@@ -62,14 +63,6 @@ namespace igRewrite7
 		{
 			if(loadedEntities.ContainsKey(dir._path)) return;
 			loadedEntities.Add(dir._path, new List<Entity>());
-			/*loadedDirs.Add(dir._path, dir);
-			for(int i = 0; i < dir._dependancies.Count; i++)
-			{
-				if(!loadedDirs.ContainsKey(dir._dependancies[i]._path))
-				{
-					LoadEntities(dir._dependancies[i], nullModel);
-				}
-			}*/
 			List<igObject> objs = dir._objectList.ToCSList();
 			for(int i = 0; i < objs.Count; i++)
 			{

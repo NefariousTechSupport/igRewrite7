@@ -8,11 +8,11 @@ namespace igLibrary.Core
 		{
 			_directories.Add(dir._name._hash, dir);
 		}
-		public igObjectDirectory Load(string path)
+		public igObjectDirectory Load(string path, bool readDependancies = true)
 		{
-			return Load(path, new igName(Path.GetFileNameWithoutExtension(path)));
+			return Load(path, new igName(Path.GetFileNameWithoutExtension(path)), readDependancies);
 		}
-		public igObjectDirectory? Load(string filePath, igName nameSpace)
+		public igObjectDirectory? Load(string filePath, igName nameSpace, bool readDependancies = true)
 		{
 			Console.Write($"igObjectStreamManager was asked to load {filePath}...");
 			if(_directories.ContainsKey(nameSpace._hash))
@@ -29,7 +29,7 @@ namespace igLibrary.Core
 			{
 				igObjectDirectory objDir = new igObjectDirectory(filePath, nameSpace);
 				AddObjectDirectory(objDir);
-				objDir.ReadFile();
+				objDir.ReadFile(readDependancies);
 				return objDir;
 			}
 			else

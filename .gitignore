@@ -14,9 +14,10 @@ debug
 *.dae
 *.fbx
 
-#debug files
+#editor files
 
 *.log
+*.ini
 
 # original assets
 

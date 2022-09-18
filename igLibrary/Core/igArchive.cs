@@ -179,6 +179,7 @@ namespace igLibrary.Core
 
 			//Start decocmpression loop, this was mainly taken from LG-RZ's igArchiveLib (https://github.com/LG-RZ/igArchiveLib/)
 
+			bool isWriting = false;
 
 			uint numBlocks = (fileHeaders[i].length + 0x7FFF) >> 0xF;
 			for(uint currentBlockIndex = 0; currentBlockIndex < numBlocks; currentBlockIndex++)
