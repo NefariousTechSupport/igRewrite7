@@ -19,6 +19,7 @@ namespace igRewrite7
 		int EBO;
 		int indexCount;
 		Material material;
+		public bool enabled;
 
 		public CDrawable()
 		{
@@ -162,6 +163,7 @@ namespace igRewrite7
 
 		public void Draw(Transform transform)
 		{
+			if(!enabled) return;
 			material.Use();
 			material.SetMatrix4x4("world", transform.GetLocalToWorldMatrix() * Camera.WorldToView * Camera.ViewToClip);
 
@@ -207,13 +209,14 @@ namespace igRewrite7
 				{
 					drawable.SetMaterial(new Material(MaterialManager.materials["stdv;ulitf"], gm));
 				}
+				drawable.enabled = mdcd._enabled;
 				this.Add(drawable);
 			}
 			else
 			{
 				if(mdcd._platformData is igPS3EdgeGeometry edgeGeometry)
 				{
-					edgeGeometry.ExtractGeometry(out uint[][] indices, out float[][] vPositions, out float[][] vTexCoords);
+					edgeGeometry.ExtractGeometry(out uint[][] indices, out float[][] vPositions, out float[][] vTexCoords, out float[][] vColours);
 					igGraphicsMaterial? gm = mdcd._materialHandle.GetObject<igGraphicsMaterial>();
 					Material mat;
 					if(gm == null)
@@ -226,8 +229,9 @@ namespace igRewrite7
 					}
 					for(int i = 0; i < edgeGeometry._count; i++)
 					{
-						drawable = new CDrawable(vPositions[i], vTexCoords[i], null, indices[i]);
+						drawable = new CDrawable(vPositions[i], vTexCoords[i], vColours[i], indices[i]);
 						drawable.SetMaterial(mat);
+						drawable.enabled = mdcd._enabled;
 						this.Add(drawable);
 					}
 				}

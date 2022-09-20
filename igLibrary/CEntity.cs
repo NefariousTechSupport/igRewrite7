@@ -24,23 +24,23 @@ namespace igLibrary
 		public short _turningLockedCounter;
 		//[igField(typeof(igTStaticMetaField<igBoolMetaField>), 0x09, 0x0A, 0x00, 0x00, "_peachesCallbackRegistered")]
 		//public static bool _peachesCallbackRegistered;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x0B, 0x6C, 0x94, "_startHidden", new object[] { 00, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedShortMetaField>), 0x09, 0x0B, 0x6C, 0x94, "_startHidden", new object[] { 00, 1 })]
 		public bool _startHidden;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x0C, 0x6C, 0x94, "_haveComponentsToStart", new object[] { 01, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedShortMetaField>), 0x09, 0x0C, 0x6C, 0x94, "_haveComponentsToStart", new object[] { 01, 1 })]
 		public bool _haveComponentsToStart;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x0D, 0x6C, 0x94, "_haveComponentsToRemove", new object[] { 02, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedShortMetaField>), 0x09, 0x0D, 0x6C, 0x94, "_haveComponentsToRemove", new object[] { 02, 1 })]
 		public bool _haveComponentsToRemove;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x0E, 0x6C, 0x94, "_actEnabled", new object[] { 03, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedShortMetaField>), 0x09, 0x0E, 0x6C, 0x94, "_actEnabled", new object[] { 03, 1 })]
 		public bool _actEnabled;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x0F, 0x6C, 0x94, "_actToggleOn", new object[] { 04, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedShortMetaField>), 0x09, 0x0F, 0x6C, 0x94, "_actToggleOn", new object[] { 04, 1 })]
 		public bool _actToggleOn;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x10, 0x6C, 0x94, "_scaleSource", new object[] { 05, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedShortMetaField>), 0x09, 0x10, 0x6C, 0x94, "_scaleSource", new object[] { 05, 1 })]
 		public bool _scaleSource;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x11, 0x6C, 0x94, "_netReplicate", new object[] { 06, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedShortMetaField>), 0x09, 0x11, 0x6C, 0x94, "_netReplicate", new object[] { 06, 1 })]
 		public bool _netReplicate;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x12, 0x6C, 0x94, "_hasTimeComponent", new object[] { 07, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedShortMetaField>), 0x09, 0x12, 0x6C, 0x94, "_hasTimeComponent", new object[] { 07, 1 })]
 		public bool _hasTimeComponent;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x13, 0x6C, 0x94, "_hasScaledTimeComponent", new object[] { 08, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedShortMetaField>), 0x09, 0x13, 0x6C, 0x94, "_hasScaledTimeComponent", new object[] { 08, 1 })]
 		public bool _hasScaledTimeComponent;
 		//[igField(typeof(igPropertyMetaField<>), 0x09, 0x15, 0x00, 0x00, "_netFlags")]
 		//public _netFlags;

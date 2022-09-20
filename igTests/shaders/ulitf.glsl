@@ -18,7 +18,7 @@ void main()
 		{
 			colour *= vColour;
 		}
-		//if(color.a == 0) discard;
+		//if(colour.a == 0) discard;
 	}
 	else
 	{

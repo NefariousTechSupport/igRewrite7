@@ -24,13 +24,13 @@ namespace igLibrary
 		//public static igUnsignedIntList _expiredAttackNumbers;
 		//[igField(typeof(igTStaticMetaField<igObjectRefMetaField<igStringRefList>>), 0x09, 0x0A, 0x00, 0x00, "_expiredImmunities")]
 		//public static igStringRefList _expiredImmunities;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x0B, 0xD8, 0x140, "_removeOnDeath", new object[] { 0, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedCharMetaField>), 0x09, 0x0B, 0xD8, 0x140, "_removeOnDeath", new object[] { 0, 1 })]
 		public bool _removeOnDeath;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x0C, 0xD8, 0x140, "_netDeath", new object[] { 1, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedCharMetaField>), 0x09, 0x0C, 0xD8, 0x140, "_netDeath", new object[] { 1, 1 })]
 		public bool _netDeath;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x0D, 0xD8, 0x140, "_hasDied", new object[] { 2, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedCharMetaField>), 0x09, 0x0D, 0xD8, 0x140, "_hasDied", new object[] { 2, 1 })]
 		public bool _hasDied;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x0E, 0xD8, 0x140, "_immunityCallbackRegistered", new object[] { 3, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedCharMetaField>), 0x09, 0x0E, 0xD8, 0x140, "_immunityCallbackRegistered", new object[] { 3, 1 })]
 		public bool _immunityCallbackRegistered;
 
 	}

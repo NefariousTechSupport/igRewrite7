@@ -28,7 +28,7 @@ namespace igRewrite7
 			GL.Enable(EnableCap.DepthTest);
 			GL.Enable(EnableCap.Texture2D);
 			//GL.Enable(EnableCap.StencilTest);
-			//GL.Enable(EnableCap.CullFace);
+			GL.Enable(EnableCap.CullFace);
 			//GL.Enable(EnableCap.Blend);
 			//GL.BlendFuncSeparate(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha, BlendingFactorSrc.One, BlendingFactorDest.Zero);
 
@@ -89,13 +89,8 @@ namespace igRewrite7
 
 			gui.FrameBegin(args.Time);
 
-			EntityManager.Singleton.Render();
-
-			quad.Draw(new Transform());
-			if(e != null)
-			{
-				e.Draw();
-			}
+			EntityManager.Singleton.Render();		//Not Instanced
+			//AssetManager.Singleton.Render();		//Instanced
 
 			gui.DrawEntityWindow();
 
@@ -124,6 +119,21 @@ namespace igRewrite7
 			if(KeyboardState.IsKeyDown(Keys.A)) Camera.transform.position += Camera.transform.Right * (float)args.Time * moveSpeed * mult;
 			if(KeyboardState.IsKeyDown(Keys.S)) Camera.transform.position -= Camera.transform.Forward * (float)args.Time * moveSpeed * mult;
 			if(KeyboardState.IsKeyDown(Keys.D)) Camera.transform.position -= Camera.transform.Right * (float)args.Time * moveSpeed * mult;
+
+			if(KeyboardState.IsKeyPressed(Keys.R)) EntityManager.Singleton.ignoreDraw = !EntityManager.Singleton.ignoreDraw;
+			if(KeyboardState.IsKeyPressed(Keys.Right))
+			{
+				while(true)
+				{
+					EntityManager.Singleton.loadedMap++;
+					if(EntityManager.Singleton.loadedEntities.Count == EntityManager.Singleton.loadedMap)
+					{
+						EntityManager.Singleton.loadedMap = 0;
+					}
+					if(EntityManager.Singleton.loadedEntities.ElementAt((int)EntityManager.Singleton.loadedMap).Value.Count != 0) break;
+				}
+				Console.WriteLine($"Displaying {EntityManager.Singleton.loadedEntities.ElementAt((int)EntityManager.Singleton.loadedMap).Key}");
+			}
 
 			CursorGrabbed = MouseState.IsButtonDown(MouseButton.Right);
 

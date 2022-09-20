@@ -37,13 +37,14 @@ namespace igLibrary.Core
 			_stream.Seek(0);
 			_readDependancies = readDependancies;
 
-			/*try
+#if false
+			try
 			{
 				Directory.CreateDirectory($"debug/{Path.GetDirectoryName(file._path._nativePath)}");
 				File.WriteAllBytes("debug/" + file._path._nativePath, (file._stream.BaseStream as MemoryStream).GetBuffer());
 			}
-			catch(Exception){}*/
-
+			catch(Exception){}
+#endif
 			uint magic = _stream.ReadUInt32();
 			if(magic == 0x015A4749) _stream._endianness = StreamHelper.Endianness.Big;
 

@@ -22,5 +22,19 @@ namespace igRewrite7
 			drawables.Add(meshDir._name._hash, drawable);
 			return drawable;
 		}
+		public void ConsolidateDrawables()
+		{
+			foreach(KeyValuePair<uint, IDrawableCommon> drawable in drawables)
+			{
+				drawable.Value.ConsolidateDrawCalls();
+			}
+		}
+		public void Render()
+		{
+			foreach(KeyValuePair<uint, IDrawableCommon> drawable in drawables)
+			{
+				drawable.Value.Draw();
+			}
+		}
 	}
 }

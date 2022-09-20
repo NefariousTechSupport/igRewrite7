@@ -39,23 +39,23 @@ namespace igLibrary
 		//public static bool sbDisplayPhysicsProperties;
 		//[igField(typeof(igTStaticMetaField<igBoolMetaField>), 0x09, 0x12, 0x00, 0x00, "_peachesCallbackRegistered")]
 		//public static bool _peachesCallbackRegistered;
-		[igField(typeof(igBitFieldMetaField<ECastsShadows>), 0x09, 0x13, 0x70, 0x98, "_castsShadows", new object[]{ 00, 2 })]
+		[igField(typeof(igBitFieldMetaField<ECastsShadows, igUnsignedIntMetaField>), 0x09, 0x13, 0x70, 0x98, "_castsShadows", new object[]{ 00, 2 })]
 		public ECastsShadows _castsShadows;
-		[igField(typeof(igBitFieldMetaField<EMobileShadowStateOverride>), 0x09, 0x14, 0x70, 0x98, "_mobileShadowStateOverride", new object[]{ 02, 2 })]
+		[igField(typeof(igBitFieldMetaField<EMobileShadowStateOverride, igUnsignedIntMetaField>), 0x09, 0x14, 0x70, 0x98, "_mobileShadowStateOverride", new object[]{ 02, 2 })]
 		public EMobileShadowStateOverride _mobileShadowStateOverride;
-		[igField(typeof(igBitFieldMetaField<byte>), 0x09, 0x15, 0x78, 0xA0, "_viewportForceDisableFlags", new object[]{ 00, 8 })]
+		[igField(typeof(igBitFieldMetaField<byte, igUnsignedIntMetaField>), 0x09, 0x15, 0x78, 0xA0, "_viewportForceDisableFlags", new object[]{ 00, 8 })]
 		public byte _viewportForceDisableFlags;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x16, 0x78, 0xA0, "_animActive", new object[]{ 08, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedIntMetaField>), 0x09, 0x16, 0x78, 0xA0, "_animActive", new object[]{ 08, 1 })]
 		public bool _animActive;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x17, 0x78, 0xA0, "_animInReverse", new object[]{ 09, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedIntMetaField>), 0x09, 0x17, 0x78, 0xA0, "_animInReverse", new object[]{ 09, 1 })]
 		public bool _animInReverse;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x18, 0x78, 0xA0, "_noKillZ", new object[]{ 10, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedIntMetaField>), 0x09, 0x18, 0x78, 0xA0, "_noKillZ", new object[]{ 10, 1 })]
 		public bool _noKillZ;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x19, 0x78, 0xA0, "_hasDestination", new object[]{ 11, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedIntMetaField>), 0x09, 0x19, 0x78, 0xA0, "_hasDestination", new object[]{ 11, 1 })]
 		public bool _hasDestination;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x1A, 0x78, 0xA0, "_fadeIn", new object[]{ 12, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedIntMetaField>), 0x09, 0x1A, 0x78, 0xA0, "_fadeIn", new object[]{ 12, 1 })]
 		public bool _fadeIn;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x1B, 0x78, 0xA0, "_scaleMovementSpeed", new object[]{ 13, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedIntMetaField>), 0x09, 0x1B, 0x78, 0xA0, "_scaleMovementSpeed", new object[]{ 13, 1 })]
 		public bool _scaleMovementSpeed;
 
 		public enum ECastsShadows : int

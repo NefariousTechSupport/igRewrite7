@@ -49,15 +49,15 @@ namespace igLibrary.Render
 		public ulong _vertexBufferFormatResource;
 		[igField(typeof(igSizeTypeMetaField), 0x09, 0x10, 0x64, 0x90, "_indexBufferResource")]
 		public ulong _indexBufferResource;
-		[igField(typeof(igBitFieldMetaField<IG_INDEX_TYPE>), 0x09, 0x11, 0x4C, 0x6C, "_indexBufferType", new object[2]{0, 3})]
+		[igField(typeof(igBitFieldMetaField<IG_INDEX_TYPE, igUnsignedIntMetaField>), 0x09, 0x11, 0x4C, 0x6C, "_indexBufferType", new object[2]{0, 3})]
 		public IG_INDEX_TYPE _indexBufferType;
-		[igField(typeof(igBitFieldMetaField<IG_GFX_DRAW>), 0x09, 0x12, 0x4C, 0x6C, "_primitiveType", new object[2]{3, 3})]
+		[igField(typeof(igBitFieldMetaField<IG_GFX_DRAW, igUnsignedIntMetaField>), 0x09, 0x12, 0x4C, 0x6C, "_primitiveType", new object[2]{3, 3})]
 		public IG_GFX_DRAW _primitiveType;
-		[igField(typeof(igBitFieldMetaField<byte>), 0x09, 0x13, 0x4C, 0x6C, "_lod", new object[2]{6, 8})]
+		[igField(typeof(igBitFieldMetaField<byte, igUnsignedIntMetaField>), 0x09, 0x13, 0x4C, 0x6C, "_lod", new object[2]{6, 8})]
 		public byte _lod;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x14, 0x4C, 0x6C, "_enabled", new object[2]{14, 1})]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedIntMetaField>), 0x09, 0x14, 0x4C, 0x6C, "_enabled", new object[2]{14, 1})]
 		public bool _enabled;
-		[igField(typeof(igBitFieldMetaField<byte>), 0x09, 0x15, 0x4C, 0x6C, "_instanceShaderConstants", new object[2]{15, 8})]
+		[igField(typeof(igBitFieldMetaField<byte, igUnsignedIntMetaField>), 0x09, 0x15, 0x4C, 0x6C, "_instanceShaderConstants", new object[2]{15, 8})]
 		public byte _instanceShaderConstants;
 
 

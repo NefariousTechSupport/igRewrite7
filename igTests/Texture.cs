@@ -47,6 +47,7 @@ namespace igRewrite7
 			GL.BindTexture(TextureTarget.Texture2D, 0);
 		}*/
 
+		//Could use the convert to rgba function for all formats but i wanted textures decompressed on the gpu
 		public unsafe Texture(igImage2 image)
 		{
 			textureId = GL.GenTexture();
@@ -54,29 +55,74 @@ namespace igRewrite7
 			GL.ActiveTexture(TextureUnit.Texture0);
 			GL.BindTexture(TextureTarget.Texture2D, textureId);
 			
-			byte[]? data = image.ConvertToRGBA();
-			if(data == null)
+			if(image._format == null)
 			{
 				Console.WriteLine($"{image._name} has Unsupported Texture Format");
 				return;
 			}
 
-			//File.WriteAllBytes(image._name, data);
+			igMetaImage.SimpleMetaImageFormat format = image._format.GetSimpleMetaImageFormat();
 
-			fixed(byte* b = data)
+			uint offset = 0;
+			int width = image._width;
+			int height = image._height;
+			int size = 0;
+			InternalFormat compressedFormat = InternalFormat.Srgb;	//This is a default value
+			bool useCompression = image._format._isCompressed;
+
+			fixed(byte* b = image._data.buffer)
 			{
-				uint offset = 0;
 				for(int i = 0; i < 1; i++)
 				{
-					if(image._format._isSrgb)
+					byte[]? uncompressedRGBAData = null;
+					switch(format)
 					{
-						GL.TexImage2D(TextureTarget.Texture2D, i, PixelInternalFormat.Srgb8Alpha8, image._width, image._height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, (IntPtr)(b + offset));
+						case igMetaImage.SimpleMetaImageFormat.DXT1:
+						case igMetaImage.SimpleMetaImageFormat.DXT1_SWIZZLE_WII:
+						case igMetaImage.SimpleMetaImageFormat.DXT1_SWIZZLE_WIIU:
+							size = (int)(Math.Max( 1, ((width+3)/4) ) * Math.Max(1, ( (height + 3) / 4 ) )) * 8;
+							if(image._format._isSrgb) compressedFormat = InternalFormat.CompressedSrgbS3tcDxt1Ext;
+							else                      compressedFormat = InternalFormat.CompressedRgbS3tcDxt1Ext;
+							break;
+						case igMetaImage.SimpleMetaImageFormat.DXT3:
+						case igMetaImage.SimpleMetaImageFormat.DXT3_SWIZZLE_WIIU:
+							size = (int)(Math.Max( 1, ((width+3)/4) ) * Math.Max(1, ( (height + 3) / 4 ) )) * 16;
+							if(image._format._isSrgb) compressedFormat = InternalFormat.CompressedSrgbAlphaS3tcDxt3Ext;
+							else                      compressedFormat = InternalFormat.CompressedRgbaS3tcDxt3Ext;
+							break;
+						case igMetaImage.SimpleMetaImageFormat.DXT5:
+						case igMetaImage.SimpleMetaImageFormat.DXT5_SWIZZLE_WIIU:
+							size = (int)(Math.Max( 1, ((width+3)/4) ) * Math.Max(1, ( (height + 3) / 4 ) )) * 16;
+							if(image._format._isSrgb) compressedFormat = InternalFormat.CompressedSrgbAlphaS3tcDxt5Ext;
+							else                      compressedFormat = InternalFormat.CompressedRgbaS3tcDxt5Ext;
+							break;
+						case igMetaImage.SimpleMetaImageFormat.PVRTC2:
+						case igMetaImage.SimpleMetaImageFormat.PVRTC4:
+							uncompressedRGBAData = image.ConvertToRGBA();
+							useCompression = false;
+							break;
+						default:
+							throw new Exception("invalid SimpleMetaImageFormat");
+					}
+
+					if(useCompression)
+					{
+						if(compressedFormat == InternalFormat.Srgb) throw new Exception();
+						GL.CompressedTexImage2D(TextureTarget.Texture2D, i, compressedFormat, width, height, 0, size, (IntPtr)(b + offset));
 					}
 					else
 					{
-						GL.TexImage2D(TextureTarget.Texture2D, i, PixelInternalFormat.Rgba, image._width, image._height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, (IntPtr)(b + offset));
+						if(image._format._isSrgb)
+						{
+							GL.TexImage2D(TextureTarget.Texture2D, i, PixelInternalFormat.Srgb8Alpha8, image._width, image._height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, uncompressedRGBAData);
+						}
+						else
+						{
+							GL.TexImage2D(TextureTarget.Texture2D, i, PixelInternalFormat.Rgba, image._width, image._height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, uncompressedRGBAData);
+						}
 					}
-					offset += (uint)(image._width * image._height * 4);
+
+					offset += (uint)size;
 				}
 			}
 

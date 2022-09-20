@@ -10,6 +10,9 @@ namespace igRewrite7
 
 		private Dictionary<string, igObjectDirectory> loadedDirs = new Dictionary<string, igObjectDirectory>();
 		public Dictionary<string, List<Entity>> loadedEntities = new Dictionary<string, List<Entity>>();
+		public uint loadedMap = 0;
+
+		public bool ignoreDraw = false;
 
 		public void Load(igObjectDirectory dir)
 		{
@@ -57,6 +60,7 @@ namespace igRewrite7
 				}
 				catch(FileNotFoundException){}
 			}
+			//AssetManager.Singleton.ConsolidateDrawables();
 		}
 
 		private void LoadEntities(igObjectDirectory dir, IDrawableCommon nullModel)
@@ -112,21 +116,17 @@ namespace igRewrite7
 			{
 				entities[i].Draw();
 			}
-			/*if(MobyHandles.Sum(x => x.Value.Count) != mobys.Count)
+			/*KeyValuePair<string, List<Entity>> map = EntityManager.Singleton.loadedEntities.ElementAt((int)loadedMap);
+			for(int j = 0; j < map.Value.Count; j++)
 			{
-				ReallocEntities();
-			}
-			mobys = mobys.OrderByDescending(x => (x.transform.Position + Camera.transform.Position).LengthSquared).ToList();
-			for(int i = 0; i < mobys.Count; i++)
-			{
-				mobys[i].Draw();
+				map.Value[j].Draw();
 			}*/
 		}
 	}
 
 	public class Entity
 	{
-		public object instance;					//Is either a Region.CMobyInstance or a TieInstance depending on if it's a moby or tie repsectively
+		public igObject instance;					//Is either a Region.CMobyInstance or a TieInstance depending on if it's a moby or tie repsectively
 		public IDrawableCommon drawable;
 		public int id;
 		public string name = string.Empty;
@@ -140,8 +140,8 @@ namespace igRewrite7
 		public Entity(){}
 		public Entity(igEntity ce)
 		{
-			draw = ce._isHidden && ce._isVisible;
 			Vector3 eulerRot = Vector3.Zero;
+			instance = ce;
 			if(ce is CActor ca)
 			{
 				CActorData caData = (CActorData)ce._entityData;
@@ -150,11 +150,12 @@ namespace igRewrite7
 				{
 					eulerRot = Utils.ToOpenTKVector3(ca._transform._parentSpaceRotation);
 				}
+				draw = !ca._startHidden;
 			}
 			else if(ce is CGameEntity cge)
 			{
 				CGameEntityData cged = (CGameEntityData)cge._entityData;
-				if(cged == null) return;
+				if(cged == null) goto finish;
 				drawable = AssetManager.Singleton.LoadDrawable(cged._modelName, false);
 				if(drawable == null)
 				{
@@ -164,25 +165,38 @@ namespace igRewrite7
 				{
 					eulerRot = Utils.ToOpenTKVector3(cge._transform._parentSpaceRotation);
 				}
+				draw = !cge._startHidden;
 			}
+			finish:
 			if(ce._transform != null)
 			{
-				transform = new Transform(Utils.ToOpenTKVector3(ce._parentSpacePosition), eulerRot, Vector3.One * ce._entityData._scale);
+				transform = new Transform(Utils.ToOpenTKVector3(ce._parentSpacePosition), eulerRot, Vector3.One * ce._transform._runtimeParentSpaceScale);
 			}
 			else
 			{
 				transform = new Transform();
 			}
+			if(drawable != null)
+			{
+				//drawable.AddDrawCall(transform);
+			}
 		}
 		public Entity(CStaticEntity cse)
 		{
+			instance = cse;
 			draw = true;
+			if(cse._entityData == null)
+			{
+				transform = new Transform();
+				return;
+			}
 			drawable = AssetManager.Singleton.LoadDrawable(cse._entityData._modelName, false);
 			Vector3 rot = Utils.ToOpenTKVector3(cse._rotation);
 			rot.X = MathHelper.DegreesToRadians(rot.X);
 			rot.Y = MathHelper.DegreesToRadians(rot.Y);
 			rot.Z = MathHelper.DegreesToRadians(rot.Z);
 			transform = new Transform(Utils.ToOpenTKVector3(cse._position), rot, Utils.ToOpenTKVector3(cse._scale));
+			//drawable.AddDrawCall(transform);
 		}
 		public void SetPosition(Vector3 position)
 		{
@@ -191,7 +205,7 @@ namespace igRewrite7
 		}
 		public void Draw()
 		{
-			if(draw) drawable.Draw(transform);
+			if(!EntityManager.Singleton.ignoreDraw || draw) drawable.Draw(transform);
 		}
 		public bool IntersectsRay(Vector3 dir, Vector3 position)
 		{

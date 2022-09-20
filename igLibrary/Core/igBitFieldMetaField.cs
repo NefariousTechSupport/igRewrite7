@@ -1,26 +1,25 @@
 namespace igLibrary.Core
 {
-	public class igBitFieldMetaField<T> : igMetaField where T : struct
+	public class igBitFieldMetaField<T1, T2> : igMetaField where T1 : struct where T2 : igMetaField, new()
 	{
 		public ushort _shift;
 		public ushort _bits;
 
-		public override Type OutputType() => typeof(T);
-		public override ushort Size(bool is64Bit) => (ushort)Marshal.SizeOf<T>();
+		public override Type OutputType() => typeof(T1);
+		public override ushort Size(bool is64Bit) => (ushort)Marshal.SizeOf<T1>();
 
 		public override object ReadRawMemory(igIGZ igz, bool is64Bit)
 		{
-			igz._stream.bitPosition = 0;
-			for(int i = 0; i < _shift; i++)
-			{
-				igz._stream.ReadBit();
-			}
+			T2 metafield = new T2();
+			uint raw = (uint)Convert.ChangeType(metafield.ReadRawMemory(igz, is64Bit), typeof(uint));
+			uint shifted = raw >> _shift;
+			uint anded = shifted & (0xFFFFFFFF >> (32 - _bits));
 
-			ulong raw = igz._stream.ReadUIntN((byte)_bits);
+			raw = anded;
 
-			Type t = typeof(T);
+			Type t = typeof(T1);
 
-			if(typeof(T).IsEnum) t = typeof(T).GetEnumUnderlyingType(); 
+			if(typeof(T1).IsEnum) t = typeof(T1).GetEnumUnderlyingType(); 
 
 			object ret;
 
@@ -34,7 +33,7 @@ namespace igLibrary.Core
 			else if(t == typeof(byte))   ret = (byte)raw;
 			else throw new NotImplementedException($"{t.Name} is not a supported type for bitfields");
 
-			if(typeof(T).IsEnum) ret = (T)ret;
+			if(typeof(T1).IsEnum) ret = (T1)ret;
 			return ret;
 		}
 

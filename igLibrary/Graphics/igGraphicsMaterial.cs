@@ -27,14 +27,14 @@ namespace igLibrary.Graphics
 		[igField(typeof(igObjectRefMetaField<igGraphicsObjectSet>), 0x09, 0x07, 0x34, 0x58, "_graphicsObjects", null, IG_CORE_PLATFORM.ASPEN, IG_CORE_PLATFORM.ASPEN64)]
 		[igField(typeof(igObjectRefMetaField<igGraphicsObjectSet>), 0x09, 0x07, 0x38, 0x58, "_graphicsObjects")]
 		public igGraphicsObjectSet _graphicsObjects;
-		[igField(typeof(igBitFieldMetaField<byte>), 0x09, 0x08, 0x14, 0x20, "_sortKey", new object[2]{0, 4}, IG_CORE_PLATFORM.ASPEN, IG_CORE_PLATFORM.ASPEN64)]
-		[igField(typeof(igBitFieldMetaField<byte>), 0x09, 0x08, 0x18, 0x20, "_sortKey", new object[2]{0, 4})]
+		[igField(typeof(igBitFieldMetaField<byte, igUnsignedIntMetaField>), 0x09, 0x08, 0x14, 0x20, "_sortKey", new object[2]{0, 4}, IG_CORE_PLATFORM.ASPEN, IG_CORE_PLATFORM.ASPEN64)]
+		[igField(typeof(igBitFieldMetaField<byte, igUnsignedIntMetaField>), 0x09, 0x08, 0x18, 0x20, "_sortKey", new object[2]{0, 4})]
 		public byte _sortKey;
-		[igField(typeof(igBitFieldMetaField<igDrawType>), 0x09, 0x09, 0x14, 0x20, "_drawType", new object[2]{4, 2}, IG_CORE_PLATFORM.ASPEN, IG_CORE_PLATFORM.ASPEN64)]
-		[igField(typeof(igBitFieldMetaField<igDrawType>), 0x09, 0x09, 0x18, 0x20, "_drawType", new object[2]{4, 2})]
+		[igField(typeof(igBitFieldMetaField<igDrawType, igUnsignedIntMetaField>), 0x09, 0x09, 0x14, 0x20, "_drawType", new object[2]{4, 2}, IG_CORE_PLATFORM.ASPEN, IG_CORE_PLATFORM.ASPEN64)]
+		[igField(typeof(igBitFieldMetaField<igDrawType, igUnsignedIntMetaField>), 0x09, 0x09, 0x18, 0x20, "_drawType", new object[2]{4, 2})]
 		public igDrawType _drawType;
-		[igField(typeof(igBitFieldMetaField<igGraphicsMaterialAnimationTimeSource>), 0x09, 0x0A, 0x14, 0x20, "_timeSource", new object[2]{6, 2}, IG_CORE_PLATFORM.ASPEN, IG_CORE_PLATFORM.ASPEN64)]
-		[igField(typeof(igBitFieldMetaField<igGraphicsMaterialAnimationTimeSource>), 0x09, 0x0A, 0x18, 0x20, "_timeSource", new object[2]{6, 2})]
+		[igField(typeof(igBitFieldMetaField<igGraphicsMaterialAnimationTimeSource, igUnsignedIntMetaField>), 0x09, 0x0A, 0x14, 0x20, "_timeSource", new object[2]{6, 2}, IG_CORE_PLATFORM.ASPEN, IG_CORE_PLATFORM.ASPEN64)]
+		[igField(typeof(igBitFieldMetaField<igGraphicsMaterialAnimationTimeSource, igUnsignedIntMetaField>), 0x09, 0x0A, 0x18, 0x20, "_timeSource", new object[2]{6, 2})]
 		public igGraphicsMaterialAnimationTimeSource _timeSource;
 	}
 }

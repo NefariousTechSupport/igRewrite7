@@ -14,11 +14,12 @@ namespace igLibrary.Gfx
 		private StreamHelper.Endianness endianness;
 		private uint version;
 
-		public void ExtractGeometry(out uint[][] indices, out float[][] vPositions, out float[][] vTexCoords)
+		public void ExtractGeometry(out uint[][] indices, out float[][] vPositions, out float[][] vTexCoords, out float[][] vColours)
 		{
 			indices = new uint[_count][];
 			vPositions = new float[_count][];
 			vTexCoords = new float[_count][];
+			vColours = new float[_count][];
 
 			for(int i = 0; i < _count; i++)
 			{
@@ -43,14 +44,8 @@ namespace igLibrary.Gfx
 				//Read Vertices
 				//use _spuVertexes0
 
-				Console.WriteLine($"{vertexCount.ToString("X08")} vertices");
-				Console.WriteLine($"{indexCount.ToString("X08")} indices");
-
 				uint stride = ((uint)segment._spuVertexes0.size / (vertexCount * 4)) * 4;
-
-				//Console.WriteLine($"_spuVertexes0    at {segment._spuVertexes0.dataOffset.ToString("X08")}, Length {segment._spuVertexes0.dataLength.ToString("X08")}, stride {(segment._spuVertexes0.dataLength / vertexCount).ToString("X08")}");
-				//Console.WriteLine($"_spuVertexes1    at {segment._spuVertexes1.dataOffset.ToString("X08")}, Length {segment._spuVertexes1.dataLength.ToString("X08")}, stride {(segment._spuVertexes1.dataLength / vertexCount).ToString("X08")}");
-				//Console.WriteLine($"_rsxOnlyVertexes at {segment._rsxOnlyVertexes.dataOffset.ToString("X08")}, Length {segment._rsxOnlyVertexes.dataLength.ToString("X08")}, stride {(segment._rsxOnlyVertexes.dataLength / vertexCount).ToString("X08")}");
+				uint rsxOnlyStride = ((uint)segment._rsxOnlyVertexes.size / (vertexCount * 4u)) * 4u;
 
 				StreamHelper posvertexsh = null;
 				posvertexsh = new StreamHelper(new MemoryStream(segment._spuVertexes0.buffer), StreamHelper.Endianness.Big);
@@ -69,10 +64,16 @@ namespace igLibrary.Gfx
 					}
 				}
 				bool useNormals = false;
+				bool useColours = false;
 				if(segment._spuVertexes1.size / vertexCount < 0x06)
 				{
 					useNormals = false;
 					Console.WriteLine("WARNING, UNIMPLEMENTED NORMALS, SKIPPING NORMALS");
+				}
+				if(rsxOnlyStride == 0x10)
+				{
+					vColours[i] = new float[vertexCount * 4];
+					useColours = true;
 				}
 				for(uint j = 0; j < vertexCount; j++)
 				{
@@ -98,12 +99,21 @@ namespace igLibrary.Gfx
 
 					if(!uvFailure)
 					{
-						uvvertexsh.Seek((segment._rsxOnlyVertexes.size / vertexCount) * j + uvOffset);
+						uvvertexsh.Seek(rsxOnlyStride * j + uvOffset);
 						Vector4 uv = igVertexConversion.unpack_HALF2(uvvertexsh);
 						vTexCoords[i][j * 4 + 0] = uv.X;
 						vTexCoords[i][j * 4 + 1] = uv.Y;
 						vTexCoords[i][j * 4 + 2] = uv.Z;
 						vTexCoords[i][j * 4 + 3] = uv.W;
+					}
+					if(useColours)
+					{
+						uvvertexsh.Seek(rsxOnlyStride * (j + 1) - 4);
+						Vector4 colour = igVertexConversion.unpack_UBYTE4N(uvvertexsh);
+						vColours[i][j * 4 + 0] = colour.W;
+						vColours[i][j * 4 + 1] = colour.Z;
+						vColours[i][j * 4 + 2] = colour.Y;
+						vColours[i][j * 4 + 3] = colour.X;
 					}
 				}
 

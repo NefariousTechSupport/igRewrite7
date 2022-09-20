@@ -132,19 +132,19 @@ namespace igLibrary
 		//public static bool _drawEnemyEntityTags;
 		//[igField(typeof(igTStaticMetaField<CDebugCombatTargetCountTable>), 0x09, 0x40, 0x00, 0x0, "_debugCombatTargetCounts")]
 		//public CDebugCombatTargetCountTable _debugCombatTargetCounts;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x41, 0xFC, 0x168, "_forceMovementForward", new object[]{ 0, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedIntMetaField>), 0x09, 0x41, 0xFC, 0x168, "_forceMovementForward", new object[]{ 0, 1 })]
 		public bool _forceMovementForward;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x42, 0xFC, 0x168, "_isHoldingMove", new object[]{ 1, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedIntMetaField>), 0x09, 0x42, 0xFC, 0x168, "_isHoldingMove", new object[]{ 1, 1 })]
 		public bool _isHoldingMove;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x43, 0xFC, 0x168, "_resetCameraRelativeMovement", new object[]{ 2, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedIntMetaField>), 0x09, 0x43, 0xFC, 0x168, "_resetCameraRelativeMovement", new object[]{ 2, 1 })]
 		public bool _resetCameraRelativeMovement;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x44, 0xFC, 0x168, "_hasBaseVehicleControllerComponent", new object[]{ 3, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedIntMetaField>), 0x09, 0x44, 0xFC, 0x168, "_hasBaseVehicleControllerComponent", new object[]{ 3, 1 })]
 		public bool _hasBaseVehicleControllerComponent;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x45, 0xFC, 0x168, "_manualThinkControl", new object[]{ 4, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedIntMetaField>), 0x09, 0x45, 0xFC, 0x168, "_manualThinkControl", new object[]{ 4, 1 })]
 		public bool _manualThinkControl;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x46, 0xFC, 0x168, "_animClipDisplayHero", new object[]{ 5, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedIntMetaField>), 0x09, 0x46, 0xFC, 0x168, "_animClipDisplayHero", new object[]{ 5, 1 })]
 		public bool _animClipDisplayHero;
-		[igField(typeof(igBitFieldMetaField<bool>), 0x09, 0x47, 0xFC, 0x168, "_timelineDisplayHero", new object[]{ 6, 1 })]
+		[igField(typeof(igBitFieldMetaField<bool, igUnsignedIntMetaField>), 0x09, 0x47, 0xFC, 0x168, "_timelineDisplayHero", new object[]{ 6, 1 })]
 		public bool _timelineDisplayHero;
 
 		public override void ReadFields(igIGZ igz)
