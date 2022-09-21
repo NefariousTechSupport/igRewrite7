@@ -33,94 +33,91 @@ namespace igLibrary.Gfx
 				uint vertexCount = spuConfigInfo.ReadUInt16();
 				uint indexCount = spuConfigInfo.ReadUInt16();
 
-				vPositions[i] = new float[vertexCount * 4];
-				vTexCoords[i] = new float[vertexCount * 4];
-
 				//Decompress Indices
 				//use _indexes
 
 				DecompressIndices(segment, indexCount, out indices[i]);
 
 				//Read Vertices
-				//use _spuVertexes0
 
-				uint stride = ((uint)segment._spuVertexes0.size / (vertexCount * 4)) * 4;
-				uint rsxOnlyStride = ((uint)segment._rsxOnlyVertexes.size / (vertexCount * 4u)) * 4u;
+				//_spuVertexes0
 
-				StreamHelper posvertexsh = null;
-				posvertexsh = new StreamHelper(new MemoryStream(segment._spuVertexes0.buffer), StreamHelper.Endianness.Big);
-				StreamHelper uvvertexsh = new StreamHelper(new MemoryStream(segment._rsxOnlyVertexes.buffer), StreamHelper.Endianness.Big);
-				StreamHelper rsxStreamDescStream = new StreamHelper(new MemoryStream(segment._rsxOnlyStreamDesc.buffer), StreamHelper.Endianness.Big);
-				igPS3EdgeGeometrySegment.StreamDesc[] rsxOnlyDescs = rsxStreamDescStream.ReadStructArray<igPS3EdgeGeometrySegment.StreamDesc>(segment._rsxOnlyStreamDescSize / 0x10u);
-
-				bool uvFailure = false;
-				byte uvOffset = 0;
-				if(rsxOnlyDescs.Length > 0)
+				StreamHelper spuVertexes0 = new StreamHelper(new MemoryStream(segment._spuVertexes0.buffer), StreamHelper.Endianness.Big);
+				if(segment._spuInputStreamDescs0.size == 0)
 				{
-					uvFailure = !rsxOnlyDescs.Any(x => x.type == 3);
-					if(!uvFailure)
-					{
-						uvOffset = rsxOnlyDescs.First(x => x.type == 3).offset;
-					}
+					igPS3EdgeGeometrySegment.StreamDescHeader header = new igPS3EdgeGeometrySegment.StreamDescHeader();
+					header.count1 = 1;
+					header.count2 = 1;
+					header.stride = 0xC;
+					igPS3EdgeGeometrySegment.StreamDescAttribute attr = new igPS3EdgeGeometrySegment.StreamDescAttribute();
+					attr.offset = 0;
+					attr.size = 0xC;
+					attr.type = igPS3EdgeGeometrySegment.EdgeGeometryVertexType.FLOAT3;
+					attr.usage = igPS3EdgeGeometrySegment.EdgeGeometryVertexUsage.POSITION;
+					PopulateBuffer(spuVertexes0, out vPositions[i], vertexCount, header, attr);
 				}
-				bool useNormals = false;
-				bool useColours = false;
-				if(segment._spuVertexes1.size / vertexCount < 0x06)
+				else
 				{
-					useNormals = false;
-					Console.WriteLine("WARNING, UNIMPLEMENTED NORMALS, SKIPPING NORMALS");
-				}
-				if(rsxOnlyStride == 0x10)
-				{
-					vColours[i] = new float[vertexCount * 4];
-					useColours = true;
-				}
-				for(uint j = 0; j < vertexCount; j++)
-				{
-					//Console.WriteLine($"Reading verts, at {vertexsh.BaseStream.Position.ToString("X08")} / {segment._rsxOnlyVertexes.dataLength.ToString("X08")}");
-					posvertexsh.Seek(stride * j);
-					if(version == 0x09 && stride != 0x0C)
-					{
-						Vector4 pos = igVertexConversion.unpack_SHORT4N(posvertexsh);
-						vPositions[i][j * 4 + 0] = pos.X / pos.W;
-						vPositions[i][j * 4 + 1] = pos.Y / pos.W;
-						vPositions[i][j * 4 + 2] = pos.Z / pos.W;
-						vPositions[i][j * 4 + 3] = 1.0f;
-					}
-					else
-					{
-						Vector4 pos = igVertexConversion.unpack_FLOAT3(posvertexsh);
-						vPositions[i][j * 4 + 0] = pos.X;
-						vPositions[i][j * 4 + 1] = pos.Y;
-						vPositions[i][j * 4 + 2] = pos.Z;
-						vPositions[i][j * 4 + 3] = 1.0f;
-					}
-
-
-					if(!uvFailure)
-					{
-						uvvertexsh.Seek(rsxOnlyStride * j + uvOffset);
-						Vector4 uv = igVertexConversion.unpack_HALF2(uvvertexsh);
-						vTexCoords[i][j * 4 + 0] = uv.X;
-						vTexCoords[i][j * 4 + 1] = uv.Y;
-						vTexCoords[i][j * 4 + 2] = uv.Z;
-						vTexCoords[i][j * 4 + 3] = uv.W;
-					}
-					if(useColours)
-					{
-						uvvertexsh.Seek(rsxOnlyStride * (j + 1) - 4);
-						Vector4 colour = igVertexConversion.unpack_UBYTE4N(uvvertexsh);
-						vColours[i][j * 4 + 0] = colour.W;
-						vColours[i][j * 4 + 1] = colour.Z;
-						vColours[i][j * 4 + 2] = colour.Y;
-						vColours[i][j * 4 + 3] = colour.X;
-					}
+					StreamHelper spuInputStreamDescs0 = new StreamHelper(new MemoryStream(segment._spuInputStreamDescs0.buffer), StreamHelper.Endianness.Big);
+					igPS3EdgeGeometrySegment.StreamDescHeader spuInputStreamDescs0Header = spuInputStreamDescs0.ReadStruct<igPS3EdgeGeometrySegment.StreamDescHeader>();
+					igPS3EdgeGeometrySegment.StreamDescAttribute[] spuInputStreamDescs0Attributes = spuInputStreamDescs0.ReadStructArray<igPS3EdgeGeometrySegment.StreamDescAttribute>(spuInputStreamDescs0Header.count1);
+					PopulateBuffer(spuVertexes0, out vPositions[i], vertexCount, spuInputStreamDescs0Header, spuInputStreamDescs0Attributes.First(x => x.usage == igPS3EdgeGeometrySegment.EdgeGeometryVertexUsage.POSITION));
 				}
 
-				posvertexsh.Close();
-				posvertexsh.Dispose();
-				uvvertexsh.Close();
-				uvvertexsh.Dispose();
+				spuVertexes0.Dispose();
+				spuVertexes0.Close();
+
+				//_rsxOnlyVertexes
+
+				StreamHelper rsxOnlyVertexes = new StreamHelper(new MemoryStream(segment._rsxOnlyVertexes.buffer), StreamHelper.Endianness.Big);
+				if(segment._rsxOnlyVertexes.size > 0)
+				{
+					StreamHelper rsxOnlyStreamDesc = new StreamHelper(new MemoryStream(segment._rsxOnlyStreamDesc.buffer), StreamHelper.Endianness.Big);
+					igPS3EdgeGeometrySegment.StreamDescHeader rsxOnlyStreamDescHeader = rsxOnlyStreamDesc.ReadStruct<igPS3EdgeGeometrySegment.StreamDescHeader>();
+					igPS3EdgeGeometrySegment.StreamDescAttribute[] rsxOnlyStreamDescAttributes = rsxOnlyStreamDesc.ReadStructArray<igPS3EdgeGeometrySegment.StreamDescAttribute>(rsxOnlyStreamDescHeader.count1);
+					int UV0Attr = Array.FindIndex<igPS3EdgeGeometrySegment.StreamDescAttribute>(rsxOnlyStreamDescAttributes, x => x.usage == igPS3EdgeGeometrySegment.EdgeGeometryVertexUsage.UV0);
+					int ColourAttr = Array.FindIndex<igPS3EdgeGeometrySegment.StreamDescAttribute>(rsxOnlyStreamDescAttributes, x => x.usage == igPS3EdgeGeometrySegment.EdgeGeometryVertexUsage.COLOR);
+					if(UV0Attr >= 0) PopulateBuffer(rsxOnlyVertexes, out vTexCoords[i], vertexCount, rsxOnlyStreamDescHeader, rsxOnlyStreamDescAttributes[UV0Attr]);
+					if(ColourAttr >= 0) PopulateBuffer(rsxOnlyVertexes, out vColours[i], vertexCount, rsxOnlyStreamDescHeader, rsxOnlyStreamDescAttributes[ColourAttr]);
+				}
+
+				rsxOnlyVertexes.Dispose();
+				rsxOnlyVertexes.Close();
+			}
+		}
+		private void PopulateBuffer(StreamHelper sh, out float[] vertices, uint vertexCount, igPS3EdgeGeometrySegment.StreamDescHeader header, igPS3EdgeGeometrySegment.StreamDescAttribute attr)
+		{
+			vertices = new float[4 * vertexCount];
+			MethodInfo? unpackFunction = typeof(igVertexConversion).GetMethod($"unpack_{attr.type.ToString()}");
+			if(unpackFunction == null) throw new NotImplementedException($"Edge Vertex Type {attr.type.ToString()} is not supported");
+			object[] unpackParams = new object[1]{sh};
+			for(uint i = 0; i < vertexCount; i++)
+			{
+				sh.Seek(header.stride * i + attr.offset);
+
+				Vector4 v4 = (Vector4)unpackFunction.Invoke(null, unpackParams);
+				vertices[i * 4 + 0] = v4.X;
+				vertices[i * 4 + 1] = v4.Y;
+				vertices[i * 4 + 2] = v4.Z;
+				vertices[i * 4 + 3] = v4.W;
+
+				if(attr.usage == igPS3EdgeGeometrySegment.EdgeGeometryVertexUsage.POSITION)
+				{
+					if(attr.type == igPS3EdgeGeometrySegment.EdgeGeometryVertexType.SHORT4N)
+					{
+						vertices[i * 4 + 0] = v4.X / v4.W;
+						vertices[i * 4 + 1] = v4.Y / v4.W;
+						vertices[i * 4 + 2] = v4.Z / v4.W;
+						vertices[i * 4 + 3] = 1.0f;
+					}
+				}
+				else if(attr.usage == igPS3EdgeGeometrySegment.EdgeGeometryVertexUsage.COLOR)
+				{
+					vertices[i * 4 + 0] = v4.W;
+					vertices[i * 4 + 1] = v4.Z;
+					vertices[i * 4 + 2] = v4.Y;
+					vertices[i * 4 + 3] = v4.X;
+				}
 			}
 		}
 		//Thanks to chroxx for reverse engineering this. (https://github.com/Danilodum/noesis-plugins-official/blob/master/chrrox/import/beta/psa.py)

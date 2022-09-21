@@ -55,12 +55,49 @@ namespace igLibrary.Gfx
 		[igField(typeof(igUnsignedIntMetaField), 0xFF, 0x19, 0xAC, 0x00, "_speedTreeType")]
 		public uint _speedTreeType;
 
-		//No idea if this is accurate
-		[StructLayout(LayoutKind.Explicit, Size = 0x10)]
-		public struct StreamDesc
+		[StructLayout(LayoutKind.Explicit, Size = 0x08)]
+		public struct StreamDescHeader
 		{
-			[FieldOffset(0x08)] public byte offset;
-			[FieldOffset(0x09)] public byte type;
+			[FieldOffset(0x00)] public byte count1;
+			[FieldOffset(0x01)] public byte stride;
+			[FieldOffset(0x02)] public byte count2;
+		}
+
+		[StructLayout(LayoutKind.Explicit, Size = 0x08)]
+		public struct StreamDescAttribute
+		{
+			[FieldOffset(0x00)] public byte offset;
+			[FieldOffset(0x01)] public EdgeGeometryVertexBuffer buffer;
+			[FieldOffset(0x03)] public EdgeGeometryVertexUsage usage;
+			[FieldOffset(0x04)] public byte size;
+			[FieldOffset(0x05)] public EdgeGeometryVertexType type;
+		}
+
+		public enum EdgeGeometryVertexBuffer : byte
+		{
+			SPU0 = 1,
+			SPU1 = 6,
+			RSX = 3
+		}
+		public enum EdgeGeometryVertexUsage : byte
+		{
+			UNKNOWN = 0,
+			POSITION = 1,
+			NORMAL = 2,			//Guessed
+			TANGENT = 3,		//Guessed
+			BINORMAL = 4,		//Guessed
+			UV0 = 5,
+			UV1 = 6,
+			UV2 = 7,
+			COLOR = 9,
+		}
+		//This could be entirely wrong
+		public enum EdgeGeometryVertexType : byte
+		{
+			SHORT4N = 0,
+			FLOAT3 = 1,			//This one's just made up
+			UBYTE4N = 3,
+			HALF2 = 8,
 		}
 	}
 }
