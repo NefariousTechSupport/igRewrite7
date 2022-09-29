@@ -1,5 +1,7 @@
 namespace igLibrary.Graphics
 {
+	[sizeofSize(0xFF, 0x38, 0x60, IG_CORE_PLATFORM.ASPEN, IG_CORE_PLATFORM.ASPEN64)]
+	[sizeofSize(0xFF, 0x40, 0x60)]
 	public class igGraphicsMaterial : igMaterial
 	{
 		//On not iOS, a long must be aligned to 8 bytes, on iOS, it must be aligned to 4 bytes, hence this

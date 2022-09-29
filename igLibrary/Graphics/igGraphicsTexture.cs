@@ -1,5 +1,6 @@
 namespace igLibrary.Graphics
 {
+	[sizeofSize(0xFF, 0x18, 0x28)]
 	public class igGraphicsTexture : igGraphicsObject
 	{
 		[igField(typeof(igEnumMetaField<igResourceUsage>), 0x09, 0x00, 0x08, 0x0C, "_usage")]

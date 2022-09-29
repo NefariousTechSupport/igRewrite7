@@ -21,7 +21,10 @@ namespace igLibrary.Core
 		{
 			return _metaField.ReadRawMemory(igz, is64Bit);
 		}
-
+		public virtual void WriteIGZMemory(igIGZSaver igz, StreamHelper sh, bool is64Bit, object? data)
+		{
+			_metaField.WriteRawMemory(igz, sh, is64Bit, data);
+		}
 		public static IEnumerable<igField> GetFieldBcyName<T>(string name)
 		{
 			FieldInfo[] fields = typeof(T).GetFields();

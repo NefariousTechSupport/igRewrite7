@@ -1,5 +1,6 @@
 namespace igLibrary.Core
 {
+	[sizeofSize(0xFF, 0x24, 0x40)]
 	public class igHashTable<T, TM, U, UM> : igContainer
 		where TM : igMetaField, new()
 		where UM : igMetaField, new()

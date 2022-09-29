@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "ac7R+05oRF8tHNO1ajrTWzvRNrfTgGuQgAQZz/AfZmveq0WUBTwhUYUULrDch8yacllzB4JrV5N0iG7rJTpV7g==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\jaska\\Documents\\Modding\\Skylanders\\Projects\\igRewrite7\\misctests\\Test_IGZGen\\Test_IGZGen.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\jaska\\.nuget\\packages\\hashdepot\\2.0.3\\hashdepot.2.0.3.nupkg.sha512",
+    "C:\\Users\\jaska\\.nuget\\packages\\lzma-sdk\\19.0.0\\lzma-sdk.19.0.0.nupkg.sha512",
+    "C:\\Users\\jaska\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.1\\microsoft.netcore.platforms.1.1.1.nupkg.sha512",
+    "C:\\Users\\jaska\\.nuget\\packages\\microsoft.netcore.targets\\1.1.3\\microsoft.netcore.targets.1.1.3.nupkg.sha512",
+    "C:\\Users\\jaska\\.nuget\\packages\\system.memory\\4.5.3\\system.memory.4.5.3.nupkg.sha512",
+    "C:\\Users\\jaska\\.nuget\\packages\\system.runtime\\4.3.1\\system.runtime.4.3.1.nupkg.sha512"
+  ],
+  "logs": []
+}

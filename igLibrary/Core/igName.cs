@@ -1,6 +1,6 @@
 namespace igLibrary.Core
 {
-	[igStruct(0xFF, 0x08, 0x10)]
+	[sizeofSize(0xFF, 0x08, 0x10)]
 	public struct igName
 	{
 		public static void arkRegisterCompoundFields(igMetaFieldList metaFields)

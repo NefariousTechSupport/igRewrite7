@@ -17,6 +17,35 @@ namespace igLibrary.Core
 
 			return registers;
 		}
+		public static bool IsPlatformBigEndian(IG_CORE_PLATFORM platform)
+		{
+			switch(platform)
+			{
+				default:
+				case IG_CORE_PLATFORM.DEFAULT:
+				case IG_CORE_PLATFORM.DEPRECATED:
+				case IG_CORE_PLATFORM.WIN32:
+				case IG_CORE_PLATFORM.DURANGO:
+				case IG_CORE_PLATFORM.ASPEN:
+				case IG_CORE_PLATFORM.XENON:
+				case IG_CORE_PLATFORM.WIN64:
+				case IG_CORE_PLATFORM.ASPEN64:
+				case IG_CORE_PLATFORM.PS4:
+				case IG_CORE_PLATFORM.OSX:
+				case IG_CORE_PLATFORM.NGP:
+				case IG_CORE_PLATFORM.MARMALADE:
+				case IG_CORE_PLATFORM.RASPI:
+				case IG_CORE_PLATFORM.ANDROID:
+				case IG_CORE_PLATFORM.LGTV:
+				case IG_CORE_PLATFORM.WP8:
+				case IG_CORE_PLATFORM.LINUX:
+					return false;
+				case IG_CORE_PLATFORM.PS3:
+				case IG_CORE_PLATFORM.CAFE:
+				case IG_CORE_PLATFORM.WII:
+					return true;
+			}
+		}
 
 		public static string GetPlatformString(IG_CORE_PLATFORM platform)
 		{

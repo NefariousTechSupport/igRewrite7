@@ -1,5 +1,6 @@
 namespace igLibrary.Core
 {
+	[sizeofSize(0xFF, 0x24, 0x40)]
 	public class igInfo : igReferenceResolver
 	{
 		[igField(typeof(igObjectRefMetaField<igDirectory>), 0xFF, 0, 0x0C, 0x18, "_directory")]

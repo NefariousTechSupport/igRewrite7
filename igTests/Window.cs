@@ -14,6 +14,8 @@ namespace igRewrite7
 
 		CDrawable quad;
 
+		bool cullEnabled;
+
 		public Window(GameWindowSettings gws, NativeWindowSettings nws, string[] args) : base(gws, nws)
 		{
 			igFileContext.Singleton.Initialize(args[0]);
@@ -28,7 +30,7 @@ namespace igRewrite7
 			GL.Enable(EnableCap.DepthTest);
 			GL.Enable(EnableCap.Texture2D);
 			//GL.Enable(EnableCap.StencilTest);
-			GL.Enable(EnableCap.CullFace);
+			//GL.Enable(EnableCap.CullFace);
 			//GL.Enable(EnableCap.Blend);
 			//GL.BlendFuncSeparate(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha, BlendingFactorSrc.One, BlendingFactorDest.Zero);
 
@@ -121,6 +123,13 @@ namespace igRewrite7
 			if(KeyboardState.IsKeyDown(Keys.D)) Camera.transform.position -= Camera.transform.Right * (float)args.Time * moveSpeed * mult;
 
 			if(KeyboardState.IsKeyPressed(Keys.R)) EntityManager.Singleton.ignoreDraw = !EntityManager.Singleton.ignoreDraw;
+			if(KeyboardState.IsKeyPressed(Keys.C))
+			{
+				cullEnabled = !cullEnabled;
+				if(cullEnabled) GL.Enable(EnableCap.CullFace);
+				else            GL.Disable(EnableCap.CullFace);
+				Console.Write($"Cull Face set to {cullEnabled}");
+			}
 			if(KeyboardState.IsKeyPressed(Keys.Right))
 			{
 				while(true)

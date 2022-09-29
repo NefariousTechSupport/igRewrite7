@@ -1,5 +1,6 @@
 namespace igLibrary.Entity
 {
+	[sizeofSize(0xFF, 0x28, 0x48)]
 	public class igEntity : igObject
 	{
 		[igField(typeof(igObjectRefMetaField<igEntityData>), 0x09, 0x00, 0x24, 0x40, "_entityData")]

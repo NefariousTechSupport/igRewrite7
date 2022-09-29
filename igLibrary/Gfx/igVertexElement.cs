@@ -1,6 +1,6 @@
 namespace igLibrary.Gfx
 {
-	[igStruct(0x09, 0x0C, 0x0C)]
+	[sizeofSize(0x09, 0x0C, 0x0C)]
 	public struct igVertexElement
 	{
 		public static void arkRegisterCompoundFields(igMetaFieldList metafields)

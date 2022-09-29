@@ -2,6 +2,7 @@
 
 namespace igLibrary.Render
 {
+	[sizeofSize(0xFF, 0x70, 0xA0)]
 	public class igModelDrawCallData : igNamedObject
 	{
 		[igField(typeof(igVec4fMetaField), 0x09, 0x00, 0x10, 0x20, "_min")]

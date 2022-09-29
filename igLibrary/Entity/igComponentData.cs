@@ -1,6 +1,7 @@
 namespace igLibrary.Entity
 {
 	//technically inherits from DotNet.Object but i can't really use that name
+	[sizeofSize(0xFF, 0x10, 0x20)]
 	public class igComponentData : igDynamicObject
 	{
 		[igField(typeof(igUnsignedIntMetaField), 0x09, 0x00, 0x0C, 0x18, "_bitfield")]

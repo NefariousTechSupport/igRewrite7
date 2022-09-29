@@ -1,5 +1,6 @@
 namespace igLibrary.Gfx
 {
+	[sizeofSize(0xFF, 0x48, 0x80)]
 	public class igVertexFormat : igObject
 	{
 		[igField(typeof(igUnsignedIntMetaField), 0x09, 0x00, 0x08, 0x0C, "_vertexSize")]

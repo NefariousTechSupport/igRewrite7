@@ -1,5 +1,6 @@
 namespace igLibrary.Entity
 {
+	[sizeofSize(0xFF, 0x80, 0x80)]
 	public class igEntityTransform : igObject
 	{
 		[igField(typeof(igQuaternionfMetaField), 0x09, 0x00, 0x10, 0x10, "_parentSpaceOrientation")]

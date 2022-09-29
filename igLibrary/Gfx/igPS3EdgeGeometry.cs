@@ -1,5 +1,6 @@
 namespace igLibrary.Gfx
 {
+	[sizeofSize(0xFF, 0x20, 0x00)]
 	public class igPS3EdgeGeometry : igPS3EdgeGeometrySegmentList
 	{
 		[igField(typeof(igBoolMetaField), 0xFF, 0x00, 0x18, 0x00, "_isMorphed")]

@@ -12,8 +12,8 @@ namespace igLibrary.Core
 
 		public override ushort Size(bool is64Bit)
 		{
-			if(is64Bit) return (ushort)_t.GetCustomAttribute<igStruct>()._size64;
-			else        return (ushort)_t.GetCustomAttribute<igStruct>()._size32;
+			if(is64Bit) return (ushort)_t.GetCustomAttribute<sizeofSize>()._size64;
+			else        return (ushort)_t.GetCustomAttribute<sizeofSize>()._size32;
 		}
 
 		public override object? ReadRawMemory(igIGZ igz, bool is64Bit)

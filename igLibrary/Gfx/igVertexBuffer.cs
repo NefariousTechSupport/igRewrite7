@@ -1,5 +1,6 @@
 namespace igLibrary.Gfx
 {
+	[sizeofSize(0xFF, 0x2C, 0x50)]
 	public class igVertexBuffer : igObject
 	{
 		[igField(typeof(igUnsignedIntMetaField), 0x09, 0x00, 0x08, 0x0C, "_vertexCount")]

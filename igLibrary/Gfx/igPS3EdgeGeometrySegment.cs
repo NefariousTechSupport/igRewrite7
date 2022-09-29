@@ -1,5 +1,6 @@
 namespace igLibrary.Gfx
 {
+	[sizeofSize(0xFF, 0xB0, 0x00)]
 	public class igPS3EdgeGeometrySegment : igObject
 	{
 		[igField(typeof(igMemoryRefMetaField), 0xFF, 0x00, 0x08, 0x00, "_spuConfigInfo")]

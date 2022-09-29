@@ -67,5 +67,9 @@ namespace igLibrary.Core
 					//throw new InvalidOperationException($"Invalid filetype {path._fileExtension}");
 			}
 		}
+		public void BuildIGZ(string path)
+		{
+			
+		}
 	}
 }

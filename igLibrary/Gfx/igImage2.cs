@@ -1,5 +1,6 @@
 namespace igLibrary.Gfx
 {
+	[sizeofSize(0x09, 0x60, 0x90)]
 	public class igImage2 : igNamedObject
 	{
 		[igField(typeof(igUnsignedShortMetaField), 0x09, 0x00, 0x34, 0x48, "_width")]

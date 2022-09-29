@@ -125,6 +125,15 @@ namespace igLibrary
 			BaseStream.Seek(offset, SeekOrigin.Begin);
 			return ReadString();
 		}
+		public void WriteString(string data, uint offset)
+		{
+			BaseStream.Seek(offset, SeekOrigin.Begin);
+			WriteString(data);
+		}
+		public void WriteString(string data)
+		{
+			BaseStream.Write(System.Text.Encoding.ASCII.GetBytes(data));
+		}
 
 		public byte[] ReadBytes(uint count) => ReadBytes((int)count);
 		public byte[] ReadFromOffset(int count, uint offset)
@@ -284,6 +293,9 @@ namespace igLibrary
 
 		public ulong ReadUInt64(Endianness endianness) => BitConverter.ToUInt64(ReadForEndianness(sizeof(ulong), endianness), 0);
 
+		public void WriteUInt32(uint data) => WriteUInt32(data, _endianness);
+		public void WriteUInt32(uint data, Endianness endianness) => WriteForEndianness(BitConverter.GetBytes(data), endianness);
+
 		public byte[] ReadForEndianness(int bytesToRead, Endianness endianness)
 		{
 			byte[] bytesRead = new byte[bytesToRead];
@@ -310,6 +322,27 @@ namespace igLibrary
 			}
 
 			return bytesRead;
+		}
+		
+		public void WriteForEndianness(byte[] bytes, Endianness endianness)
+		{
+			switch (endianness)
+			{
+				case Endianness.Little:
+					if (!BitConverter.IsLittleEndian)
+					{
+						Array.Reverse(bytes);
+					}
+					break;
+
+				case Endianness.Big:
+					if (BitConverter.IsLittleEndian)
+					{
+						Array.Reverse(bytes);
+					}
+					break;
+			}
+			BaseStream.Write(bytes);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 namespace igLibrary.Graphics
 {
+	[sizeofSize(0xFF, 0x14, 0x20)]
 	public class igGraphicsIndexBuffer : igGraphicsObject
 	{
 		[igField(typeof(igEnumMetaField<igResourceUsage>), 0x09, 0x00, 0x08, 0x0C, "_usage")]

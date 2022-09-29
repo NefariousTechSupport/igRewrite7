@@ -1,5 +1,6 @@
 namespace igLibrary.Core
 {
+	[sizeofSize(0xFF, 0x18, 0x28)]
 	public class igDataList<T1, T2> : igObject where T2 : igMetaField, new()
 	{
 		[igField(typeof(igUnsignedIntMetaField), 0xFF, 0, 0x08, 0x0C, "_count")]
