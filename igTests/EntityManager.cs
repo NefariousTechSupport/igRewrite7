@@ -126,7 +126,7 @@ namespace igRewrite7
 
 	public class Entity
 	{
-		public igObject instance;					//Is either a Region.CMobyInstance or a TieInstance depending on if it's a moby or tie repsectively
+		public igObject instance;
 		public IDrawableCommon drawable;
 		public int id;
 		public string name = string.Empty;
@@ -205,6 +205,7 @@ namespace igRewrite7
 		}
 		public void Draw()
 		{
+			//if(this.name != "TunnelTrack") return;
 			if(!EntityManager.Singleton.ignoreDraw || draw) drawable.Draw(transform);
 		}
 		public bool IntersectsRay(Vector3 dir, Vector3 position)

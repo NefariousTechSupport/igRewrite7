@@ -9,7 +9,7 @@ namespace igLibrary.Core
 		public IG_CORE_PLATFORM _platform;
 		public uint _version;
 
-		public struct igIGZSaverSection
+		public class igIGZSaverSection
 		{
 			public StreamHelper _stream;
 			public List<ulong> _runtimeOffsets;
@@ -59,6 +59,7 @@ namespace igLibrary.Core
 		}
 		private void WriteFixups()
 		{
+			_stream.Seek(0x800);
 			//TDEP
 			//TSTR
 			//TMET
@@ -67,12 +68,13 @@ namespace igLibrary.Core
 			{
 				long basePos = _stream.BaseStream.Position;
 				string data = _vtableList[i].Name;
+				Console.WriteLine($"Writing TMET {data}");
 				tmetMs.Write(System.Text.Encoding.ASCII.GetBytes(data));
 				int bits = (_version > 7) ? 2 : 1;
 				tmetMs.Seek(basePos + bits + (data.Length & (uint)(-bits)), SeekOrigin.Begin);
 			}
 			tmetMs.Flush();
-			WriteFixupData(0, _vtableList.Count, tmetMs.GetBuffer(), 1);
+			WriteFixupData(0, _vtableList.Count, (int)tmetMs.Length, tmetMs.GetBuffer(), 1);
 			//EXID
 			//MTSZ
 			//TMHN
@@ -87,7 +89,7 @@ namespace igLibrary.Core
 			_stream.Seek(0x7FC);
 			_stream.WriteUInt32(0);
 		}
-		private void WriteFixupData(uint oldMagic, int count, byte[] buffer, uint requiredAlignment)
+		private void WriteFixupData(uint oldMagic, int count, int length, byte[] buffer, uint requiredAlignment)
 		{
 			if(_version > 6)
 			{
@@ -110,10 +112,14 @@ namespace igLibrary.Core
 			}
 			_stream.WriteUInt32(oldMagic);
 			if(_version <= 6) _stream.Seek(8, SeekOrigin.Current);
+			_stream.WriteUInt32((uint)count);
+			_stream.WriteUInt32((uint)length + 0x10u);
+			_stream.WriteUInt32(0x10);
+			_stream.BaseStream.Write(buffer, 0, length);	//Length is past like this because MemoryStream capacity can be large
 		}
 		private void WriteSection(int index)
 		{
-			uint ogOffset = (uint)_stream.BaseStream.Length;
+			uint ogOffset = (uint)(((_stream.BaseStream.Length + 7) / 8) * 8);
 			_stream.Seek(0x24 + 0x10 * index);
 			_stream.WriteUInt32(0);
 			_stream.WriteUInt32(ogOffset);
@@ -122,28 +128,47 @@ namespace igLibrary.Core
 			_stream.Seek(ogOffset);
 			_sections[index]._stream.BaseStream.Flush();
 			_sections[index]._stream.BaseStream.Seek(0, SeekOrigin.Begin);
-			byte[] buffer = new byte[(uint)_sections[index]._stream.BaseStream.Length];
-			_sections[index]._stream.BaseStream.Read(buffer);
-			_stream.BaseStream.Write(buffer);
+			_sections[index]._stream.BaseStream.CopyTo(_stream.BaseStream);
 		}
 		private void SaveObject(igIGZSaverSection section, igObject obj)
 		{
 			AlignStream(section._stream, igCore.GetSizeOfPointer(_platform));
 			long objPos = section._stream.BaseStream.Position;
 			IEnumerable<sizeofSize> sizeAttrs = obj.GetType().GetCustomAttributes<sizeofSize>();
-			sizeofSize sizeAttr = sizeAttrs.First(x => x._applicableVersion == _version && !(x._platform.Length > 0 && x._platform.Contains(_platform)));
+			sizeofSize? sizeAttr = null;
+			for(int i = 0; i < sizeAttrs.Count(); i++)
+			{
+				if(sizeAttrs.ElementAt(i)._applicableVersion == 0xFF || sizeAttrs.ElementAt(i)._applicableVersion == _version)
+				{
+					if(sizeAttrs.ElementAt(i)._platform.Length > 0)
+					{
+						if(sizeAttrs.ElementAt(i)._platform.Any(x => x == _platform))
+						{
+							sizeAttr = sizeAttrs.ElementAt(i);
+						}
+					}
+					else sizeAttr = sizeAttrs.ElementAt(i);
+				}
+				if(sizeAttr != null) break;
+			}
+			if(sizeAttr == null) throw new NotImplementedException($"sizeofSize for type {obj.GetType().Name}, version {_version}, platform IG_CORE_PLATFORM_{_platform} not implemented");
 			if(igCore.IsPlatform64Bit(_platform)) _stream.BaseStream.Write(new byte[sizeAttr._size64]);
 			else _stream.BaseStream.Write(new byte[sizeAttr._size32]);
 			section._stream.Seek(objPos);
 			WriteRawOffset(section._stream, GetVtableIndex(obj.GetType()));
 			section._stream.WriteUInt32(0xFF);
 			section._stream.Seek(objPos);
-			obj.WriteFields(this, section._stream);
+			//obj.WriteFields(this, section._stream);
 		}
-		private void AlignStream(StreamHelper sh, uint alignment)
+		public void AlignStream(StreamHelper sh, uint alignment)
 		{
 			if(sh.BaseStream.Position == 0) return;
 			sh.Seek((((sh.BaseStream.Position - 1) / alignment) + 1) * alignment);
+		}
+		public void GetFreeMemory(igIGZSaverSection section)
+		{
+			section._stream.Seek(section._stream.BaseStream.Length);
+			AlignStream(section._stream, igCore.GetSizeOfPointer(_platform));
 		}
 		public void WriteRawOffset(StreamHelper sh, ulong offset)
 		{

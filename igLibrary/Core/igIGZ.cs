@@ -34,6 +34,17 @@ namespace igLibrary.Core
 			if(file._stream.BaseStream.Length < 0x800) throw new InvalidDataException($"file {file._path} is not large enough with only {file._stream.BaseStream.Length.ToString("X08")} instead pf 0x00000800.");
 			_file = file;
 			_stream = _file._stream;
+			Init(dir, readDependancies);
+		}
+
+		public igIGZ(igObjectDirectory dir, Stream stream, bool readDependancies)
+		{
+			_file = new igFileDescriptor(stream, dir._path, StreamHelper.Endianness.Little);
+			_stream = _file._stream;
+			Init(dir, readDependancies);
+		}
+		private void Init(igObjectDirectory dir, bool readDependancies)
+		{
 			_stream.Seek(0);
 			_readDependancies = readDependancies;
 
@@ -167,6 +178,10 @@ namespace igLibrary.Core
 										break;
 									}
 								}
+							}
+							if(obj == null && rawDepNSHash == 0x843CD0C2)
+							{
+								obj = obj;
 							}
 							finish:
 								_externalList.Add(new igHandle(depName));

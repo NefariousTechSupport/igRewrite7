@@ -8,7 +8,7 @@ namespace igLibrary.Core
 		WIN32,		//32-bit Windows
 		WII,		//Wii
 		DURANGO,	//Xbox One
-		ASPEN,		//??
+		ASPEN,		//32-bit iOS
 		XENON,		//Xbox 360
 		PS3,		//PS3
 		OSX,		//Mac
@@ -18,11 +18,11 @@ namespace igLibrary.Core
 		MARMALADE,	//Something NVIDEA made https://youtu.be/uC16fCnI62Y
 		RASPI,		//Raspberry Pi
 		ANDROID,	//Android
-		ASPEN64,	//??
+		ASPEN64,	//64-bit iOS
 		LGTV,		//LG TV
 		PS4,		//PS4
 		WP8,		//Windows Phone 8 (presumably)
 		LINUX,		//Linux
-		MAX			//??
+		MAX			//Platform count
 	}
 }

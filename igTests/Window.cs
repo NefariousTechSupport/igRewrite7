@@ -76,7 +76,10 @@ namespace igRewrite7
 			//e.transform = new Transform();
 			//if(rootDir._objectList[0] is igModelInfo mi) e.drawable = new CDrawableListList(mi);
 			//else if(rootDir._objectList[1] is CGraphicsSkinInfo gsi) e.drawable = new CDrawableListList(gsi);
+			//else throw new NotImplementedException("unsupported object type");
 			//e.name = "idk lol";
+			//EntityManager.Singleton.loadedEntities.Add("e", new List<Entity>());
+			//EntityManager.Singleton.loadedEntities["e"].Add(e);
 			//EntityManager.Singleton.entities.Add(e);
 
 			gui = new GUI(this);

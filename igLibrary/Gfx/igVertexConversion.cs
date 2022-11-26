@@ -11,7 +11,7 @@ namespace igLibrary.Gfx
 		public static Vector4 unpack_FLOAT4(StreamHelper sh) =>                 new Vector4(sh.ReadSingle(), sh.ReadSingle(), sh.ReadSingle(), sh.ReadSingle());
 		public static Vector4 unpack_UBYTE4N_COLOR(StreamHelper sh) =>          new Vector4(sh.ReadByte() / 255f, sh.ReadByte() / 255f, sh.ReadByte() / 255f, sh.ReadByte() / 255f);
 		public static Vector4 unpack_UBYTE4N_COLOR_ARGB(StreamHelper sh) =>     new Vector4(sh.ReadByte() / 255f, sh.ReadByte() / 255f, sh.ReadByte() / 255f, sh.ReadByte() / 255f);
-		public static Vector4 unpack_UBYTE4N_COLOR_RGB(StreamHelper sh) =>      new Vector4(sh.ReadByte() / 255f, sh.ReadByte() / 255f, sh.ReadByte() / 255f, sh.ReadByte() / 255f);
+		public static Vector4 unpack_UBYTE4N_COLOR_RGBA(StreamHelper sh) =>     new Vector4(sh.ReadByte() / 255f, sh.ReadByte() / 255f, sh.ReadByte() / 255f, sh.ReadByte() / 255f);
 		public static Vector4 unpack_UBYTE2N_COLOR_5650(StreamHelper sh)
 		{
 			ushort color = sh.ReadUInt16();

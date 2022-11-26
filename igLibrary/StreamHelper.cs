@@ -278,7 +278,8 @@ namespace igLibrary
 			bitPosition %= 8;
 			return bit == 1;
 		}
-		public override ulong ReadUInt64() => ReadUInt64(_endianness);
+		public ulong ReadUInt64(uint offset) => ReadUInt64(_endianness, offset);
+		public override ulong ReadUInt64() => ReadUInt64(_endianness, BaseStream.Position);
 
 		public short ReadInt16(Endianness endianness) => BitConverter.ToInt16(ReadForEndianness(sizeof(short), endianness), 0);
 
@@ -291,10 +292,16 @@ namespace igLibrary
 
 		public uint ReadUInt32(Endianness endianness) => BitConverter.ToUInt32(ReadForEndianness(sizeof(uint), endianness), 0);
 
-		public ulong ReadUInt64(Endianness endianness) => BitConverter.ToUInt64(ReadForEndianness(sizeof(ulong), endianness), 0);
-
+		public ulong ReadUInt64(Endianness endianness) => ReadUInt64(endianness, BaseStream.Position);
+		public ulong ReadUInt64(Endianness endianness, long offset)
+		{
+			Seek(offset);
+			return BitConverter.ToUInt64(ReadForEndianness(sizeof(ulong), endianness), 0);
+		}
 		public void WriteUInt32(uint data) => WriteUInt32(data, _endianness);
 		public void WriteUInt32(uint data, Endianness endianness) => WriteForEndianness(BitConverter.GetBytes(data), endianness);
+		public void WriteUInt64(ulong data) => WriteUInt64(data, _endianness);
+		public void WriteUInt64(ulong data, Endianness endianness) => WriteForEndianness(BitConverter.GetBytes(data), endianness);
 
 		public byte[] ReadForEndianness(int bytesToRead, Endianness endianness)
 		{

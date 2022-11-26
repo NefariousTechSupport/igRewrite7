@@ -33,6 +33,21 @@ namespace igLibrary.Core
 			_name = new igName(Path.GetFileNameWithoutExtension(path).ToLower());
 		}
 		
+		public void ReadFile(Stream stream, bool readDependancies = true)
+		{
+			//change this to happen in igObjectLoader once that exists
+			type = GetLoader(_path);
+
+			switch(type)
+			{
+				case FileType.kIGZ:
+					igIGZ igz = new igIGZ(this, stream, readDependancies);
+					break;
+				default:
+					Console.WriteLine($"WARNING: {_path} IS NOT AN IGOBJECT STREAM, SKIPPING...");
+					break;
+			}
+		}
 		public void ReadFile(bool readDependancies = true)
 		{
 			//change this to happen in igObjectLoader once that exists

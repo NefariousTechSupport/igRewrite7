@@ -64,6 +64,20 @@ namespace igLibrary.Core
 				this.Append((T1)appender);
 			}
 		}
+		public virtual void ToMemory(igIGZSaver igz, igIGZSaver.igIGZSaverSection section, bool is64Bit)
+		{
+			_capacity = (uint)list.Count;
+			_count = (uint)list.Count;
+
+			T2 metafield = new T2();
+
+			int typeSize = metafield.Size(is64Bit);
+			
+			for(int i = 0; i < _count; i++)
+			{
+				//section._stream.Seek();
+			}
+		}
 
 		public override void ReadFields(igIGZ igz)
 		{
@@ -71,6 +85,13 @@ namespace igLibrary.Core
 			base.ReadFields(igz);
 			igz._stream.Seek(offset);
 			this.FromMemory(igz, igCore.IsPlatform64Bit(igz._platform));
+		}
+
+		public override void WriteFields(igIGZSaver igz, int index)
+		{
+			//ToMemory(igz, igCore.IsPlatform64Bit(igz._platform));
+
+			base.WriteFields(igz, index);
 		}
 
 		public List<T1> ToCSList()

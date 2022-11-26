@@ -74,6 +74,11 @@ namespace igRewrite7
 				}
 			}
 			ImGui.End();
+
+			if(selectedEntity != null)
+			{
+				ShowEntityInfo();
+			}
 		}
 
 		public void KeyPress(int c)
@@ -88,9 +93,15 @@ namespace igRewrite7
 		{
 			ImGui.Begin($"{selectedEntity.name} Properties");
 			bool posChanged = false;
+			bool rotChanged = false;
 			System.Numerics.Vector3 position = Utils.ToNumericsVector3(selectedEntity.transform.position);
+			OpenTK.Mathematics.Vector3 rawRotation;
+			OpenTK.Mathematics.Quaternion.ToEulerAngles(selectedEntity.transform.rotation, out rawRotation);
+			System.Numerics.Vector3 rotation = Utils.ToNumericsVector3(rawRotation);
 			if(ImGui.InputFloat3("Position: ", ref position)) posChanged = true;
+			if(ImGui.InputFloat3("Rotation: ", ref rotation)) rotChanged = true;
 			if(posChanged) selectedEntity.SetPosition(Utils.ToOpenTKVector3(position));
+			//if(rotChanged) selectedEntity.SetRotation(Utils.ToOpenTKVector3(rotation));
 			ImGui.End();
 			//ImGui.ShowDemoWindow();
 		}

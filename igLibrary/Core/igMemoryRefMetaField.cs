@@ -40,6 +40,25 @@ namespace igLibrary.Core
 			igz._stream.Seek(end);
 			return mem;
 		}
+		public override void WriteRawMemory(igIGZSaver igz, igIGZSaver.igIGZSaverSection section, bool is64Bit, object? data)
+		{
+			byte[]? bytes = (byte[]?)data;
+			if(bytes == null)
+			{
+				section._stream.WriteUInt64(0);
+				if(is64Bit)
+				{
+					section._stream.WriteUInt64(0);
+				}
+			}
+			else
+			{
+				section._stream.WriteUInt32((uint)bytes.Length);
+				igz.AlignStream(section._stream, is64Bit ? 8u : 4u);
+				igz.GetFreeMemory(section);
+				//write raw ref
+			}
+		}
 	}
 	public class igMemoryRefMetaField : igMemoryRefMetaField<igUnsignedCharMetaField>{}
 }

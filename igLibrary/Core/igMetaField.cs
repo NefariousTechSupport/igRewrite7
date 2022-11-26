@@ -12,7 +12,7 @@ namespace igLibrary.Core
 		public virtual ushort Size(bool is64Bit) => 0;
 		public virtual Type OutputType() => null;
 		public virtual object? ReadRawMemory(igIGZ igz, bool is64Bit) => null;
-		public virtual void WriteRawMemory(igIGZSaver igz, StreamHelper sh, bool is64Bit, object? data){}
+		public virtual void WriteRawMemory(igIGZSaver igz, igIGZSaver.igIGZSaverSection section, bool is64Bit, object? data){}
 		public virtual void SetExtraData(object[]? extraData){}
 	}
 }

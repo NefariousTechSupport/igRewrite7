@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misctests", "misctests", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_IGZGen", "misctests\Test_IGZGen\Test_IGZGen.csproj", "{7636A537-2258-4741-94CD-0942F178E6C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "igCauldron", "igCauldron\igCauldron.csproj", "{FBE0FA00-E766-4EB5-A53F-20AAAE25C9D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{7636A537-2258-4741-94CD-0942F178E6C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7636A537-2258-4741-94CD-0942F178E6C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7636A537-2258-4741-94CD-0942F178E6C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBE0FA00-E766-4EB5-A53F-20AAAE25C9D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBE0FA00-E766-4EB5-A53F-20AAAE25C9D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBE0FA00-E766-4EB5-A53F-20AAAE25C9D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBE0FA00-E766-4EB5-A53F-20AAAE25C9D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7636A537-2258-4741-94CD-0942F178E6C3} = {5A160E16-C3F0-43EA-AA46-8FBFC53FB58F}

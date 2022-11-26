@@ -21,7 +21,9 @@ namespace igLibrary.Core
 		}
 		public struct IG_CORE_ARCHIVE_FILE_HEADER
 		{
-			public uint hash;		//Not part of the file header but it's easier to store it here
+			public uint hash;			//Not part of the file header but it's easier to store it here
+			public string name;			//See above
+			public string fullName;		//See above
 			public uint offset;
 			public uint ordinal;	//Doesn't exist on IG_CORE_ARCHIVE_VERSION.ssa_wii_or_all_citrus_or_sg_alpha
 			public uint length;
@@ -31,10 +33,8 @@ namespace igLibrary.Core
 		StreamHelper sh;
 		IG_CORE_ARCHIVE_VERSION version;
 
-		uint numFiles;
 		uint alignment;
-		string[] names;
-		IG_CORE_ARCHIVE_FILE_HEADER[] fileHeaders;
+		public IG_CORE_ARCHIVE_FILE_HEADER[] fileHeaders;
 
 		uint numLargeBlocks;
 		uint numMediumBlocks;
@@ -44,11 +44,23 @@ namespace igLibrary.Core
 		ushort[] mediumBlockTable;
 		byte[] smallBlockTable;
 
-		uint flags;
+		public uint flags;
 
 		public igArchive(string path)
 		{
 			sh = igFileContext.Singleton.Open(path)._stream;
+			uint magicNumber = sh.ReadUInt32();
+
+			if(magicNumber == 0x1A414749) sh._endianness = StreamHelper.Endianness.Little;
+			else if(magicNumber == 0x4947411A) sh._endianness = StreamHelper.Endianness.Big;
+
+			ReadHeader();
+		}
+
+		//Bypasses igFileContext, useful when not reading an archive from _root
+		public igArchive(Stream stream)
+		{
+			sh = new StreamHelper(stream);
 			uint magicNumber = sh.ReadUInt32();
 
 			if(magicNumber == 0x1A414749) sh._endianness = StreamHelper.Endianness.Little;
@@ -78,7 +90,7 @@ namespace igLibrary.Core
 			version = PredictVersion();
 			//Console.WriteLine($"Got version {version}");
 
-			numFiles = sh.ReadUInt32(0x0C);
+			uint numFiles = sh.ReadUInt32(0x0C);
 
 			//Read alignment
 			alignment = 0;
@@ -108,20 +120,10 @@ namespace igLibrary.Core
 			}
 
 			//Get nametable offset
-			uint nametableStart = 0;
-			switch(version)
-			{
-				case IG_CORE_ARCHIVE_VERSION.ssf_not_citrus:
-				case IG_CORE_ARCHIVE_VERSION.ssc_all_or_si_ps3_xenon_cafe:
-					nametableStart = sh.ReadUInt32(0x2C);	//Note: nametable size stored at 0x30
-					break;
-				case IG_CORE_ARCHIVE_VERSION.stt_not_citrus:
-					nametableStart = sh.ReadUInt32(0x28);
-					break;
-			}
+			uint nametableStart = (uint)sh.ReadUInt64(0x28);
 
 			//Initialize arrays
-			names = new string[numFiles];
+			//names = new string[numFiles];
 			fileHeaders = new IG_CORE_ARCHIVE_FILE_HEADER[numFiles];
 
 			//Read stuff
@@ -129,7 +131,8 @@ namespace igLibrary.Core
 			{
 				//Read nametable
 				uint relativeNameOffset = sh.ReadUInt32(nametableStart + i * 0x04);
-				names[i] = sh.ReadString(nametableStart + relativeNameOffset);
+				fileHeaders[i].fullName = sh.ReadString(nametableStart + relativeNameOffset);
+				fileHeaders[i].name = sh.ReadString();
 
 				//Read Hash
 				fileHeaders[i].hash = sh.ReadUInt32(headerLength + i * 4);
@@ -262,7 +265,13 @@ namespace igLibrary.Core
 			}
 			dst.Flush();
 			dst.Seek(0, SeekOrigin.Begin);
-			if(fileHeaders[i].length == 0) Console.WriteLine($"file {names[i]} is empty");
+			if(fileHeaders[i].length == 0) Console.WriteLine($"file {fileHeaders[i].name} is empty");
+		}
+		//Likely unsafe
+		public void Close()
+		{
+			sh.Close();
+			sh.Dispose();
 		}
 		public int FindFile(string path)
 		{
@@ -285,7 +294,7 @@ namespace igLibrary.Core
 		public string GetFileName(int i)
 		{
 			string volumeName = Path.GetFileName((sh.BaseStream as FileStream).Name);
-			return $"{volumeName}:/{names[i]}";
+			return $"{volumeName}:/{fileHeaders[i].name}";
 		}
 	}
 }
