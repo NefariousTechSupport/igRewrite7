@@ -1,3 +1,5 @@
+using System.Collections;
+
 namespace igLibrary.Core
 {
 	[sizeofSize(0xFF, 0x08, 0x0C)]
@@ -89,6 +91,56 @@ namespace igLibrary.Core
 				fields[i].SetValue(copy, fields[i].GetValue(this));
 			}
 			return copy;
+		}
+		public virtual igObject[] GetReferencedObjects()
+		{
+			List<igObject> references = new List<igObject>();
+			FieldInfo[] fields = Utils.GetAllInstanceFields(GetType());
+			for(uint i = 0; i < fields.Length; i++)
+			{
+				Type t = fields[i].FieldType;
+				if(t.IsAssignableTo(typeof(igObject)))
+				{
+					igObject? obj = (igObject?)fields[i].GetValue(this);
+
+					if(obj != null)
+					{
+						references.Add(obj);
+					}
+					continue;
+				}
+				if(t.IsGenericType && t.GetGenericTypeDefinition() == typeof(List<>))
+				{
+					if(t.GenericTypeArguments[0].IsAssignableTo(typeof(igObject)))
+					{
+						IList? objs = fields[i].GetValue(this) as IList;
+						if(objs != null)
+						{
+							for(int j = 0; j < objs.Count; j++)
+							{
+								if(objs[j] != null)
+								{
+									references.Add((igObject)objs[j]);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return references.ToArray();
+		}
+		public virtual ushort GetSizeofSize(uint version, IG_CORE_PLATFORM platform)
+		{
+			sizeofSize[] sizes = GetType().GetCustomAttributes<sizeofSize>().ToArray();
+			for(int i = 0; i < sizes.Length; i++)
+			{
+				if(sizes[i]._applicableVersion != 0xFF && sizes[i]._applicableVersion != version) continue;
+				if(sizes[i]._platform.Length > 0 && !sizes[i]._platform.Any(x => x == platform)) continue;
+
+				return igCore.IsPlatform64Bit(platform) ? sizes[i]._size64 : sizes[i]._size32;
+			}
+			return 0;
 		}
 	}
 }

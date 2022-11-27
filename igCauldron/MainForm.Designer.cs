@@ -33,6 +33,7 @@
 			this._fileTab = new System.Windows.Forms.ToolStripMenuItem();
 			this._msiOpen = new System.Windows.Forms.ToolStripMenuItem();
 			this._msiOpenIGA = new System.Windows.Forms.ToolStripMenuItem();
+			this._msiOpenIGZ = new System.Windows.Forms.ToolStripMenuItem();
 			this._fileTree = new System.Windows.Forms.TreeView();
 			this._fileNameLabel = new System.Windows.Forms.Label();
 			this._extractFileButton = new System.Windows.Forms.Button();
@@ -66,7 +67,8 @@
 			// 
 			this._msiOpen.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[]
 			{
-				this._msiOpenIGA
+				this._msiOpenIGA,
+				this._msiOpenIGZ
 			});
 			this._msiOpen.Name = "_msiOpen";
 			this._msiOpen.Size = new System.Drawing.Size(37, 20);
@@ -78,6 +80,13 @@
 			this._msiOpenIGA.Size = new System.Drawing.Size(37, 20);
 			this._msiOpenIGA.Text = "IGA";
 			this._msiOpenIGA.Click += new System.EventHandler(this.ClickedOpenIGA);
+			// 
+			// _msiOpenIGZ
+			// 
+			this._msiOpenIGZ.Name = "_msiOpenIGZ";
+			this._msiOpenIGZ.Size = new System.Drawing.Size(37, 20);
+			this._msiOpenIGZ.Text = "IGZ";
+			this._msiOpenIGZ.Click += new System.EventHandler(this.ClickedOpenIGZ);
 			//
 			// _fileTree
 			//
@@ -128,6 +137,7 @@
 		public System.Windows.Forms.ToolStripMenuItem _fileTab;
 		public System.Windows.Forms.ToolStripMenuItem _msiOpen;
 		public System.Windows.Forms.ToolStripMenuItem _msiOpenIGA;
+		public System.Windows.Forms.ToolStripMenuItem _msiOpenIGZ;
 		public System.Windows.Forms.TreeView _fileTree;
 		public System.Windows.Forms.Label _fileNameLabel;
 		public System.Windows.Forms.Button _extractFileButton;

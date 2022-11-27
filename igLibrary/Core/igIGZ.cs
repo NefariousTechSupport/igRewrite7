@@ -13,6 +13,8 @@ namespace igLibrary.Core
 		public List<ulong> _runtimePID = new List<ulong>();
 		public List<ulong> _runtimeNamedExternals = new List<ulong>();
 		public List<ulong> _runtimeStrings = new List<ulong>();
+		public List<ushort> _metaSizes = new List<ushort>();
+		public List<string> _vtableNameList = new List<string>();
 		public List<igHandle> _externalList = new List<igHandle>();
 		public List<igHandle> _namedHandleList = new List<igHandle>();
 		public List<igHandle> _unresolvedNames = new List<igHandle>();
@@ -24,6 +26,7 @@ namespace igLibrary.Core
 		public uint _numFixups;
 		public igFileDescriptor _file;
 		public StreamHelper _stream;
+		public igObjectDirectory _dir;
 		public uint _fixups;
 		public uint[] _loadedPointers = new uint[0x1F];
 		public ulong nameListOffset;
@@ -45,6 +48,7 @@ namespace igLibrary.Core
 		}
 		private void Init(igObjectDirectory dir, bool readDependancies)
 		{
+			_dir = dir;
 			_stream.Seek(0);
 			_readDependancies = readDependancies;
 
@@ -102,20 +106,29 @@ namespace igLibrary.Core
 				{
 					case 0x54454D54:							//TMET
 						_vtableList.Capacity = (int)count;
+						_vtableNameList.Capacity = (int)count;
 						for(uint j = 0; j < count; j++)
 						{
 							long basePos = _stream.BaseStream.Position;
 							string vtableName = _stream.ReadString();
+							_vtableNameList.Add(vtableName);
 							if(igCore.RegisteredTypes.ContainsKey(vtableName))
 							{
 								_vtableList.Add(igCore.RegisteredTypes[vtableName]);
 							}
 							else
 							{
-								_vtableList.Add(typeof(igObject));
+								_vtableList.Add(typeof(igFakeObject));
 							}
 							int bits = (_version > 7) ? 2 : 1;
 							_stream.Seek(basePos + bits + (vtableName.Length & (uint)(-bits)));
+						}
+						break;
+					case 0x5A53544D:							//MTSZ
+						_metaSizes.Capacity = (int)count;
+						for(uint j = 0; j < count; j++)
+						{
+							_metaSizes.Add((ushort)_stream.ReadUInt32());
 						}
 						break;
 					case 0x52545354:							//TSTR
@@ -389,7 +402,9 @@ namespace igLibrary.Core
 		public igObject InstantiateObject(ulong offset)
 		{
 			_stream.Seek(offset);
-			return (igObject)Activator.CreateInstance(_vtableList[(int)ReadRawOffset()]);
+			int index = (int)ReadRawOffset();
+			Type t = _vtableList[index];
+			return (igObject)Activator.CreateInstance(t);
 		}
 	}
 }

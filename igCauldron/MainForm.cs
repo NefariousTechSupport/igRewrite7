@@ -1,3 +1,4 @@
+using System.IO;
 using igLibrary.Core;
 
 namespace igCauldron
@@ -27,6 +28,19 @@ namespace igCauldron
 				}
 				_archive = new igArchive(File.Open(ofd.FileName, FileMode.Open, FileAccess.Read));
 				GenerateNodesFromFilePathList();
+			}
+		}
+		private void ClickedOpenIGZ(object sender, EventArgs e) => OpenIGZ();
+		public void OpenIGZ()
+		{
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.Multiselect = false;
+			ofd.Filter = "igObjectDirectory files|*.igz;*.lang;*.bld;*.pak|All Files|*.*";
+			if(ofd.ShowDialog() == DialogResult.OK)
+			{
+				Console.WriteLine($"Opening IGZ {ofd.FileName}");
+				IGZForm igzForm = new IGZForm(ofd.OpenFile());
+				igzForm.Show();
 			}
 		}
 		public void GenerateNodesFromFilePathList()

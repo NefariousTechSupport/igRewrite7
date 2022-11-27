@@ -8,6 +8,7 @@ namespace igLibrary.Core
 		public igObjectList _objectList = new igObjectList();
 		public bool _useNameList = false;
 		public igNameList? _nameList = null;
+		public igIGZ _loader;
 
 		public enum FileType : uint
 		{
@@ -33,15 +34,12 @@ namespace igLibrary.Core
 			_name = new igName(Path.GetFileNameWithoutExtension(path).ToLower());
 		}
 		
-		public void ReadFile(Stream stream, bool readDependancies = true)
+		public void ReadFile(FileType type, Stream stream, bool readDependancies = true)
 		{
-			//change this to happen in igObjectLoader once that exists
-			type = GetLoader(_path);
-
 			switch(type)
 			{
 				case FileType.kIGZ:
-					igIGZ igz = new igIGZ(this, stream, readDependancies);
+					_loader = new igIGZ(this, stream, readDependancies);
 					break;
 				default:
 					Console.WriteLine($"WARNING: {_path} IS NOT AN IGOBJECT STREAM, SKIPPING...");
@@ -55,7 +53,7 @@ namespace igLibrary.Core
 			switch(type)
 			{
 				case FileType.kIGZ:
-					igIGZ igz = new igIGZ(this, igFileContext.Singleton.Open(_path), readDependancies);
+					_loader = new igIGZ(this, igFileContext.Singleton.Open(_path), readDependancies);
 					break;
 				default:
 					Console.WriteLine($"WARNING: {_path} IS NOT AN IGOBJECT STREAM, SKIPPING...");
