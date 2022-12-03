@@ -55,8 +55,12 @@ namespace igLibrary.Core
 			{
 				section._stream.WriteUInt32((uint)bytes.Length);
 				igz.AlignStream(section._stream, is64Bit ? 8u : 4u);
-				igz.GetFreeMemory(section);
-				//write raw ref
+				ulong memOffset = (ulong)section._stream.BaseStream.Position;
+				ulong offset = igz.GetFreeMemory(section);
+				section._stream.BaseStream.Write(bytes);
+				section._stream.Seek(memOffset);
+				section._stream.WriteUInt32((uint)offset);
+				section._runtimeFields._offsets.Add(memOffset);
 			}
 		}
 	}

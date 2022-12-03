@@ -46,6 +46,8 @@ namespace igLibrary
 
 		public void Seek(ulong offset, SeekOrigin origin = SeekOrigin.Begin) => Seek((long)offset, origin);
 		public void Seek(long offset, SeekOrigin origin = SeekOrigin.Begin) => BaseStream.Seek(offset, origin);
+		public uint Tell() => (uint)BaseStream.Position;
+		public ulong Tell64() => (ulong)BaseStream.Position;
 
 		public override string ReadString()
 		{
@@ -300,6 +302,8 @@ namespace igLibrary
 		}
 		public void WriteUInt32(uint data) => WriteUInt32(data, _endianness);
 		public void WriteUInt32(uint data, Endianness endianness) => WriteForEndianness(BitConverter.GetBytes(data), endianness);
+		public void WriteInt32(int data) => WriteInt32(data, _endianness);
+		public void WriteInt32(int data, Endianness endianness) => WriteForEndianness(BitConverter.GetBytes(data), endianness);
 		public void WriteUInt64(ulong data) => WriteUInt64(data, _endianness);
 		public void WriteUInt64(ulong data, Endianness endianness) => WriteForEndianness(BitConverter.GetBytes(data), endianness);
 

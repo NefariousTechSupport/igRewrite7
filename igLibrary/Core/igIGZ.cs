@@ -12,7 +12,8 @@ namespace igLibrary.Core
 		public List<ulong> _runtimeExternals = new List<ulong>();
 		public List<ulong> _runtimePID = new List<ulong>();
 		public List<ulong> _runtimeNamedExternals = new List<ulong>();
-		public List<ulong> _runtimeStrings = new List<ulong>();
+		public List<ulong> _runtimeStringTables = new List<ulong>();
+		public List<ulong> _runtimeStringRefs = new List<ulong>();
 		public List<ushort> _metaSizes = new List<ushort>();
 		public List<string> _vtableNameList = new List<string>();
 		public List<igHandle> _externalList = new List<igHandle>();
@@ -305,8 +306,10 @@ namespace igLibrary.Core
 						UnpackCompressedInts(_runtimeNamedExternals, _stream.ReadBytes(length - start), count);
 						break;
 					case 0x54545352:							//RSTT
+						UnpackCompressedInts(_runtimeStringTables, _stream.ReadBytes(length - start), count);
+						break;
 					case 0x52545352:							//RSTR
-						UnpackCompressedInts(_runtimeStrings, _stream.ReadBytes(length - start), count);
+						UnpackCompressedInts(_runtimeStringRefs, _stream.ReadBytes(length - start), count);
 						break;
 				}
 

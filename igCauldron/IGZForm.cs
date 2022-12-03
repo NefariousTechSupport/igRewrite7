@@ -23,22 +23,29 @@ namespace igCauldron
 
 			dir.ReadFile(igObjectDirectory.FileType.kIGZ, igz, false);
 			_igz = dir._loader;
+
+			_inspectorTypeDropDown.Items.AddRange(_igz._vtableNameList.ToArray());
+
 			offsetObjList = _igz._offsetObjectList.ToArray();
 
-			HighlightRuntime(_igz._runtimeVtableList, System.Windows.Media.Color.FromRgb(0xFF, 0xFF, 0x00));
+			HighlightRuntime(_igz._runtimeVtableList,   0xFFFF00);
+			HighlightRuntime(_igz._runtimeOffsetList,   0x00FFFF);
+			HighlightRuntime(_igz._runtimeStringRefs,   0xFF00FF);
+			HighlightRuntime(_igz._runtimeStringTables, 0xFF00FF);
+			//HighlightRuntime(_igz._runtimePID, 0x00FF00);
 
 			PopulateObjectTree();
 		}
 
-		private void HighlightRuntime(List<ulong> runtime, System.Windows.Media.Color colour)
+		private void HighlightRuntime(List<ulong> runtime, uint colour)
 		{
 			int length = igCore.GetSizeOfPointer(_igz._platform);
 
-			_hexEditor.HighLightColor = new System.Windows.Media.SolidColorBrush(colour);
+			System.Windows.Media.SolidColorBrush brush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb((byte)(colour >> 16), (byte)(colour >> 8), (byte)colour));
 
 			for(int i = 0; i < runtime.Count; i++)
 			{
-				_hexEditor.AddHighLight((long)runtime[i], length, true);
+				_hexEditor.CustomBackgroundBlockItems.Add(new WpfHexaEditor.Core.CustomBackgroundBlock((long)runtime[i], length, brush));
 			}
 		}
 
@@ -82,13 +89,30 @@ namespace igCauldron
 			_objectTree.Focus();
 		}
 
+		private void HexEditorCursorMoved(object sender, EventArgs e)
+		{
+			if(_igz._runtimeVtableList.Any(x => x == (ulong)_hexEditor.SelectionStart))
+			{
+				ulong vtableOffset = _igz._runtimeVtableList.First(x => x == (ulong)_hexEditor.SelectionStart);
+				int vtableIndex = (int)_igz._stream.ReadUInt32((uint)vtableOffset);
+				Console.WriteLine($"Selected object of type {_igz._vtableNameList[vtableIndex]} at {vtableOffset.ToString("X08")}");
+				_inspectorTypeDropDown.SelectedIndex = vtableIndex;
+			}
+			if(_igz._runtimeStringRefs.Any(x => x == (ulong)_hexEditor.SelectionStart))
+			{
+				ulong stringRefOffset = _igz._runtimeStringRefs.First(x => x == (ulong)_hexEditor.SelectionStart);
+				ulong stringOffset = _igz.DeserializeOffset(_igz._stream.ReadUInt32((uint)stringRefOffset));
+				_inspectorStringTextBox.Text = _igz._stream.ReadString((uint)stringOffset);
+			}
+		}
+
 		private void OnResize(object sender, EventArgs e)
 		{
 			_objectTree.Location = new Point(12, 40);
-			_objectTree.Size = new Size(ClientSize.Width / 2 - 18, ClientSize.Height / 2 - 36);
+			_objectTree.Size = new Size(ClientSize.Width / 2 - 18, ClientSize.Height / 2 - 30);
 			_hexPanel.Location = new Point(ClientSize.Width / 2 + 6, _objectTree.Location.Y);
 			_hexPanel.Size = new Size(ClientSize.Width / 2 - 18, ClientSize.Height - 52);
-			_inspectorPanel.Location = new Point(12, ClientSize.Height / 2 + 26);
+			_inspectorPanel.Location = new Point(12, ClientSize.Height / 2 + 20);
 			_inspectorPanel.Size = _objectTree.Size;
 		}
 	}

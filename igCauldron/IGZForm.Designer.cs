@@ -35,7 +35,8 @@
 			this._hexPanel = new System.Windows.Forms.Panel();
 			this._elementHost = new System.Windows.Forms.Integration.ElementHost();
 			this._hexEditor = new WpfHexaEditor.HexEditor();
-			this._inspectorTypeDropDown = new System.Windows.Forms.CheckBox();
+			this._inspectorTypeDropDown = new System.Windows.Forms.ComboBox();
+			this._inspectorStringTextBox = new System.Windows.Forms.TextBox();
 			this._inspectorPanel = new System.Windows.Forms.Panel();
 			this._menuStrip.SuspendLayout();
 			this.SuspendLayout();
@@ -62,6 +63,10 @@
 			this._replaceFileButton.Name = "_replaceFileButton";
 			this._replaceFileButton.Size = new System.Drawing.Size(72, 23);
 			this._replaceFileButton.Text = "Replace";
+			//
+			// _hexEditor
+			//
+			this._hexEditor.SelectionStartChanged += new System.EventHandler(this.HexEditorCursorMoved);
             // 
             // _elementHost
             // 
@@ -84,8 +89,14 @@
 			// _inspectorTypeDropDown
 			//
 			this._inspectorTypeDropDown.Location = new System.Drawing.Point(200, 12);
-			this._inspectorTypeDropDown.Size = new System.Drawing.Size(72, 23);
+			this._inspectorTypeDropDown.Size = new System.Drawing.Size(300, 23);
 			this._inspectorTypeDropDown.Name = "_inspectorTypeDropDown";
+			//
+			// _inspectorStringTextBox
+			//
+			this._inspectorStringTextBox.Location = new System.Drawing.Point(200, 47);
+			this._inspectorStringTextBox.Size = new System.Drawing.Size(300, 23);
+			this._inspectorStringTextBox.Name = "_inspectorTypeDropDown";
             // 
             // _inspectorPanel
             // 
@@ -95,6 +106,7 @@
             this._inspectorPanel.Size = new System.Drawing.Size(400, 400);
             this._inspectorPanel.Text = "_inspectorPanel";
 			this._inspectorPanel.Controls.Add(this._inspectorTypeDropDown);
+			this._inspectorPanel.Controls.Add(this._inspectorStringTextBox);
 			this._inspectorPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 
 			this.Controls.Add(_menuStrip);
@@ -124,7 +136,8 @@
 		public System.Windows.Forms.Panel _hexPanel;
 		public System.Windows.Forms.Integration.ElementHost _elementHost;
 		public WpfHexaEditor.HexEditor _hexEditor;
-		public System.Windows.Forms.CheckBox _inspectorTypeDropDown;
+		public System.Windows.Forms.ComboBox _inspectorTypeDropDown;
+		public System.Windows.Forms.TextBox _inspectorStringTextBox;
 		public System.Windows.Forms.Panel _inspectorPanel;
 	}
 }

@@ -5,7 +5,7 @@ namespace igLibrary.Core
 	{
 		public string _typeName;
 		public ushort _sizeofSize;
-		public List<ushort> _runtimeOffsetList = new List<ushort>();
+		public igRuntimeFields _runtimeFields = new igRuntimeFields();
 		public igObjectDirectory _dir;
 		private ulong _offset;
 
@@ -21,7 +21,7 @@ namespace igLibrary.Core
 			ulong[] tempOffsetList = igz._runtimeOffsetList.Where(x => x >= _offset && x < _offset + _sizeofSize).ToArray();
 			for(uint i = 0 ; i < tempOffsetList.Length; i++)
 			{
-				_runtimeOffsetList.Add((ushort)(tempOffsetList[i] - _offset));
+				_runtimeFields._offsets.Add((ushort)(tempOffsetList[i] - _offset));
 			}
 			//Add checks for igMemory
 		}
@@ -31,9 +31,9 @@ namespace igLibrary.Core
 			List<igObject> objects = new List<igObject>();
 
 			KeyValuePair<ulong, igObject>[] offsetObjectList = _dir._loader._offsetObjectList.ToArray();
-			for(int i = 0; i < _runtimeOffsetList.Count; i++)
+			for(int i = 0; i < _runtimeFields._offsets.Count; i++)
 			{
-				_dir._loader._stream.Seek(_offset + _runtimeOffsetList[i]);
+				_dir._loader._stream.Seek(_offset + _runtimeFields._offsets[i]);
 				ulong runtimeOffset = _dir._loader.ReadRawOffset();
 				int index = Array.FindIndex<KeyValuePair<ulong, igObject>>(offsetObjectList, x => x.Key == runtimeOffset);
 				if(index >= 0) objects.Add(offsetObjectList[index].Value);

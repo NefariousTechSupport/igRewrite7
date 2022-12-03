@@ -10,6 +10,7 @@ namespace igLibrary.Core
 		public uint _capacity;
 
 		[igField(typeof(igMemoryRefMetaField), 0xFF, 2, 0x10, 0x18, "_data")]
+		[igNoWriteField]		//Don't write it, ToMemory will handle that
 		public igMemory _data;
 
 		private List<T1> list = new List<T1>();
@@ -64,19 +65,30 @@ namespace igLibrary.Core
 				this.Append((T1)appender);
 			}
 		}
-		public virtual void ToMemory(igIGZSaver igz, igIGZSaver.igIGZSaverSection section, bool is64Bit)
+		public virtual void ToMemory(igIGZSaver igz, igIGZSaver.igIGZSaverSection section, bool is64Bit, long baseOffset)
 		{
-			_capacity = (uint)list.Count;
-			_count = (uint)list.Count;
-
+			if(_count == 0) return;
 			T2 metafield = new T2();
 
 			int typeSize = metafield.Size(is64Bit);
-			
+
+			ulong freeMemory = igz.GetFreeMemory(section);
+
+			section._stream.Seek(freeMemory);
+			section._stream.BaseStream.Write(new byte[typeSize * _count]);
+
 			for(int i = 0; i < _count; i++)
 			{
-				//section._stream.Seek();
+				section._stream.Seek(freeMemory + (uint)(i * typeSize));
+				metafield.WriteRawMemory(igz, section, is64Bit, this[i]);
 			}
+
+			section._stream.Seek(baseOffset + (is64Bit ? 0x18 : 0x10));
+			section._stream.WriteUInt32(0x90000000 | (uint)(typeSize * _count));
+
+			section._stream.Seek(baseOffset + (is64Bit ? 0x20 : 0x14));
+			section._runtimeFields._offsets.Add((ulong)section._stream.BaseStream.Position);
+			section._stream.WriteUInt32((uint)freeMemory);
 		}
 
 		public override void ReadFields(igIGZ igz)
@@ -89,9 +101,14 @@ namespace igLibrary.Core
 
 		public override void WriteFields(igIGZSaver igz, int index)
 		{
-			//ToMemory(igz, igCore.IsPlatform64Bit(igz._platform));
+			long baseOffset = igz._sections[index]._stream.BaseStream.Position;
+
+			_capacity = (uint)list.Count;
+			_count = (uint)list.Count;
 
 			base.WriteFields(igz, index);
+
+			ToMemory(igz, igz._sections[index], igCore.IsPlatform64Bit(igz._platform), baseOffset);
 		}
 
 		public List<T1> ToCSList()

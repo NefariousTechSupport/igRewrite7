@@ -46,14 +46,27 @@ namespace igLibrary.Core
 		public virtual void WriteFields(igIGZSaver igz, int sectionIndex)
 		{
 			long objPos = igz._sections[sectionIndex]._stream.BaseStream.Position;
+
 			Type t = GetType();
 			Console.WriteLine($"processing {t.Name} @ {objPos.ToString("X08")}");
+
 			bool is64Bit = igCore.IsPlatform64Bit(igz._platform);
+
 			FieldInfo[] fields = t.GetFields();
+
 			System.Text.StringBuilder builder = new System.Text.StringBuilder(256);
+
+			igz._sections[sectionIndex]._stream.BaseStream.Write(new byte[GetSizeofSize(igz._version, igz._platform)]);
+
+			igz._sections[sectionIndex]._stream.Seek(objPos);
+
+			igz._sections[sectionIndex]._runtimeFields._vtables.Add(igz._sections[sectionIndex]._stream.Tell());
 			igz.WriteRawOffset(igz._sections[sectionIndex]._stream, igz.GetVtableIndex(GetType()));
+
 			for(int i = 0; i < fields.Length; i++)
 			{
+				if(fields[i].GetCustomAttribute<igNoWriteField>() != null) continue;
+
 				igField[] metafields = fields[i].GetCustomAttributes<igField>().ToArray();
 				for(int j = 0; j < metafields.Length; j++)
 				{
@@ -132,15 +145,7 @@ namespace igLibrary.Core
 		}
 		public virtual ushort GetSizeofSize(uint version, IG_CORE_PLATFORM platform)
 		{
-			sizeofSize[] sizes = GetType().GetCustomAttributes<sizeofSize>().ToArray();
-			for(int i = 0; i < sizes.Length; i++)
-			{
-				if(sizes[i]._applicableVersion != 0xFF && sizes[i]._applicableVersion != version) continue;
-				if(sizes[i]._platform.Length > 0 && !sizes[i]._platform.Any(x => x == platform)) continue;
-
-				return igCore.IsPlatform64Bit(platform) ? sizes[i]._size64 : sizes[i]._size32;
-			}
-			return 0;
+			return sizeofSize.GetSizeOfType(GetType(), version, platform);
 		}
 	}
 }

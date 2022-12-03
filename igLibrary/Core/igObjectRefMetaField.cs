@@ -41,5 +41,15 @@ namespace igLibrary.Core
 			if(ret is T t) return t;
 			else return null;
 		}
+		public override void WriteRawMemory(igIGZSaver igz, igIGZSaver.igIGZSaverSection section, bool is64Bit, object? data)
+		{
+			uint basePos = section._stream.Tell();
+			ulong freeMemory = igz.GetFreeMemory(section);
+			section._stream.Seek(basePos);
+			section._runtimeFields._offsets.Add(section._stream.Tell64());
+			section._stream.WriteUInt32((uint)freeMemory);
+			section._stream.Seek(freeMemory);
+			((igObject)data).WriteFields(igz, section._index);
+		}
 	}
 }
