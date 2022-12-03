@@ -66,7 +66,7 @@ namespace igLibrary.Core
 
 			_version = _stream.ReadUInt32();
 			_typeHash = _stream.ReadUInt32();
-			_platform = igCore.GetPlatform(_version, _stream.ReadUInt32());
+			_platform = igMetaEnumMember.GetEnumFromValue<IG_CORE_PLATFORM>(_stream.ReadUInt32(), _version);
 			_numFixups = _stream.ReadUInt32();
 
 			ParseSections();

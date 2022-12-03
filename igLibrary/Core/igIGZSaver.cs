@@ -58,7 +58,7 @@ namespace igLibrary.Core
 			_stream.WriteUInt32(0x49475A01);
 			_stream.WriteUInt32(_version);
 			_stream.WriteUInt32(0);
-			_stream.WriteUInt32(6);
+			_stream.WriteUInt32((uint)igMetaEnumMember.GetValueFromEnum<IG_CORE_PLATFORM>(_platform, _version));
 			_stream.WriteUInt32(_numFixups);
 		}
 		private void WriteFixups()
