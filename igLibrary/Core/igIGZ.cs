@@ -180,7 +180,7 @@ namespace igLibrary.Core
 								Console.WriteLine($"igIGZ EXID load: Failed to find {depName._ns._hash.ToString("X08")}, referenced in {_file._path._path}");
 								goto finish;
 							}
-							Console.WriteLine($"igIGZ EXID load: Successfully found {depName._ns._hash.ToString("X08")}, referenced in {_file._path._path}");
+							//Console.WriteLine($"igIGZ EXID load: Successfully found {depName._ns._hash.ToString("X08")}, referenced in {_file._path._path}");
 							igObjectDirectory dependantDir = igObjectStreamManager.Singleton._directories.First(x => x.Value._name._hash == depName._ns._hash).Value;
 							if(dependantDir._useNameList)
 							{
@@ -229,7 +229,7 @@ namespace igLibrary.Core
 							}
 							else
 							{
-								Console.WriteLine($"igIGZ EXNM load: Successfully found namespace {depHandleName._ns._string}, referenced in {_file._path._path}");
+								//Console.WriteLine($"igIGZ EXNM load: Successfully found namespace {depHandleName._ns._string}, referenced in {_file._path._path}");
 								igObjectDirectory dependantDir = dir._dependancies.First(x => x._name._hash == depHandleName._ns._hash);
 								if(dependantDir._useNameList)
 								{

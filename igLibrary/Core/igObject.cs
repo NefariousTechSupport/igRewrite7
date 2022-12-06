@@ -9,7 +9,6 @@ namespace igLibrary.Core
 		{
 			long objPos = igz._stream.BaseStream.Position;
 			Type t = GetType();
-			Console.WriteLine($"processing {t.Name} @ {objPos.ToString("X08")}");
 			bool is64Bit = igCore.IsPlatform64Bit(igz._platform);
 			FieldInfo[] fields = t.GetFields();
 			System.Text.StringBuilder builder = new System.Text.StringBuilder(256);
@@ -23,21 +22,18 @@ namespace igLibrary.Core
 
 					if(is64Bit) igz._stream.Seek(objPos + metafields[j]._metaField._offset64);
 					else        igz._stream.Seek(objPos + metafields[j]._metaField._offset32);
-					
-					builder.Append("Processing ");
-					builder.Append(t.Name);
-					builder.Append(" @ ");
-					builder.Append(objPos.ToString("X08"));
-					builder.Append(" in ");
-					builder.Append(igz._file._path._path);
-					builder.Append(", metafield ");
-					builder.Append(metafields[j]._metaField._name);
 
-					Console.WriteLine(builder.ToString());
+					uint positionBeforeRead = igz._stream.Tell();
 
-					builder.Clear();
-
-					fields[i].SetValue(this, metafields[j].ReadIGZMemory(igz, is64Bit));
+					try
+					{
+						fields[i].SetValue(this, metafields[j].ReadIGZMemory(igz, is64Bit));
+					}
+					catch(Exception e)
+					{
+						Console.WriteLine($"Processing {t.Name} @ {objPos.ToString("X08")} in {igz._file._path._path}, metafield {metafields[j]._metaField._name} @ {positionBeforeRead.ToString("X08")}");
+						throw e;
+					}
 
 					break;
 				}

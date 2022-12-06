@@ -12,7 +12,6 @@ namespace igLibrary.Core
 		public override void ReadFields(igIGZ igz)
 		{
 			_offset = (ulong)igz._stream.BaseStream.Position;
-			Console.WriteLine($"Processing fake object @ {_offset.ToString("X08")}");
 			int index = (int)igz.ReadRawOffset();
 			_dir = igz._dir;
 			_sizeofSize = igz._metaSizes[index];
