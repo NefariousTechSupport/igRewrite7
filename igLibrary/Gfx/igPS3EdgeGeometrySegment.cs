@@ -1,3 +1,5 @@
+using igLibrary.PS3Edge;
+
 namespace igLibrary.Gfx
 {
 	[sizeofSize(0xFF, 0xB0, 0x00)]
@@ -56,49 +58,108 @@ namespace igLibrary.Gfx
 		[igField(typeof(igUnsignedIntMetaField), 0xFF, 0x19, 0xAC, 0x00, "_speedTreeType")]
 		public uint _speedTreeType;
 
-		[StructLayout(LayoutKind.Explicit, Size = 0x08)]
-		public struct StreamDescHeader
+		private void GetSpuConfigInfo(out EdgeGeomSpuConfigInfo spuConfigInfo)
 		{
-			[FieldOffset(0x00)] public byte count1;
-			[FieldOffset(0x01)] public byte stride;
-			[FieldOffset(0x02)] public byte count2;
+			StreamHelper sh = new StreamHelper(_spuConfigInfo.buffer, StreamHelper.Endianness.Big);
+			spuConfigInfo = sh.ReadStruct<EdgeGeomSpuConfigInfo>();
+		}
+		private void GetSpuInputStreamDescs0(out EdgeGeomVertexStreamDescription spuInputStreamDesc0, out EdgeGeomGenericBlock[] blocks)
+		{
+			if(_spuInputStreamDescs0.size == 0)
+			{
+				spuInputStreamDesc0 = new EdgeGeomVertexStreamDescription();
+				blocks = null;
+				return;
+			}
+			StreamHelper sh = new StreamHelper(_spuInputStreamDescs0.buffer, StreamHelper.Endianness.Big);
+			spuInputStreamDesc0 = sh.ReadStruct<EdgeGeomVertexStreamDescription>();
+			blocks = sh.ReadStructArray<EdgeGeomGenericBlock>(spuInputStreamDesc0.numBlocks);
+		}
+		private void GetSpuInputStreamDescs1(out EdgeGeomVertexStreamDescription spuInputStreamDesc1, out EdgeGeomGenericBlock[] blocks)
+		{
+			if(_spuInputStreamDescs1.size == 0)
+			{
+				spuInputStreamDesc1 = new EdgeGeomVertexStreamDescription();
+				blocks = null;
+				return;
+			}
+			StreamHelper sh = new StreamHelper(_spuInputStreamDescs1.buffer, StreamHelper.Endianness.Big);
+			spuInputStreamDesc1 = sh.ReadStruct<EdgeGeomVertexStreamDescription>();
+			blocks = sh.ReadStructArray<EdgeGeomGenericBlock>(spuInputStreamDesc1.numBlocks);
+		}
+		private void GetRsxOnlyStreamDesc(out EdgeGeomVertexStreamDescription rsxOnlyStreamDesc, out EdgeGeomGenericBlock[] blocks)
+		{
+			if(_rsxOnlyStreamDesc.size == 0)
+			{
+				rsxOnlyStreamDesc = new EdgeGeomVertexStreamDescription();
+				blocks = null;
+				return;
+			}
+			StreamHelper sh = new StreamHelper(_rsxOnlyStreamDesc.buffer, StreamHelper.Endianness.Big);
+			rsxOnlyStreamDesc = sh.ReadStruct<EdgeGeomVertexStreamDescription>();
+			blocks = sh.ReadStructArray<EdgeGeomGenericBlock>(rsxOnlyStreamDesc.numBlocks);
 		}
 
-		[StructLayout(LayoutKind.Explicit, Size = 0x08)]
-		public struct StreamDescAttribute
+		public void GetVertexBufferForAttribute(EDGE_GEOM_ATTRIBUTE_ID attribute, out float[]? outBuffer, out uint stride)
 		{
-			[FieldOffset(0x00)] public byte offset;
-			[FieldOffset(0x01)] public EdgeGeometryVertexBuffer buffer;
-			[FieldOffset(0x03)] public EdgeGeometryVertexUsage usage;
-			[FieldOffset(0x04)] public byte size;
-			[FieldOffset(0x05)] public EdgeGeometryVertexType type;
-		}
+			GetSpuConfigInfo(out EdgeGeomSpuConfigInfo spuConfigInfo);
+			GetSpuInputStreamDescs0(out EdgeGeomVertexStreamDescription spuInputStreamDescs0, out EdgeGeomGenericBlock[] spuInputStreamDescs0Blocks);
+			GetSpuInputStreamDescs1(out EdgeGeomVertexStreamDescription spuInputStreamDescs1, out EdgeGeomGenericBlock[] spuInputStreamDescs1Blocks);
+			GetRsxOnlyStreamDesc(out EdgeGeomVertexStreamDescription rsxOnlyStreamDesc, out EdgeGeomGenericBlock[] rsxOnlyStreamDescBlocks);
 
-		public enum EdgeGeometryVertexBuffer : byte
-		{
-			SPU0 = 1,
-			SPU1 = 6,
-			RSX = 3
+			if(attribute == EDGE_GEOM_ATTRIBUTE_ID.POSITION && spuInputStreamDescs0.numBlocks == 0)
+			{
+				EdgeGeomVertexStreamDescription desc = new EdgeGeomVertexStreamDescription();
+				desc.numAttributes = desc.numBlocks = 1;
+				EdgeGeomGenericBlock block = new EdgeGeomGenericBlock();
+				block.attributeBlock.componentCount = 3;
+				block.attributeBlock.format = EDGE_GEOM_ATTRIBUTE_FORMAT.F32;
+				block.attributeBlock.size = 0x0C;
+				EdgeGeomVertexConversion.UnpackBufferForAttribute(_spuVertexes0.buffer, spuConfigInfo, desc, block, out outBuffer);
+				stride = 3;
+				return;
+			}
+
+			if(spuInputStreamDescs0Blocks != null)
+			{
+				int index = Array.FindIndex<EdgeGeomGenericBlock>(spuInputStreamDescs0Blocks, x => x.attributeBlock.edgeAttributeId == attribute);
+				if(index >= 0)
+				{
+					EdgeGeomVertexConversion.UnpackBufferForAttribute(   _spuVertexes0.buffer, spuConfigInfo, spuInputStreamDescs0, spuInputStreamDescs0Blocks[index], out outBuffer);
+					stride = (uint)outBuffer.Length / spuConfigInfo.numVertexes;
+					return;
+				}
+			}
+
+			if(spuInputStreamDescs1Blocks != null)
+			{
+				int index = Array.FindIndex<EdgeGeomGenericBlock>(spuInputStreamDescs1Blocks, x => x.attributeBlock.edgeAttributeId == attribute);
+				if(index >= 0)
+				{
+					EdgeGeomVertexConversion.UnpackBufferForAttribute(   _spuVertexes1.buffer, spuConfigInfo, spuInputStreamDescs1, spuInputStreamDescs1Blocks[index], out outBuffer);
+					stride = (uint)outBuffer.Length / spuConfigInfo.numVertexes;
+					return;
+				}
+			}
+
+			if(rsxOnlyStreamDescBlocks != null)
+			{
+				int index = Array.FindIndex<EdgeGeomGenericBlock>(   rsxOnlyStreamDescBlocks, x => x.attributeBlock.edgeAttributeId == attribute);
+				if(index >= 0)
+				{
+					EdgeGeomVertexConversion.UnpackBufferForAttribute(_rsxOnlyVertexes.buffer, spuConfigInfo,    rsxOnlyStreamDesc,    rsxOnlyStreamDescBlocks[index], out outBuffer);
+					stride = (uint)outBuffer.Length / spuConfigInfo.numVertexes;
+					return;
+				}
+			}
+
+			outBuffer = null;
+			stride = 0;
 		}
-		public enum EdgeGeometryVertexUsage : byte
+		public void GetIndexBuffer(out uint[] indices)
 		{
-			UNKNOWN = 0,
-			POSITION = 1,
-			NORMAL = 2,			//Guessed
-			TANGENT = 3,		//Guessed
-			BINORMAL = 4,		//Guessed
-			UV0 = 5,
-			UV1 = 6,
-			UV2 = 7,
-			COLOR = 9,
-		}
-		//This could be entirely wrong
-		public enum EdgeGeometryVertexType : byte
-		{
-			SHORT4N = 0,
-			FLOAT3 = 1,			//This one's just made up
-			UBYTE4N = 3,
-			HALF2 = 8,
+			GetSpuConfigInfo(out EdgeGeomSpuConfigInfo spuConfigInfo);
+			EdgeGeomVertexConversion.UnpackIndexBuffer(_indexes.buffer, spuConfigInfo, out indices);
 		}
 	}
 }

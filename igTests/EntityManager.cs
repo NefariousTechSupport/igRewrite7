@@ -48,7 +48,7 @@ namespace igRewrite7
 			igStringRefList stringRefs = dir._objectList[0] as igStringRefList;
 			
 			//Parallel.For(0, stringRefs._count, (i, p) => LoadDirectory(stringRefs[(int)i], quad));
-			for(int i = 0; i < stringRefs._count; i++)
+			for(int i = 1; i < stringRefs._count; i += 2)
 			{
 				try
 				{

@@ -16,8 +16,8 @@ namespace igRewrite7
 			igObjectDirectory meshDir = igObjectStreamManager.Singleton.Load(internalPath);
 			if(drawables.ContainsKey(meshDir._name._hash)) return drawables[meshDir._name._hash];
 			IDrawableCommon drawable;
-			if(meshDir._objectList[0] is igModelInfo mi) drawable = new CDrawableListList(mi);
-			else if(meshDir._objectList[1] is CGraphicsSkinInfo gsi) drawable = new CDrawableListList(gsi);
+			if(meshDir._objectList[0] is igModelInfo mi) drawable = new CDrawableList(mi);
+			else if(meshDir._objectList[1] is CGraphicsSkinInfo gsi) drawable = new CDrawableList(gsi);
 			else throw new NotImplementedException($"mesh type at {internalPath} not implemented");
 			drawables.Add(meshDir._name._hash, drawable);
 			return drawable;

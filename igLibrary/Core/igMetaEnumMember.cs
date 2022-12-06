@@ -16,17 +16,17 @@ namespace igLibrary.Core
 
 		public static TEnum GetEnumFromValue<TEnum>(long value, uint version) where TEnum : struct, Enum
 		{
-			MemberInfo[] members = typeof(TEnum).GetMembers();
+			FieldInfo[] members = typeof(TEnum).GetFields();
 			TEnum[] enumValues = Enum.GetValues<TEnum>();
 
-			for(uint i = 0; i < members.Length; i++)
+			for(uint i = 1; i < members.Length; i++)	//There's a hidden field for some reason, so we start at 1
 			{
 				igMetaEnumMember[] values = members[i].GetCustomAttributes<igMetaEnumMember>().ToArray();
 				for(uint j = 0; j < values.Length; j++)
 				{
 					if(values[j]._version != version && values[j]._version != 0xFF) continue;
 
-					if(values[j]._value == value) return enumValues[i];
+					if(values[j]._value == value) return enumValues[i-1];
 				}
 			}
 

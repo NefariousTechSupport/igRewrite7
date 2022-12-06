@@ -1,3 +1,5 @@
+using igLibrary.PS3Edge;
+
 namespace igRewrite7
 {
 	//Buffers are split up due to how not all vertex attributes are currently known.
@@ -40,6 +42,20 @@ namespace igRewrite7
 			SetIndices(indices);
 			//SetMaterial(new Material(MaterialManager.materials["stdv;whitef"]));
 		}
+		public CDrawable(igPS3EdgeGeometrySegment segment)
+		{
+			Prepare();
+
+			segment.GetVertexBufferForAttribute(EDGE_GEOM_ATTRIBUTE_ID.POSITION, out float[]? vPositions, out uint positionStride);
+			segment.GetVertexBufferForAttribute(EDGE_GEOM_ATTRIBUTE_ID.UV0,      out float[]? vUV0,       out uint UV0Stride);
+			segment.GetVertexBufferForAttribute(EDGE_GEOM_ATTRIBUTE_ID.COLOR,    out float[]? vColours,   out uint colourStride);
+			segment.GetIndexBuffer(out uint[] indices);
+
+			if(vPositions != null) SetVertexPositions(vPositions, (int)positionStride);
+			if(vUV0 != null)       SetVertexTexCoords(vUV0, (int)UV0Stride);
+			if(vColours != null)   SetVertexColours(vColours, (int)colourStride);
+			SetIndices(indices);
+		}
 
 		public CDrawable(float[] vPositions, float[] vTexCoords, float[] vColours, uint[] indices)
 		{
@@ -66,10 +82,7 @@ namespace igRewrite7
 			indexCount = indices.Length;
 		}
 
-		//It goes:
-		//	0: vertex positions  (3 floats)
-		//	1: vertex tex coords (2 floats)
-		public void SetVertexPositions(float[] vpositions)
+		public void SetVertexPositions(float[] vpositions, int componentCount = 4)
 		{
 			VertexAttribute attr = new VertexAttribute();
 			attr.usage = IG_VERTEX_USAGE.POSITION;
@@ -81,12 +94,12 @@ namespace igRewrite7
 			GL.BufferData(BufferTarget.ArrayBuffer, vpositions.Length * sizeof(float), vpositions, BufferUsageHint.StaticDraw);
 
 			GL.BindVertexArray(VAO);
-			GL.VertexAttribPointer(attr.index, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
+			GL.VertexAttribPointer(attr.index, componentCount, VertexAttribPointerType.Float, false, componentCount * sizeof(float), 0);
 			GL.EnableVertexAttribArray(attr.index);
 
 			attributes.Add(attr);
 		}
-		public void SetVertexTexCoords(float[] vtexcoords)
+		public void SetVertexTexCoords(float[] vtexcoords, int componentCount = 4)
 		{
 			VertexAttribute attr = new VertexAttribute();
 			attr.usage = IG_VERTEX_USAGE.TEXCOORD;
@@ -98,12 +111,12 @@ namespace igRewrite7
 			GL.BufferData(BufferTarget.ArrayBuffer, vtexcoords.Length * sizeof(float), vtexcoords, BufferUsageHint.StaticDraw);
 
 			GL.BindVertexArray(VAO);
-			GL.VertexAttribPointer(attr.index, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
+			GL.VertexAttribPointer(attr.index, componentCount, VertexAttribPointerType.Float, false, componentCount * sizeof(float), 0);
 			GL.EnableVertexAttribArray(attr.index);
 
 			attributes.Add(attr);
 		}
-		public void SetVertexColours(float[] vcolours)
+		public void SetVertexColours(float[] vcolours, int componentCount = 4)
 		{
 			VertexAttribute attr = new VertexAttribute();
 			attr.usage = IG_VERTEX_USAGE.COLOR;
@@ -115,7 +128,7 @@ namespace igRewrite7
 			GL.BufferData(BufferTarget.ArrayBuffer, vcolours.Length * sizeof(float), vcolours, BufferUsageHint.StaticDraw);
 
 			GL.BindVertexArray(VAO);
-			GL.VertexAttribPointer(attr.index, 4, VertexAttribPointerType.Float, false, 4 * sizeof(float), 0);
+			GL.VertexAttribPointer(attr.index, componentCount, VertexAttribPointerType.Float, false, componentCount * sizeof(float), 0);
 			GL.EnableVertexAttribArray(attr.index);
 
 			attributes.Add(attr);
@@ -192,8 +205,23 @@ namespace igRewrite7
 		}
 	}
 
-	public class CDrawableList : List<CDrawable>, IDrawableCommon
+	public class CDrawableList : List<IDrawableCommon>, IDrawableCommon
 	{
+		public CDrawableList(igModelInfo mi)
+		{
+			for(int i = 0; i < mi._modelData._drawCalls.Count; i++)
+			{
+				this.Add(new CDrawableList(mi._modelData._drawCalls[i]));
+			}
+		}
+		public CDrawableList(CGraphicsSkinInfo gsi)
+		{
+			for(int i = 0; i < gsi._skin._drawCalls.Count; i++)
+			{
+				this.Add(new CDrawableList(gsi._skin._drawCalls[i]));
+			}
+		}
+
 		public CDrawableList(igModelDrawCallData mdcd)
 		{
 			CDrawable drawable;
@@ -216,7 +244,7 @@ namespace igRewrite7
 			{
 				if(mdcd._platformData is igPS3EdgeGeometry edgeGeometry)
 				{
-					edgeGeometry.ExtractGeometry(out uint[][] indices, out float[][] vPositions, out float[][] vTexCoords, out float[][] vColours);
+					//edgeGeometry.ExtractGeometry(out uint[][] indices, out float[][] vPositions, out float[][] vTexCoords, out float[][] vColours);
 					igGraphicsMaterial? gm = mdcd._materialHandle.GetObject<igGraphicsMaterial>();
 					Material mat;
 					if(gm == null)
@@ -229,7 +257,7 @@ namespace igRewrite7
 					}
 					for(int i = 0; i < edgeGeometry._count; i++)
 					{
-						drawable = new CDrawable(vPositions[i], vTexCoords[i], vColours[i], indices[i]);
+						drawable = new CDrawable(edgeGeometry[i]);
 						drawable.SetMaterial(mat);
 						drawable.enabled = mdcd._enabled;
 						this.Add(drawable);
@@ -280,59 +308,6 @@ namespace igRewrite7
 		}
 	}
 
-	public class CDrawableListList : List<CDrawableList>, IDrawableCommon
-	{
-		public CDrawableListList(igModelInfo mi)
-		{
-			for(int i = 0; i < mi._modelData._drawCalls.Count; i++)
-			{
-				this.Add(new CDrawableList(mi._modelData._drawCalls[i]));
-			}
-		}
-		public CDrawableListList(CGraphicsSkinInfo gsi)
-		{
-			for(int i = 0; i < gsi._skin._drawCalls.Count; i++)
-			{
-				this.Add(new CDrawableList(gsi._skin._drawCalls[i]));
-			}
-		}
-
-		public void AddDrawCall(Transform transform)
-		{
-			for(int i = 0; i < Count; i++)
-			{
-				this[i].AddDrawCall(transform);
-			}
-		}
-		public void ConsolidateDrawCalls()
-		{
-			for(int i = 0; i < Count; i++)
-			{
-				this[i].ConsolidateDrawCalls();
-			}
-		}
-		public void Draw()
-		{
-			for(int i = 0; i < Count; i++)
-			{
-				this[i].Draw();
-			}
-		}
-		public void Draw(Transform transform)
-		{
-			for(int i = 0; i < Count; i++)
-			{
-				this[i].Draw(transform);
-			}
-		}
-		public void UpdateTransform(Transform transform)
-		{
-			for(int i = 0; i < Count; i++)
-			{
-				this[i].UpdateTransform(transform);
-			}
-		}
-	}
 	public interface IDrawableCommon
 	{
 		public void AddDrawCall(Transform transform);

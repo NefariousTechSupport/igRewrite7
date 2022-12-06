@@ -17,32 +17,18 @@ namespace igLibrary
 		public Endianness _endianness = Endianness.Little;
 		public byte bitPosition = 0;
 
-		public StreamHelper(Stream input) : base(input)
-		{
-		}
-
-		public StreamHelper(Stream input, Encoding encoding) : base(input, encoding)
-		{
-		}
-
-		public StreamHelper(Stream input, Encoding encoding, bool leaveOpen) : base(input, encoding, leaveOpen)
-		{
-		}
-
-		public StreamHelper(Stream input, Endianness endianness) : base(input)
-		{
-			_endianness = endianness;
-		}
-
-		public StreamHelper(Stream input, Encoding encoding, Endianness endianness) : base(input, encoding)
-		{
-			_endianness = endianness;
-		}
-
-		public StreamHelper(Stream input, Encoding encoding, bool leaveOpen, Endianness endianness) : base(input, encoding, leaveOpen)
-		{
-			_endianness = endianness;
-		}
+		public StreamHelper(byte[] input) : base(new MemoryStream(input)) {}
+		public StreamHelper(Stream input) : base(input) {}
+		public StreamHelper(byte[] input, Encoding encoding) : base(new MemoryStream(input), encoding) {}
+		public StreamHelper(Stream input, Encoding encoding) : base(input, encoding) {}
+		public StreamHelper(byte[] input, Encoding encoding, bool leaveOpen) : base(new MemoryStream(input), encoding, leaveOpen) {}
+		public StreamHelper(Stream input, Encoding encoding, bool leaveOpen) : base(input, encoding, leaveOpen) {}
+		public StreamHelper(byte[] input, Endianness endianness) : base(new MemoryStream(input)) => _endianness = endianness;
+		public StreamHelper(Stream input, Endianness endianness) : base(input) => _endianness = endianness;
+		public StreamHelper(byte[] input, Encoding encoding, Endianness endianness) : base(new MemoryStream(input), encoding) => _endianness = endianness;
+		public StreamHelper(Stream input, Encoding encoding, Endianness endianness) : base(input, encoding) => _endianness = endianness;
+		public StreamHelper(byte[] input, Encoding encoding, bool leaveOpen, Endianness endianness) : base(new MemoryStream(input), encoding, leaveOpen) => _endianness = endianness;
+		public StreamHelper(Stream input, Encoding encoding, bool leaveOpen, Endianness endianness) : base(input, encoding, leaveOpen) => _endianness = endianness;
 
 		public void Seek(ulong offset, SeekOrigin origin = SeekOrigin.Begin) => Seek((long)offset, origin);
 		public void Seek(long offset, SeekOrigin origin = SeekOrigin.Begin) => BaseStream.Seek(offset, origin);
