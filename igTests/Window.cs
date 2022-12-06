@@ -120,10 +120,10 @@ namespace igRewrite7
 			moveSpeed += MouseState.ScrollDelta.Y;
 			moveSpeed = MathHelper.Clamp(moveSpeed, 0, 1000);
 
-			if(KeyboardState.IsKeyDown(Keys.W)) Camera.transform.position += Camera.transform.Forward * (float)args.Time * moveSpeed * mult;
-			if(KeyboardState.IsKeyDown(Keys.A)) Camera.transform.position += Camera.transform.Right * (float)args.Time * moveSpeed * mult;
-			if(KeyboardState.IsKeyDown(Keys.S)) Camera.transform.position -= Camera.transform.Forward * (float)args.Time * moveSpeed * mult;
-			if(KeyboardState.IsKeyDown(Keys.D)) Camera.transform.position -= Camera.transform.Right * (float)args.Time * moveSpeed * mult;
+			if(KeyboardState.IsKeyDown(Keys.W)) Camera.transform.Position += Camera.transform.Forward * (float)args.Time * moveSpeed * mult;
+			if(KeyboardState.IsKeyDown(Keys.A)) Camera.transform.Position += Camera.transform.Right * (float)args.Time * moveSpeed * mult;
+			if(KeyboardState.IsKeyDown(Keys.S)) Camera.transform.Position -= Camera.transform.Forward * (float)args.Time * moveSpeed * mult;
+			if(KeyboardState.IsKeyDown(Keys.D)) Camera.transform.Position -= Camera.transform.Right * (float)args.Time * moveSpeed * mult;
 
 			if(KeyboardState.IsKeyPressed(Keys.R)) EntityManager.Singleton.ignoreDraw = !EntityManager.Singleton.ignoreDraw;
 			if(KeyboardState.IsKeyPressed(Keys.C))
@@ -157,7 +157,7 @@ namespace igRewrite7
 				freecamLocal.X = MathHelper.Clamp(freecamLocal.X, -MathHelper.Pi + 0.0001f, 0);
 
 				//Camera.transform.rotation = Quaternion.FromAxisAngle(Vector3.UnitX, freecamLocal.X) * Quaternion.FromAxisAngle(Vector3.UnitY, freecamLocal.Y);
-				Camera.transform.rotation = Quaternion.FromAxisAngle(Vector3.UnitX, freecamLocal.X) * Quaternion.FromAxisAngle(Vector3.UnitZ, freecamLocal.Y);
+				Camera.transform.Rotation = Quaternion.FromAxisAngle(Vector3.UnitX, freecamLocal.X) * Quaternion.FromAxisAngle(Vector3.UnitZ, freecamLocal.Y);
 			}
 			else
 			{

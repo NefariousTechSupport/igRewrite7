@@ -42,7 +42,21 @@ namespace igRewrite7
 			SetIndices(indices);
 			//SetMaterial(new Material(MaterialManager.materials["stdv;whitef"]));
 		}
-		public CDrawable(igPS3EdgeGeometrySegment segment)
+		public CDrawable(igPS3EdgeGeometry geom)
+		{
+			Prepare();
+
+			geom.BatchSegmentVertexBuffersForAttribute(EDGE_GEOM_ATTRIBUTE_ID.POSITION, out float[]? vPositions, out uint positionStride);
+			geom.BatchSegmentVertexBuffersForAttribute(EDGE_GEOM_ATTRIBUTE_ID.UV0,      out float[]? vUV0,       out uint UV0Stride);
+			geom.BatchSegmentVertexBuffersForAttribute(EDGE_GEOM_ATTRIBUTE_ID.COLOR,    out float[]? vColours,   out uint colourStride);
+			geom.BatchSegmentIndexBuffers(out uint[] indices);
+
+			if(vPositions != null) SetVertexPositions(vPositions, (int)positionStride);
+			if(vUV0 != null)       SetVertexTexCoords(vUV0, (int)UV0Stride);
+			if(vColours != null)   SetVertexColours(vColours, (int)colourStride);
+			SetIndices(indices);
+		}
+		public CDrawable(igPS3EdgeGeometrySegment segment)	//No longer used
 		{
 			Prepare();
 
@@ -148,7 +162,7 @@ namespace igRewrite7
 			Matrix4[] transformMatrices = new Matrix4[transforms.Count];
 			for(int i = 0; i < transformMatrices.Length; i++)
 			{
-				transformMatrices[i] = Matrix4.Transpose(transforms[i].GetLocalToWorldMatrix());
+				transformMatrices[i] = Matrix4.Transpose(transforms[i]._m);
 			}
 
 			VwBO = GL.GenBuffer();
@@ -178,7 +192,7 @@ namespace igRewrite7
 		{
 			if(!enabled) return;
 			material.Use();
-			material.SetMatrix4x4("world", transform.GetLocalToWorldMatrix() * Camera.WorldToView * Camera.ViewToClip);
+			material.SetMatrix4x4("world", transform._m * Camera.WorldToView * Camera.ViewToClip);
 
 			int index = attributes.FindIndex(x => x.usage == IG_VERTEX_USAGE.COLOR);
 			material.SetBool("useVColour", index >= 0);
@@ -199,7 +213,7 @@ namespace igRewrite7
 			int index = transforms.FindIndex(0, transforms.Count, x => x == transform);
 
 			GL.BindBuffer(BufferTarget.ArrayBuffer, VwBO);
-			Matrix4[] matrix = new Matrix4[1] { Matrix4.Transpose(transform.GetLocalToWorldMatrix()) };
+			Matrix4[] matrix = new Matrix4[1] { Matrix4.Transpose(transform._m) };
 			
 			GL.BufferSubData(BufferTarget.ArrayBuffer, (IntPtr)(sizeof(float) * 16 * index), sizeof(float) * 16, matrix);
 		}
@@ -255,13 +269,11 @@ namespace igRewrite7
 					{
 						mat = new Material(MaterialManager.materials["stdv;ulitf"], gm);
 					}
-					for(int i = 0; i < edgeGeometry._count; i++)
-					{
-						drawable = new CDrawable(edgeGeometry[i]);
-						drawable.SetMaterial(mat);
-						drawable.enabled = mdcd._enabled;
-						this.Add(drawable);
-					}
+
+					drawable = new CDrawable(edgeGeometry);
+					drawable.SetMaterial(mat);
+					drawable.enabled = mdcd._enabled;
+					this.Add(drawable);
 				}
 				else throw new NotImplementedException("GFX PLATFORM UNSUPPORTED");
 			}

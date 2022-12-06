@@ -2,64 +2,73 @@ namespace igRewrite7
 {
 	public class Transform
 	{
-		public Vector3 position = Vector3.Zero;
-		public Quaternion rotation = Quaternion.Identity;
-		public Vector3 scale = Vector3.One;
-
-		private Matrix4 modelMatrix;
-		public bool useMatrix = false;
-
-		public bool updated = false;
-
-		public Vector3 Forward
+		public Vector3 Position
 		{
-			get
+			get => _position;
+			set
 			{
-				return Quaternion.Invert(rotation) * Vector3.UnitZ;
+				_position = value;
+				UpdateM();
+			}
+		}
+		public Quaternion Rotation
+		{
+			get => _quatRotation;
+			set
+			{
+				Quaternion.ToEulerAngles(value, out _eulerRotation);
+				_quatRotation = value;
+				UpdateM();
+			}
+		}
+		public Vector3 EulerRotation
+		{
+			get => _eulerRotation;
+			set
+			{
+				_eulerRotation = value;
+				_quatRotation = Quaternion.FromAxisAngle(Vector3.UnitZ, _eulerRotation.Z) * Quaternion.FromAxisAngle(Vector3.UnitY, _eulerRotation.Y) * Quaternion.FromAxisAngle(Vector3.UnitX, _eulerRotation.X);
+				UpdateM();
+			}
+		}
+		public Vector3 Scale
+		{
+			get => _scale;
+			set
+			{
+				_scale = value;
+				UpdateM();
 			}
 		}
 
-		public Vector3 Up
-		{
-			get
-			{
-				return Quaternion.Invert(rotation) * Vector3.UnitY;
-			}
-		}
+		public Vector3 Forward => Quaternion.Invert(_quatRotation) * Vector3.UnitZ;
+		public Vector3 Right => Quaternion.Invert(_quatRotation) * Vector3.UnitX;
+		public Vector3 Up => Quaternion.Invert(_quatRotation) * Vector3.UnitY;
 
-		public Vector3 Right
-		{
-			get
-			{
-				return Quaternion.Invert(rotation) * Vector3.UnitX;
-			}
-		}
+		private Vector3 _position;
+		private Vector3 _eulerRotation;
+		private Quaternion _quatRotation;
+		private Vector3 _scale;
+
+		public Matrix4 _m { get; private set; }
 
 		public Transform()
 		{
-			position = Vector3.Zero;	
-			rotation = Quaternion.Identity;
-			scale = Vector3.One;	
+			_position = Vector3.Zero;
+			_quatRotation = Quaternion.Identity;
+			_eulerRotation = Vector3.Zero;
+			_scale = Vector3.Zero;
+			UpdateM();
 		}
-
-		public Transform(Vector3 position, Vector3 rotation, Vector3 scale)
+		public Transform(Vector3 position, Vector3 eulerRotation, Vector3 scale)
 		{
-			this.position = position;
-			this.rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, rotation.Z) * Quaternion.FromAxisAngle(Vector3.UnitY, rotation.Y) * Quaternion.FromAxisAngle(Vector3.UnitX, rotation.X);
-			this.scale = scale;
+			_position = position;
+			_scale = scale;
+			EulerRotation = eulerRotation;	//Also calls UpdateM
 		}
-		public Transform(Matrix4 mat)
+		private void UpdateM()
 		{
-			useMatrix = true;
-			modelMatrix = mat;
-			position = mat.ExtractTranslation();
-			scale = mat.ExtractScale();
-			rotation = mat.ExtractRotation();
-		}
-		public Matrix4 GetLocalToWorldMatrix()
-		{
-			if(useMatrix) return modelMatrix;
-			return Matrix4.Identity * Matrix4.CreateScale(scale) * Matrix4.CreateFromQuaternion(rotation) * Matrix4.CreateTranslation(position);
+			_m = Matrix4.CreateScale(_scale) * Matrix4.CreateFromQuaternion(_quatRotation) * Matrix4.CreateTranslation(_position);
 		}
 	}
 }

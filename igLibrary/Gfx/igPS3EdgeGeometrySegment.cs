@@ -58,6 +58,15 @@ namespace igLibrary.Gfx
 		[igField(typeof(igUnsignedIntMetaField), 0xFF, 0x19, 0xAC, 0x00, "_speedTreeType")]
 		public uint _speedTreeType;
 
+		//Helper properties
+		public EdgeGeomSpuConfigInfo hSpuConfigInfo { get; private set; }
+		public EdgeGeomVertexStreamDescription hSpuInputStreamDescs0 { get; private set; }
+		public EdgeGeomGenericBlock[] hSpuInputStreamDescs0Blocks { get; private set; }
+		public EdgeGeomVertexStreamDescription hSpuInputStreamDescs1 { get; private set; }
+		public EdgeGeomGenericBlock[] hSpuInputStreamDescs1Blocks { get; private set; }
+		public EdgeGeomVertexStreamDescription hRsxOnlyStreamDesc { get; private set; }
+		public EdgeGeomGenericBlock[] hRsxOnlyStreamDescBlocks { get; private set; }
+
 		private void GetSpuConfigInfo(out EdgeGeomSpuConfigInfo spuConfigInfo)
 		{
 			StreamHelper sh = new StreamHelper(_spuConfigInfo.buffer, StreamHelper.Endianness.Big);
@@ -102,12 +111,7 @@ namespace igLibrary.Gfx
 
 		public void GetVertexBufferForAttribute(EDGE_GEOM_ATTRIBUTE_ID attribute, out float[]? outBuffer, out uint stride)
 		{
-			GetSpuConfigInfo(out EdgeGeomSpuConfigInfo spuConfigInfo);
-			GetSpuInputStreamDescs0(out EdgeGeomVertexStreamDescription spuInputStreamDescs0, out EdgeGeomGenericBlock[] spuInputStreamDescs0Blocks);
-			GetSpuInputStreamDescs1(out EdgeGeomVertexStreamDescription spuInputStreamDescs1, out EdgeGeomGenericBlock[] spuInputStreamDescs1Blocks);
-			GetRsxOnlyStreamDesc(out EdgeGeomVertexStreamDescription rsxOnlyStreamDesc, out EdgeGeomGenericBlock[] rsxOnlyStreamDescBlocks);
-
-			if(attribute == EDGE_GEOM_ATTRIBUTE_ID.POSITION && spuInputStreamDescs0.numBlocks == 0)
+			if(attribute == EDGE_GEOM_ATTRIBUTE_ID.POSITION && hSpuInputStreamDescs0.numBlocks == 0)
 			{
 				EdgeGeomVertexStreamDescription desc = new EdgeGeomVertexStreamDescription();
 				desc.numAttributes = desc.numBlocks = 1;
@@ -115,40 +119,40 @@ namespace igLibrary.Gfx
 				block.attributeBlock.componentCount = 3;
 				block.attributeBlock.format = EDGE_GEOM_ATTRIBUTE_FORMAT.F32;
 				block.attributeBlock.size = 0x0C;
-				EdgeGeomVertexConversion.UnpackBufferForAttribute(_spuVertexes0.buffer, spuConfigInfo, desc, block, out outBuffer);
+				EdgeGeomVertexConversion.UnpackBufferForAttribute(_spuVertexes0.buffer, hSpuConfigInfo, desc, block, out outBuffer);
 				stride = 3;
 				return;
 			}
 
-			if(spuInputStreamDescs0Blocks != null)
+			if(hSpuInputStreamDescs0Blocks != null)
 			{
-				int index = Array.FindIndex<EdgeGeomGenericBlock>(spuInputStreamDescs0Blocks, x => x.attributeBlock.edgeAttributeId == attribute);
+				int index = Array.FindIndex<EdgeGeomGenericBlock>(hSpuInputStreamDescs0Blocks, x => x.attributeBlock.edgeAttributeId == attribute);
 				if(index >= 0)
 				{
-					EdgeGeomVertexConversion.UnpackBufferForAttribute(   _spuVertexes0.buffer, spuConfigInfo, spuInputStreamDescs0, spuInputStreamDescs0Blocks[index], out outBuffer);
-					stride = (uint)outBuffer.Length / spuConfigInfo.numVertexes;
+					EdgeGeomVertexConversion.UnpackBufferForAttribute(   _spuVertexes0.buffer, hSpuConfigInfo, hSpuInputStreamDescs0, hSpuInputStreamDescs0Blocks[index], out outBuffer);
+					stride = (uint)outBuffer.Length / hSpuConfigInfo.numVertexes;
 					return;
 				}
 			}
 
-			if(spuInputStreamDescs1Blocks != null)
+			if(hSpuInputStreamDescs1Blocks != null)
 			{
-				int index = Array.FindIndex<EdgeGeomGenericBlock>(spuInputStreamDescs1Blocks, x => x.attributeBlock.edgeAttributeId == attribute);
+				int index = Array.FindIndex<EdgeGeomGenericBlock>(hSpuInputStreamDescs1Blocks, x => x.attributeBlock.edgeAttributeId == attribute);
 				if(index >= 0)
 				{
-					EdgeGeomVertexConversion.UnpackBufferForAttribute(   _spuVertexes1.buffer, spuConfigInfo, spuInputStreamDescs1, spuInputStreamDescs1Blocks[index], out outBuffer);
-					stride = (uint)outBuffer.Length / spuConfigInfo.numVertexes;
+					EdgeGeomVertexConversion.UnpackBufferForAttribute(   _spuVertexes1.buffer, hSpuConfigInfo, hSpuInputStreamDescs1, hSpuInputStreamDescs1Blocks[index], out outBuffer);
+					stride = (uint)outBuffer.Length / hSpuConfigInfo.numVertexes;
 					return;
 				}
 			}
 
-			if(rsxOnlyStreamDescBlocks != null)
+			if(hRsxOnlyStreamDescBlocks != null)
 			{
-				int index = Array.FindIndex<EdgeGeomGenericBlock>(   rsxOnlyStreamDescBlocks, x => x.attributeBlock.edgeAttributeId == attribute);
+				int index = Array.FindIndex<EdgeGeomGenericBlock>(   hRsxOnlyStreamDescBlocks, x => x.attributeBlock.edgeAttributeId == attribute);
 				if(index >= 0)
 				{
-					EdgeGeomVertexConversion.UnpackBufferForAttribute(_rsxOnlyVertexes.buffer, spuConfigInfo,    rsxOnlyStreamDesc,    rsxOnlyStreamDescBlocks[index], out outBuffer);
-					stride = (uint)outBuffer.Length / spuConfigInfo.numVertexes;
+					EdgeGeomVertexConversion.UnpackBufferForAttribute(_rsxOnlyVertexes.buffer, hSpuConfigInfo,    hRsxOnlyStreamDesc,    hRsxOnlyStreamDescBlocks[index], out outBuffer);
+					stride = (uint)outBuffer.Length / hSpuConfigInfo.numVertexes;
 					return;
 				}
 			}
@@ -160,6 +164,24 @@ namespace igLibrary.Gfx
 		{
 			GetSpuConfigInfo(out EdgeGeomSpuConfigInfo spuConfigInfo);
 			EdgeGeomVertexConversion.UnpackIndexBuffer(_indexes.buffer, spuConfigInfo, out indices);
+		}
+		public override void ReadFields(igIGZ igz)
+		{
+			base.ReadFields(igz);
+
+			GetSpuConfigInfo(out EdgeGeomSpuConfigInfo tSpuConfigInfo);
+			hSpuConfigInfo = tSpuConfigInfo;
+
+			GetSpuInputStreamDescs0(out EdgeGeomVertexStreamDescription tSpuInputStreamDescs0, out EdgeGeomGenericBlock[] tSpuInputStreamDescs0Blocks);
+			GetSpuInputStreamDescs1(out EdgeGeomVertexStreamDescription tSpuInputStreamDescs1, out EdgeGeomGenericBlock[] tSpuInputStreamDescs1Blocks);
+			GetRsxOnlyStreamDesc(out EdgeGeomVertexStreamDescription tRsxOnlyStreamDesc, out EdgeGeomGenericBlock[] tRsxOnlyStreamDescBlocks);
+
+			hSpuInputStreamDescs0 = tSpuInputStreamDescs0;
+			hSpuInputStreamDescs0Blocks = tSpuInputStreamDescs0Blocks;
+			hSpuInputStreamDescs1 = tSpuInputStreamDescs1;
+			hSpuInputStreamDescs1Blocks = tSpuInputStreamDescs1Blocks;
+			hRsxOnlyStreamDesc = tRsxOnlyStreamDesc;
+			hRsxOnlyStreamDescBlocks = tRsxOnlyStreamDescBlocks;
 		}
 	}
 }
