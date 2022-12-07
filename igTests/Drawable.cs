@@ -142,7 +142,7 @@ namespace igRewrite7
 			GL.BufferData(BufferTarget.ArrayBuffer, vcolours.Length * sizeof(float), vcolours, BufferUsageHint.StaticDraw);
 
 			GL.BindVertexArray(VAO);
-			GL.VertexAttribPointer(attr.index, componentCount, VertexAttribPointerType.Float, false, componentCount * sizeof(float), 0);
+			GL.VertexAttribPointer(attr.index, componentCount, VertexAttribPointerType.Float, true, componentCount * sizeof(float), 0);
 			GL.EnableVertexAttribArray(attr.index);
 
 			attributes.Add(attr);
@@ -274,6 +274,15 @@ namespace igRewrite7
 					drawable.SetMaterial(mat);
 					drawable.enabled = mdcd._enabled;
 					this.Add(drawable);
+
+					/*for(int i = 0; i < edgeGeometry._count; i++)
+					{
+						drawable = new CDrawable(edgeGeometry[i]);
+						drawable.SetMaterial(mat);
+						drawable.enabled = mdcd._enabled;
+						this.Add(drawable);
+					}*/
+
 				}
 				else throw new NotImplementedException("GFX PLATFORM UNSUPPORTED");
 			}

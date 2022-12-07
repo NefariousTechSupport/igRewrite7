@@ -101,7 +101,7 @@ namespace igLibrary.PS3Edge
 		public static float[] edgeUnpack_I16N(StreamHelper sh) =>			new float[] { (float)sh.ReadInt16() / 0x7FFF };
 		public static float[] edgeUnpack_F32(StreamHelper sh) =>			new float[] { sh.ReadSingle() };
 		public static float[] edgeUnpack_F16(StreamHelper sh) =>			new float[] { (float)sh.ReadHalf() };
-		public static float[] edgeUnpack_U8N(StreamHelper sh) =>			new float[] { (float)sh.ReadByte() / 0x7F };
+		public static float[] edgeUnpack_U8N(StreamHelper sh) =>			new float[] { (float)sh.ReadByte() / 0xFF };
 		public static float[] edgeUnpack_I16(StreamHelper sh) =>			new float[] { (float)sh.ReadInt16() };
 		public static float[] edgeUnpack_X11Y11Z10N(StreamHelper sh)
 		{
@@ -131,25 +131,25 @@ namespace igLibrary.PS3Edge
 		};
 
 		//Convert the vertex buffer for an attribute into a byte array of floats
-		public static void UnpackBufferForAttribute(in byte[] inBuffer, EdgeGeomSpuConfigInfo spuConfigInfo, EdgeGeomVertexStreamDescription streamDesc, EdgeGeomGenericBlock genericBlock, out float[] outBuffer)
+		public static void UnpackBufferForAttribute(in byte[] inBuffer, EdgeGeomSpuConfigInfo spuConfigInfo, EdgeGeomVertexStreamDescription streamDesc, EdgeGeomAttributeBlock attributeBlock, out float[] outBuffer)
 		{
 			StreamHelper sh = new StreamHelper(new MemoryStream(inBuffer), StreamHelper.Endianness.Big);
-			outBuffer = new float[spuConfigInfo.numVertexes * genericBlock.attributeBlock.componentCount];
+			outBuffer = new float[spuConfigInfo.numVertexes * attributeBlock.componentCount];
 
 			int currentIndex = 0;
 
 			for(int i = 0; i < spuConfigInfo.numVertexes; i++)
 			{
-				sh.Seek(i * streamDesc.stride + genericBlock.attributeBlock.offset);
-				for(int j = 0; j < genericBlock.attributeBlock.componentCount; j++)
+				sh.Seek(i * streamDesc.stride + attributeBlock.offset);
+				for(int j = 0; j < attributeBlock.componentCount; j++)
 				{
-					float[] processed = edgeUnpackFunctions[(uint)genericBlock.attributeBlock.format].Invoke(sh);
+					float[] processed = edgeUnpackFunctions[(uint)attributeBlock.format].Invoke(sh);
 					
 					Array.Copy(processed, 0, outBuffer, currentIndex, processed.Length);
 					
 					currentIndex += processed.Length;
 
-					if(genericBlock.attributeBlock.format == EDGE_GEOM_ATTRIBUTE_FORMAT.X11Y11Z10N) break;
+					if(attributeBlock.format == EDGE_GEOM_ATTRIBUTE_FORMAT.X11Y11Z10N) break;
 				}
 			}
 		}

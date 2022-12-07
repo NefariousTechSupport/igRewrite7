@@ -165,7 +165,7 @@ namespace igRewrite7
 				CursorVisible = true;
 			}
 
-			Title = $"igRewrite7 | {1 / args.Time}";
+			Title = $"igRewrite7 | {args.Time} seconds";
 
 			base.OnUpdateFrame(args);
 		}
