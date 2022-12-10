@@ -28,9 +28,6 @@ namespace igLibrary.Gfx
 			uint[] strides = new uint[this._count];
 			float[]?[] inBuffer = new float[this._count][];
 
-			if(this._count > 1)
-				Console.WriteLine("yo batching's happening");
-
 			//Load the vertex buffers and allocate the batched buffer
 			for(int i = 0; i < this._count; i++)
 			{

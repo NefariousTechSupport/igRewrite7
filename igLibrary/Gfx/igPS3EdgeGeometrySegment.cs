@@ -119,6 +119,7 @@ namespace igLibrary.Gfx
 				block.componentCount = 3;
 				block.format = EDGE_GEOM_ATTRIBUTE_FORMAT.F32;
 				block.size = 0x0C;
+				desc.stride = 0x0C;
 				EdgeGeomVertexConversion.UnpackBufferForAttribute(_spuVertexes0.buffer, hSpuConfigInfo, desc, block, out outBuffer);
 				stride = 3;
 				return;

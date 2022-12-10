@@ -81,7 +81,6 @@ namespace igRewrite7
 		}
 		public void Draw()
 		{
-			//if(this.name != "TunnelTrack") return;
 			if(!EntityManager.Singleton.ignoreDraw || draw) drawable.Draw(transform);
 		}
 		public bool IntersectsRay(Vector3 dir, Vector3 position)
