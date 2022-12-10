@@ -242,15 +242,7 @@ namespace igRewrite7
 			if(mdcd._platformData == null)
 			{
 				drawable = new CDrawable(mdcd._graphicsVertexBuffer, mdcd._graphicsIndexBuffer);
-				igGraphicsMaterial? gm = mdcd._materialHandle.GetObject<igGraphicsMaterial>();
-				if(gm == null)
-				{
-					drawable.SetMaterial(new Material(MaterialManager.materials["stdv;ulitf"], null, PrimitiveType.Triangles));
-				}
-				else
-				{
-					drawable.SetMaterial(new Material(MaterialManager.materials["stdv;ulitf"], gm));
-				}
+				drawable.SetMaterial(AssetManager.Singleton.LoadMaterial(mdcd._materialHandle));
 				drawable.enabled = mdcd._enabled;
 				this.Add(drawable);
 			}
@@ -258,17 +250,7 @@ namespace igRewrite7
 			{
 				if(mdcd._platformData is igPS3EdgeGeometry edgeGeometry)
 				{
-					//edgeGeometry.ExtractGeometry(out uint[][] indices, out float[][] vPositions, out float[][] vTexCoords, out float[][] vColours);
-					igGraphicsMaterial? gm = mdcd._materialHandle.GetObject<igGraphicsMaterial>();
-					Material mat;
-					if(gm == null)
-					{
-						mat = new Material(MaterialManager.materials["stdv;ulitf"], null, PrimitiveType.Triangles);
-					}
-					else
-					{
-						mat = new Material(MaterialManager.materials["stdv;ulitf"], gm);
-					}
+					Material mat = AssetManager.Singleton.LoadMaterial(mdcd._materialHandle);
 
 					drawable = new CDrawable(edgeGeometry);
 					drawable.SetMaterial(mat);

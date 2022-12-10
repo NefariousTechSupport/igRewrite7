@@ -24,17 +24,7 @@ namespace igRewrite7
 			if(material._graphicsObjects._objects.Any(x => x is igGraphicsTexture))
 			{
 				igGraphicsTexture tex = (igGraphicsTexture)material._graphicsObjects._objects.First(x => x is igGraphicsTexture);
-				igImage2? image = tex._imageHandle.GetObject<igImage2>();
-				if(image != null && image._format != null)
-				{
-					this.albedo = new Texture(image);
-				}
-				else
-				{
-					if(image == null) Console.WriteLine($"Failed to load igImage2 from ns {tex._imageHandle._handleName._ns._string}");
-					else if(image._format == null) Console.WriteLine($"Failed to load format for igImage2 from ns {tex._imageHandle._handleName._ns._string}");
-					this.albedo = null;
-				}
+				this.albedo = AssetManager.Singleton.LoadTexture(tex._imageHandle);
 			}
 			else
 			{
