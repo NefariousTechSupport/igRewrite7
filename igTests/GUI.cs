@@ -43,7 +43,7 @@ namespace igRewrite7
 				Vector4 eye = Matrix4.Invert(Matrix4.Transpose(Camera.ViewToClip)) * homogeneousClip;
 				eye.Z = -1;
 				eye.W = 0;
-				Vector3 world = (Matrix4.Invert(Matrix4.Transpose(Camera.WorldToView)) * eye).Xyz;
+				Vector3 world = (Matrix4.Invert(Matrix4.Transpose(Camera._worldToView)) * eye).Xyz;
 				world.Normalize();
 				string entityNames = string.Empty;
 				ImGui.SetTooltip(entityNames);
@@ -94,12 +94,16 @@ namespace igRewrite7
 			ImGui.Begin($"{selectedEntity.name} Properties");
 			bool posChanged = false;
 			bool rotChanged = false;
+			bool scaleChanged = false;
 			System.Numerics.Vector3 position = Utils.ToNumericsVector3(selectedEntity.transform.Position);
 			System.Numerics.Vector3 rotation = Utils.ToNumericsVector3(selectedEntity.transform.EulerRotation);
+			System.Numerics.Vector3 scale = Utils.ToNumericsVector3(selectedEntity.transform.Scale);
 			if(ImGui.InputFloat3("Position: ", ref position)) posChanged = true;
 			if(ImGui.InputFloat3("Rotation: ", ref rotation)) rotChanged = true;
+			if(ImGui.InputFloat3("Scale: ", ref scale)) scaleChanged = true;
 			if(posChanged) selectedEntity.transform.Position = Utils.ToOpenTKVector3(position);
 			if(rotChanged) selectedEntity.transform.EulerRotation = Utils.ToOpenTKVector3(rotation);
+			if(scaleChanged) selectedEntity.transform.Scale = Utils.ToOpenTKVector3(scale);
 			ImGui.End();
 			//ImGui.ShowDemoWindow();
 		}

@@ -2,18 +2,31 @@ namespace igRewrite7
 {
 	public class Entity
 	{
+		private enum CullMode
+		{
+			NeverCull,
+			BoxCull,
+			SphereCull,
+		}
+
 		public igObject instance;
 		public IDrawableCommon drawable;
 		public int id;
 		public string name = string.Empty;
-		public bool draw;
+		public bool draw = true;
+		public Cull cull;
 
 		public Transform transform;
 
 		//xyz is pos, w is radius
 		public Vector4 boundingSphere;
 
-		public Entity(){}
+		public static uint drawCalls;
+
+		public Entity()
+		{
+			cull = new Cull();
+		}
 		public Entity(igEntity ce)
 		{
 			Vector3 eulerRot = Vector3.Zero;
@@ -52,9 +65,13 @@ namespace igRewrite7
 			{
 				transform = new Transform();
 			}
-			if(drawable != null)
+			if(ce is CEntity centity)
 			{
-				//drawable.AddDrawCall(transform);
+				cull = new BoxCull(transform, Utils.ToOpenTKVector3(centity._min), Utils.ToOpenTKVector3(centity._max));
+			}
+			else
+			{
+				cull = new Cull();
 			}
 		}
 		public Entity(CStaticEntity cse)
@@ -72,6 +89,7 @@ namespace igRewrite7
 			rot.Y = MathHelper.DegreesToRadians(rot.Y);
 			rot.Z = MathHelper.DegreesToRadians(rot.Z);
 			transform = new Transform(Utils.ToOpenTKVector3(cse._position), rot, Utils.ToOpenTKVector3(cse._scale));
+			cull = new Cull();// {min = transform.Position};
 			//drawable.AddDrawCall(transform);
 		}
 		public void SetPosition(Vector3 position)
@@ -81,7 +99,13 @@ namespace igRewrite7
 		}
 		public void Draw()
 		{
-			if(!EntityManager.Singleton.ignoreDraw || draw) drawable.Draw(transform);
+			//Frustum culling is currently not used because idk how the bounding boxes work
+			//if(cull.DoFrustumCull()) return;
+			if(!EntityManager.Singleton.ignoreDraw || draw)
+			{
+				drawCalls++;
+				drawable.Draw(transform);
+			}
 		}
 		public bool IntersectsRay(Vector3 dir, Vector3 position)
 		{

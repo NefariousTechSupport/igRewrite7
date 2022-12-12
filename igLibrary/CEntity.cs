@@ -34,7 +34,7 @@ namespace igLibrary
 		public bool _actEnabled;
 		[igField(typeof(igBitFieldMetaField<bool, igUnsignedShortMetaField>), 0x09, 0x0F, 0x6C, 0x94, "_actToggleOn", new object[] { 04, 1 })]
 		public bool _actToggleOn;
-		[igField(typeof(igBitFieldMetaField<bool, igUnsignedShortMetaField>), 0x09, 0x10, 0x6C, 0x94, "_scaleSource", new object[] { 05, 1 })]
+		[igField(typeof(igBitFieldMetaField<EScaleSource, igUnsignedShortMetaField>), 0x09, 0x10, 0x6C, 0x94, "_scaleSource", new object[] { 05, 1 })]
 		public bool _scaleSource;
 		[igField(typeof(igBitFieldMetaField<bool, igUnsignedShortMetaField>), 0x09, 0x11, 0x6C, 0x94, "_netReplicate", new object[] { 06, 1 })]
 		public bool _netReplicate;
@@ -44,5 +44,11 @@ namespace igLibrary
 		public bool _hasScaledTimeComponent;
 		//[igField(typeof(igPropertyMetaField<>), 0x09, 0x15, 0x00, 0x00, "_netFlags")]
 		//public _netFlags;
+
+		public enum EScaleSource : byte
+		{
+			eSS_Entity = 0,
+			eSS_EntityData = 1
+		}
 	}
 }

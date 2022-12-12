@@ -21,7 +21,7 @@ namespace igRewrite7
 		int EBO;
 		int indexCount;
 		Material material;
-		public bool enabled;
+		public bool enabled = true;
 
 		public CDrawable()
 		{
@@ -182,7 +182,7 @@ namespace igRewrite7
 		public void Draw()
 		{
 			material.Use();
-			material.SetMatrix4x4("worldToClip", Camera.WorldToView * Camera.ViewToClip);
+			material.SetMatrix4x4("worldToClip", Camera._worldToView * Camera.ViewToClip);
 
 			GL.BindVertexArray(VAO);
 			GL.DrawElementsInstanced(PrimitiveType.Triangles, indexCount, DrawElementsType.UnsignedInt, IntPtr.Zero, transforms.Count);
@@ -192,7 +192,7 @@ namespace igRewrite7
 		{
 			if(!enabled) return;
 			material.Use();
-			material.SetMatrix4x4("world", transform._m * Camera.WorldToView * Camera.ViewToClip);
+			material.SetMatrix4x4("world", transform._m * Camera._worldToView * Camera.ViewToClip);
 
 			int index = attributes.FindIndex(x => x.usage == IG_VERTEX_USAGE.COLOR);
 			material.SetBool("useVColour", index >= 0);

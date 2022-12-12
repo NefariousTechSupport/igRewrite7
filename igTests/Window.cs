@@ -37,43 +37,73 @@ namespace igRewrite7
 			MaterialManager.LoadMaterial("stdv;ulitf", "shaders/stdvsingle.glsl", "shaders/ulitf.glsl");
 			MaterialManager.LoadMaterial("stdv;whitef", "shaders/stdvsingle.glsl", "shaders/whitef.glsl");
 
+			Camera.Initialize();
 			Camera.CreatePerspective(MathHelper.PiOver2, ClientSize.X / (float)ClientSize.Y);
 
 			quad = new CDrawable();
 			quad.SetVertexPositions(new float[]
 			{
-				-1, -1,  0, 1,
-				-1,  1,  0, 1,
-				 1,  1,  0, 1,
-				 1, -1,  0, 1,
+				-0.5f, -0.5f, -0.5f, 1,
+				-0.5f, -0.5f, -0.5f, 1,
+				-0.5f,  0.5f, -0.5f, 1,
+				 0.5f,  0.5f, -0.5f, 1,
+				 0.5f, -0.5f, -0.5f, 1,
+				-0.5f, -0.5f,  0.5f, 1,
+				-0.5f,  0.5f,  0.5f, 1,
+				 0.5f,  0.5f,  0.5f, 1,
+				 0.5f, -0.5f,  0.5f, 1,
 			});
 			quad.SetVertexTexCoords(new float[]
 			{
 				0, 0, 0, 1,
-				0, 1, 0, 1,
-				1, 1, 0, 1,
-				1, 0, 0, 1,
+				0, 0, 0, 1,
+				0, 0, 0, 1,
+				0, 0, 0, 1,
+				0, 0, 0, 1,
+				0, 0, 0, 1,
+				0, 0, 0, 1,
+				0, 0, 0, 1,
+				0, 0, 0, 1,
 			});
 			quad.SetVertexColours(new float[]
 			{
-				1, 0, 0, 1,
-				0, 1, 0, 1,
 				1, 1, 0, 1,
-				0, 0, 0, 1
+				1, 1, 0, 1,
+				1, 1, 0, 1,
+				1, 1, 0, 1,
+				1, 1, 0, 1,
+				1, 1, 0, 1,
+				1, 1, 0, 1,
+				1, 1, 0, 1,
+				1, 1, 0, 1,
 			});
 			quad.SetIndices(new uint[]
 			{
-				0, 1, 2,
-				2, 3, 0
+				5, 3, 1,
+				3, 8, 4,
+				7, 6, 8,
+				2, 8, 6,
+				1, 4, 2,
+				5, 2, 6,
+				5, 7, 3,
+				3, 7, 8,
+				7, 5, 6,
+				2, 4, 8,
+				1, 3, 4,
+				5, 1, 2,
 			});
 			quad.SetMaterial(new Material(MaterialManager.materials["stdv;ulitf"]));
-
 
 			igObjectStreamManager o = igObjectStreamManager.Singleton;
 
 			EntityManager.Singleton.Load(rootDir);
 			//e = new Entity();
 			//e.transform = new Transform();
+			//e.drawable = quad;
+			//CEntity centity = EntityManager.Singleton.entities[0].instance as CEntity;
+			//BoxCull firstEntity = EntityManager.Singleton.entities[0].cull as BoxCull;
+			//e.transform.Position = EntityManager.Singleton.entities[0].transform.Position + (firstEntity._min + firstEntity._max) / 2;
+			//e.transform.Scale = (firstEntity._max - firstEntity._min) * EntityManager.Singleton.entities[0].transform.Scale;
 			//if(rootDir._objectList[0] is igModelInfo mi) e.drawable = new CDrawableListList(mi);
 			//else if(rootDir._objectList[1] is CGraphicsSkinInfo gsi) e.drawable = new CDrawableListList(gsi);
 			//else throw new NotImplementedException("unsupported object type");
@@ -89,6 +119,8 @@ namespace igRewrite7
 		{
 			base.OnRenderFrame(args);
 
+			Camera.Update();
+
 			GL.ClearColor(0.1f, 0.1f, 0.1f, 0);
 			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -96,6 +128,8 @@ namespace igRewrite7
 
 			EntityManager.Singleton.Render();		//Not Instanced
 			//AssetManager.Singleton.Render();		//Instanced
+
+			//e.Draw();
 
 			gui.DrawEntityWindow();
 

@@ -57,7 +57,7 @@ namespace igRewrite7
 			_position = Vector3.Zero;
 			_quatRotation = Quaternion.Identity;
 			_eulerRotation = Vector3.Zero;
-			_scale = Vector3.Zero;
+			_scale = Vector3.One;
 			UpdateM();
 		}
 		public Transform(Vector3 position, Vector3 eulerRotation, Vector3 scale)
