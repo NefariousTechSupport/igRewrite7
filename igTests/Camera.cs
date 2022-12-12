@@ -30,7 +30,7 @@ namespace igRewrite7
 		}
 		private static void UpdateModel()
 		{
-			_worldToView = Matrix4.CreateTranslation(transform.Position) * Matrix4.CreateFromQuaternion(transform.Rotation);
+			_worldToView = Matrix4.CreateTranslation(-transform.Position) * Matrix4.CreateFromQuaternion(transform.Rotation);
 		}
 		private static void UpdateFrustum()
 		{
@@ -42,36 +42,10 @@ namespace igRewrite7
 			float hFar = _zFar * tang;
 			float wFar = hFar * _aspect;
 
-			/*Vector3 position = transform.Position;
-			Vector3 Z = -transform.Forward;
-			Vector3 X = Vector3.Cross(Vector3.UnitY, Z);
-			Vector3 Y = Vector3.Cross(Z, X); 
-
-			Vector3 nc = position - Z * _zNear;
-			Vector3 fc = position - Z * _zFar;
-			_viewFrustum._planes[0] = new Frustum.Plane(-Z, fc);
-			_viewFrustum._planes[1] = new Frustum.Plane( Z, nc);
-
-			//Top
-			Vector3 aux = Vector3.NormalizeFast(nc + Y * hNear - position);
-			_viewFrustum._planes[2] = new Frustum.Plane(Vector3.Cross(aux, X), nc + Y * hNear);
-
-			//Bottom
-			aux = Vector3.NormalizeFast(nc - Y * hNear - position);
-			_viewFrustum._planes[3] = new Frustum.Plane(Vector3.Cross(aux, X), nc - Y * hNear);
-
-			//Left
-			aux = Vector3.NormalizeFast(nc - X * wNear - position);
-			_viewFrustum._planes[4] = new Frustum.Plane(Vector3.Cross(aux, Y), nc - X * wNear);
-
-			//Right
-			aux = Vector3.NormalizeFast(nc + X * wNear - position);
-			_viewFrustum._planes[5] = new Frustum.Plane(Vector3.Cross(aux, Y), nc + X * wNear);*/
-
-			Vector3 right = -transform.Right;
-			Vector3 up = -transform.Up;
-			Vector3 forward = -transform.Forward;
-			Vector3 p = -transform.Position;
+			Vector3 right = transform.Right;
+			Vector3 up = transform.Up;
+			Vector3 forward = transform.Forward;
+			Vector3 p = transform.Position;
 
 			Vector3 forwardMultFar = forward * _zFar;
 			float halfWFar = wFar;

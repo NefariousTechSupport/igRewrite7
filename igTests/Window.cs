@@ -154,10 +154,10 @@ namespace igRewrite7
 			moveSpeed += MouseState.ScrollDelta.Y;
 			moveSpeed = MathHelper.Clamp(moveSpeed, 0, 1000);
 
-			if(KeyboardState.IsKeyDown(Keys.W)) Camera.transform.Position += Camera.transform.Forward * (float)args.Time * moveSpeed * mult;
-			if(KeyboardState.IsKeyDown(Keys.A)) Camera.transform.Position += Camera.transform.Right * (float)args.Time * moveSpeed * mult;
-			if(KeyboardState.IsKeyDown(Keys.S)) Camera.transform.Position -= Camera.transform.Forward * (float)args.Time * moveSpeed * mult;
-			if(KeyboardState.IsKeyDown(Keys.D)) Camera.transform.Position -= Camera.transform.Right * (float)args.Time * moveSpeed * mult;
+			if(KeyboardState.IsKeyDown(Keys.W)) Camera.transform.Position -= Camera.transform.Forward * (float)args.Time * moveSpeed * mult;
+			if(KeyboardState.IsKeyDown(Keys.A)) Camera.transform.Position -= Camera.transform.Right * (float)args.Time * moveSpeed * mult;
+			if(KeyboardState.IsKeyDown(Keys.S)) Camera.transform.Position += Camera.transform.Forward * (float)args.Time * moveSpeed * mult;
+			if(KeyboardState.IsKeyDown(Keys.D)) Camera.transform.Position += Camera.transform.Right * (float)args.Time * moveSpeed * mult;
 
 			if(KeyboardState.IsKeyPressed(Keys.R)) EntityManager.Singleton.ignoreDraw = !EntityManager.Singleton.ignoreDraw;
 			if(KeyboardState.IsKeyPressed(Keys.C))

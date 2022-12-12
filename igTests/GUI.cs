@@ -65,7 +65,7 @@ namespace igRewrite7
 
 						if(ImGui.Button(map.Value[j].name))
 						{
-							Camera.transform.Position = -map.Value[j].transform.Position;
+							Camera.transform.Position = map.Value[j].transform.Position;
 							selectedEntity = map.Value[j];
 						}
 

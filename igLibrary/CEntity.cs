@@ -35,7 +35,7 @@ namespace igLibrary
 		[igField(typeof(igBitFieldMetaField<bool, igUnsignedShortMetaField>), 0x09, 0x0F, 0x6C, 0x94, "_actToggleOn", new object[] { 04, 1 })]
 		public bool _actToggleOn;
 		[igField(typeof(igBitFieldMetaField<EScaleSource, igUnsignedShortMetaField>), 0x09, 0x10, 0x6C, 0x94, "_scaleSource", new object[] { 05, 1 })]
-		public bool _scaleSource;
+		public EScaleSource _scaleSource;
 		[igField(typeof(igBitFieldMetaField<bool, igUnsignedShortMetaField>), 0x09, 0x11, 0x6C, 0x94, "_netReplicate", new object[] { 06, 1 })]
 		public bool _netReplicate;
 		[igField(typeof(igBitFieldMetaField<bool, igUnsignedShortMetaField>), 0x09, 0x12, 0x6C, 0x94, "_hasTimeComponent", new object[] { 07, 1 })]
