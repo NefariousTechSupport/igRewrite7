@@ -29,10 +29,6 @@ namespace igRewrite7
 			
 			GL.Enable(EnableCap.DepthTest);
 			GL.Enable(EnableCap.Texture2D);
-			//GL.Enable(EnableCap.StencilTest);
-			//GL.Enable(EnableCap.CullFace);
-			//GL.Enable(EnableCap.Blend);
-			//GL.BlendFuncSeparate(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha, BlendingFactorSrc.One, BlendingFactorDest.Zero);
 
 			MaterialManager.LoadMaterial("stdv;ulitf", "shaders/stdvsingle.glsl", "shaders/ulitf.glsl");
 			MaterialManager.LoadMaterial("stdv;whitef", "shaders/stdvsingle.glsl", "shaders/whitef.glsl");
@@ -121,19 +117,23 @@ namespace igRewrite7
 
 			Camera.Update();
 
-			GL.ClearColor(0.1f, 0.1f, 0.1f, 0);
-			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+			//gui.RenderTo3D();
 
-			gui.FrameBegin(args.Time);
+			//GL.ClearColor(0f, 0f, 0f, 1f);
+			//GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-			EntityManager.Singleton.Render();		//Not Instanced
+			//EntityManager.Singleton.Render();		//Not Instanced
 			//AssetManager.Singleton.Render();		//Instanced
 
 			//e.Draw();
 
-			gui.DrawEntityWindow();
+			//GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
-			gui.Tick();
+			gui.FrameBegin(args.Time);
+
+			gui.DrawSceneWindow();
+			gui.DrawEntityWindow();
+			gui.DrawInspector();
 
 			gui.FrameEnd();
 

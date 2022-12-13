@@ -58,7 +58,7 @@ namespace igRewrite7
             io.Fonts.AddFontDefault();
 
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
-
+			io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
             CreateDeviceResources();
             SetKeyMappings();
 
@@ -221,6 +221,8 @@ void main()
 
             _frameBegun = true;
             ImGui.NewFrame();
+	
+			ImGui.DockSpaceOverViewport(ImGui.GetMainViewport());
         }
 
         /// <summary>

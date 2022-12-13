@@ -139,7 +139,7 @@ namespace igRewrite7
 			{
 				entities[i].Draw();
 			}
-			Console.WriteLine(Entity.drawCalls);
+			//Console.WriteLine(Entity.drawCalls);
 			/*KeyValuePair<string, List<Entity>> map = EntityManager.Singleton.loadedEntities.ElementAt((int)loadedMap);
 			for(int j = 0; j < map.Value.Count; j++)
 			{

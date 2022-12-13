@@ -18,6 +18,7 @@ void main()
 		{
 			colour *= vColour;
 		}
+		colour.a = 1.0;					//Note: If you're struggling with transparency in the future, this is why
 		//if(colour.a == 0) discard;
 	}
 	else

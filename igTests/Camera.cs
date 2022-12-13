@@ -11,7 +11,7 @@ namespace igRewrite7
 		private static float _zNear = 10;
 		private static float _zFar = 100000;
 		private static float _aspect;
-		private static float _fovY;
+		public static float _fovY;
 
 		public static void Initialize()
 		{
