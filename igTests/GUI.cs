@@ -109,9 +109,13 @@ namespace igRewrite7
 			GL.ClearColor(0f, 0f, 0f, 1f);
 			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+			GL.Viewport(0, 0, oldWidth, oldHeight);
+			Camera.CreatePerspective(MathHelper.PiOver2, oldWidth / (float)oldHeight);
+
 			EntityManager.Singleton.Render();
 
 			GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+			GL.Viewport(0, 0, wnd.ClientSize.X, wnd.ClientSize.Y);
 
 			ImGui.Image((IntPtr)gameWindowColourTexture, viewSize, System.Numerics.Vector2.UnitY, System.Numerics.Vector2.UnitX);
 

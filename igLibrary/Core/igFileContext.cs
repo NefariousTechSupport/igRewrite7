@@ -107,7 +107,6 @@ namespace igLibrary.Core
 					else throw new FileNotFoundException($"Did not find {fp._path}");
 				}
 				_fileDescriptorPool.Add(new igFileDescriptor(ms, fp._path));
-				Console.WriteLine($"{_fileDescriptorPool.Last()._path._path} added to pool");
 				return _fileDescriptorPool.Last();
 			}
 		}

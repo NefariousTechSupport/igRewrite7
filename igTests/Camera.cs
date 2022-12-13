@@ -9,7 +9,7 @@ namespace igRewrite7
 		public static Frustum _viewFrustum { get; private set; }
 
 		private static float _zNear = 10;
-		private static float _zFar = 100000;
+		private static float _zFar = 1000000;
 		private static float _aspect;
 		public static float _fovY;
 

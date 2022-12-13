@@ -10,11 +10,10 @@ namespace igRewrite7
 		}
 
 		public igObject instance;
-		public IDrawableCommon drawable;
+		public IDrawableCommon? drawable;
 		public int id;
 		public string name = string.Empty;
 		public bool draw = true;
-		public Cull cull;
 
 		public Transform transform;
 
@@ -23,55 +22,51 @@ namespace igRewrite7
 
 		public static uint drawCalls;
 
-		public Entity()
+		public Entity(igEntity entity)
 		{
-			cull = new Cull();
-		}
-		public Entity(igEntity ce)
-		{
-			Vector3 eulerRot = Vector3.Zero;
-			instance = ce;
-			if(ce is CActor ca)
+			instance = entity;
+
+			transform = new Transform();
+			transform.Position = Utils.ToOpenTKVector3(entity._parentSpacePosition);
+
+			if(entity is CActor actor)
 			{
-				CActorData caData = (CActorData)ce._entityData;
-				drawable = AssetManager.Singleton.LoadDrawable(caData._skin, true);
-				if(ca._transform != null)
+				CActorData actorData = (CActorData)actor._entityData;
+
+				drawable = AssetManager.Singleton.LoadDrawable(actorData._skin, true);
+			}
+			else if(entity is CGameEntity gameEntity)
+			{
+				CGameEntityData gameEntityData = (CGameEntityData)gameEntity._entityData;
+
+				if(gameEntityData._modelName != null)
 				{
-					eulerRot = Utils.ToOpenTKVector3(ca._transform._parentSpaceRotation);
+					drawable = AssetManager.Singleton.LoadDrawable(gameEntityData._modelName, false);
 				}
-				draw = !ca._startHidden;
-			}
-			else if(ce is CGameEntity cge)
-			{
-				CGameEntityData cged = (CGameEntityData)cge._entityData;
-				if(cged == null) goto finish;
-				drawable = AssetManager.Singleton.LoadDrawable(cged._modelName, false);
-				if(drawable == null)
+				else
 				{
-					drawable = AssetManager.Singleton.LoadDrawable(cged._skinName, true);
+					drawable = AssetManager.Singleton.LoadDrawable(gameEntityData._skinName, true);
 				}
-				if(cge._transform != null)
+			}
+
+			if(entity is CEntity cEntity)
+			{
+				draw = !cEntity._startHidden;
+				if(cEntity._scaleSource == CEntity.EScaleSource.eSS_Entity)
 				{
-					eulerRot = Utils.ToOpenTKVector3(cge._transform._parentSpaceRotation);
+					//TODO: Fix this
+					//transform.Scale = Vector3.One * cEntity._transform._runtimeParentSpaceScale;
+					transform.Scale = Vector3.One;
 				}
-				draw = !cge._startHidden;
+				else if(cEntity._scaleSource == CEntity.EScaleSource.eSS_EntityData)
+				{
+					transform.Scale = Vector3.One * cEntity._entityData._scale;
+				}
 			}
-			finish:
-			if(ce._transform != null)
+
+			if(entity._transform != null)
 			{
-				transform = new Transform(Utils.ToOpenTKVector3(ce._parentSpacePosition), eulerRot, Vector3.One * ce._transform._runtimeParentSpaceScale);
-			}
-			else
-			{
-				transform = new Transform();
-			}
-			if(ce is CEntity centity)
-			{
-				cull = new BoxCull(transform, Utils.ToOpenTKVector3(centity._min), Utils.ToOpenTKVector3(centity._max));
-			}
-			else
-			{
-				cull = new Cull();
+				transform.EulerRotation = Utils.ToOpenTKVector3(entity._transform._parentSpaceRotation);
 			}
 		}
 		public Entity(CStaticEntity cse)
@@ -89,35 +84,18 @@ namespace igRewrite7
 			rot.Y = MathHelper.DegreesToRadians(rot.Y);
 			rot.Z = MathHelper.DegreesToRadians(rot.Z);
 			transform = new Transform(Utils.ToOpenTKVector3(cse._position), rot, Utils.ToOpenTKVector3(cse._scale));
-			cull = new Cull();// {min = transform.Position};
-			//drawable.AddDrawCall(transform);
 		}
 		public void SetPosition(Vector3 position)
 		{
 			transform.Position = position;
-			drawable.UpdateTransform(transform);
+			if(drawable != null) drawable.UpdateTransform(transform);
 		}
 		public void Draw()
 		{
+			if(drawable == null) return;
 			//Frustum culling is currently not used because idk how the bounding boxes work
 			//if(cull.DoFrustumCull()) return;
-			if(!EntityManager.Singleton.ignoreDraw || draw)
-			{
-				drawCalls++;
-				drawable.Draw(transform);
-			}
-		}
-		public bool IntersectsRay(Vector3 dir, Vector3 position)
-		{
-			Vector3 m = position - boundingSphere.Xyz;
-			float b = Vector3.Dot(m, dir);
-			float c = Vector3.Dot(m, m) - boundingSphere.W * boundingSphere.W;
-
-			if(c > 0 && b > 0) return false;
-
-			float discriminant = b*b - c;
-
-			return discriminant >= 0;
+			if(!EntityManager.Singleton.ignoreDraw || draw) drawable.Draw(transform);
 		}
 	}
 }
