@@ -10,6 +10,10 @@ namespace igRewrite7
 		{
 			return new OpenTK.Mathematics.Vector3(input.X, input.Y, input.Z);
 		}
+		public static OpenTK.Mathematics.Vector4 ToOpenTKVector4(System.Numerics.Vector4 input)
+		{
+			return new OpenTK.Mathematics.Vector4(input.X, input.Y, input.Z, input.W);
+		}
 
 		public static OpenTK.Mathematics.Matrix4 ToOpenTKMatrix4(System.Numerics.Matrix4x4 input)
 		{

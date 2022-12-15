@@ -2,13 +2,6 @@ namespace igRewrite7
 {
 	public class Entity
 	{
-		private enum CullMode
-		{
-			NeverCull,
-			BoxCull,
-			SphereCull,
-		}
-
 		public igObject instance;
 		public IDrawableCommon? drawable;
 		public int id;
@@ -22,6 +15,10 @@ namespace igRewrite7
 
 		public static uint drawCalls;
 
+		public Entity()
+		{
+			transform = new Transform();
+		}
 		public Entity(igEntity entity)
 		{
 			instance = entity;
@@ -93,6 +90,8 @@ namespace igRewrite7
 		public void Draw()
 		{
 			if(drawable == null) return;
+			if(name.Contains("eater", StringComparison.OrdinalIgnoreCase))
+				;
 			//Frustum culling is currently not used because idk how the bounding boxes work
 			//if(cull.DoFrustumCull()) return;
 			if(!EntityManager.Singleton.ignoreDraw || draw) drawable.Draw(transform);

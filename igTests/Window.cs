@@ -21,6 +21,13 @@ namespace igRewrite7
 			igFileContext.Singleton.Initialize(args[0]);
 			igArchiveManager.Singleton.AddArchiveToPool(args[1]);
 			rootDir = igObjectStreamManager.Singleton.Load(args[2]);
+
+			//Initialize igCommandStreamDecoder
+			igCommandStreamDecoder.SetConstantBoolCommand = (loc, data) => GL.Uniform1((int)loc, data ? 1 : 0);
+			igCommandStreamDecoder.SetConstantIntCommand = (loc, data) => GL.Uniform1((int)loc, data);
+			igCommandStreamDecoder.SetConstantFloatCommand = (loc, data) => GL.Uniform1((int)loc, data);
+			igCommandStreamDecoder.SetConstantVec4fCommand = (loc, data) => GL.Uniform4((int)loc, Utils.ToOpenTKVector4(data));
+			//igCommandStreamDecoder.SetConstantMatrix44fCommand = (loc, data) => { Matrix4 tkData = Utils.ToOpenTKMatrix4(data); GL.UniformMatrix4((int)loc, false, ref tkData); };
 		}
 
 		protected override void OnLoad()
@@ -94,14 +101,13 @@ namespace igRewrite7
 
 			EntityManager.Singleton.Load(rootDir);
 			//e = new Entity();
-			//e.transform = new Transform();
 			//e.drawable = quad;
 			//CEntity centity = EntityManager.Singleton.entities[0].instance as CEntity;
 			//BoxCull firstEntity = EntityManager.Singleton.entities[0].cull as BoxCull;
 			//e.transform.Position = EntityManager.Singleton.entities[0].transform.Position + (firstEntity._min + firstEntity._max) / 2;
 			//e.transform.Scale = (firstEntity._max - firstEntity._min) * EntityManager.Singleton.entities[0].transform.Scale;
-			//if(rootDir._objectList[0] is igModelInfo mi) e.drawable = new CDrawableListList(mi);
-			//else if(rootDir._objectList[1] is CGraphicsSkinInfo gsi) e.drawable = new CDrawableListList(gsi);
+			//if(rootDir._objectList[0] is igModelInfo mi) e.drawable = new CDrawableList(mi);
+			//else if(rootDir._objectList[1] is CGraphicsSkinInfo gsi) e.drawable = new CDrawableList(gsi);
 			//else throw new NotImplementedException("unsupported object type");
 			//e.name = "idk lol";
 			//EntityManager.Singleton.loadedEntities.Add("e", new List<Entity>());

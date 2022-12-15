@@ -69,6 +69,12 @@ namespace igLibrary.Core
 			_platform = igMetaEnumMember.GetEnumFromValue<IG_CORE_PLATFORM>(_stream.ReadUInt32(), _version);
 			_numFixups = _stream.ReadUInt32();
 
+			if(_platform != igCore.platform)
+			{
+				if(igCore.platform == IG_CORE_PLATFORM.DEFAULT) igCore.platform = _platform;
+				else throw new Exception($"Platform Mismatch, expected {igCore.platform}, got {_platform}");
+			}
+
 			ParseSections();
 			ProcessFixupSections(dir);
 

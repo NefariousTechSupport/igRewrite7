@@ -8,6 +8,7 @@ in vec4 vColour;
 uniform sampler2D albedo;
 uniform bool useTexture;
 uniform bool useVColour;
+layout(location = 0x0F) uniform vec4 tint;
 
 void main()
 {
@@ -18,6 +19,7 @@ void main()
 		{
 			colour *= vColour;
 		}
+		colour *= tint;
 		colour.a = 1.0;					//Note: If you're struggling with transparency in the future, this is why
 		//if(colour.a == 0) discard;
 	}

@@ -17,9 +17,9 @@ namespace igLibrary.Graphics
 		[igField(typeof(igHandleMetaField<igObject>), 0x09, 0x03, 0x1C, 0x28, "_effectHandle", null, IG_CORE_PLATFORM.ASPEN, IG_CORE_PLATFORM.ASPEN64)]		//igGraphicsEffect
 		[igField(typeof(igHandleMetaField<igObject>), 0x09, 0x03, 0x20, 0x28, "_effectHandle")]																//igGraphicsEffect
 		public igHandle _effectHandle;
-		[igField(typeof(igObjectRefMetaField<igObject>), 0x09, 0x04, 0x20, 0x30, "_commonState", null, IG_CORE_PLATFORM.ASPEN, IG_CORE_PLATFORM.ASPEN64)]	//igMemoryCommandStream
-		[igField(typeof(igObjectRefMetaField<igObject>), 0x09, 0x04, 0x24, 0x30, "_commonState")]															//igMemoryCommandStream
-		public igObject _commonState;
+		[igField(typeof(igObjectRefMetaField<igMemoryCommandStream>), 0x09, 0x04, 0x20, 0x30, "_commonState", null, IG_CORE_PLATFORM.ASPEN, IG_CORE_PLATFORM.ASPEN64)]
+		[igField(typeof(igObjectRefMetaField<igMemoryCommandStream>), 0x09, 0x04, 0x24, 0x30, "_commonState")]
+		public igMemoryCommandStream _commonState;
 		[igField(typeof(igVectorMetaField<igObject, igObjectRefMetaField<igObject>>), 0x09, 0x05, 0x24, 0x38, "_techniques", null, IG_CORE_PLATFORM.ASPEN, IG_CORE_PLATFORM.ASPEN64)]	//igMemoryCommandStream
 		[igField(typeof(igVectorMetaField<igObject, igObjectRefMetaField<igObject>>), 0x09, 0x05, 0x28, 0x38, "_techniques")]															//igMemoryCommandStream
 		public List<igObject> _techniques;
