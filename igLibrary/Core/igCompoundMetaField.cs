@@ -40,6 +40,8 @@ namespace igLibrary.Core
 				}
 			}
 
+			igz._stream.Seek(objPos + Size(is64Bit));
+
 			return item;
 		}
 		public virtual void UserInstantiate(){}

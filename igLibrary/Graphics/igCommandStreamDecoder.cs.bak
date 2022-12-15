@@ -37,26 +37,28 @@ namespace igLibrary.Graphics
 		public static Action<ulong, Matrix4x4[], int> SetConstantArrayMatrix44fCommand = (a, b, c) => {};
 
 		private StreamHelper? sh;
+		private ulong baseOffset;
+		private igIGZ? loader;
 
-		public unsafe void Decode(igCommandStream commandStream)
+		public List<object> Decode(igCommandStream commandStream)
 		{
 			if(sh == null)
 			{
 				if(commandStream is igMemoryCommandStream memoryCommandStream)
 				{
-					sh = new StreamHelper(memoryCommandStream._memory.buffer, (igCore.IsPlatformBigEndian(igCore.platform) ? StreamHelper.Endianness.Big : StreamHelper.Endianness.Little));
+					loader = memoryCommandStream._igz;
+					sh = loader._stream;
+					baseOffset = memoryCommandStream._memory.offset;
 				}
 				else throw new NotImplementedException($"{commandStream.GetType()} isn't supported for decoding");
 			}
 
-			Func<ulong> readPointer = () => sh.ReadUInt32();
-			if(igCore.IsPlatform64Bit(igCore.platform))
-			{
-				readPointer = () => sh.ReadUInt64();
-			}
-			byte sizeOfPointer = igCore.GetSizeOfPointer(igCore.platform);
+			List<object> decodedObjects = new List<object>();
 
-			sh.Seek(0);
+			byte sizeOfPointer = igCore.GetSizeOfPointer(igCore.platform);
+			bool is64Bit = sizeOfPointer == 8;
+
+			sh.Seek(baseOffset);
 
 			while(true)
 			{
@@ -65,10 +67,12 @@ namespace igLibrary.Graphics
 				sh.Align(4);
 
 				igCommandId id = (igCommandId)sh.ReadUInt32();
+
 				switch(id)
 				{
 					case igCommandId.kSetPrimitiveType:
 						sh.Align(4);
+						igGraphics.SetPrimitiveTypeParamsField.ReadRawMemory(loader, is64Bit);
 						SetPrimitiveTypeCommand.Invoke((IG_GFX_DRAW)sh.ReadUInt32());
 						break;
 					case igCommandId.kSetVertexBuffer:
@@ -307,13 +311,13 @@ namespace igLibrary.Graphics
 						sh.Align(16);
 						sh.Seek(0xD0, SeekOrigin.Current);	//Please don't break;
 						break;
-					case igCommandId.kComputeandSetInstanceMatrices:
+					case igCommandId.kComputeAndSetInstanceMatrices:
 						//Appears to be 2 pointers to some matrices, followed by a ushort 
 						sh.Align(sizeOfPointer);
 						sh.Seek(sizeOfPointer * 2 + 2, SeekOrigin.Current);
 						sh.Align(sizeOfPointer);
 						break;
-					case igCommandId.kComputeAndSetInstanceConstraints:
+					case igCommandId.kComputeAndSetInstanceConstants:
 						//Literally 2 bytes
 						sh.Seek(2, SeekOrigin.Current);
 						break;

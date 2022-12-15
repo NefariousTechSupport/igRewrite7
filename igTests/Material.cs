@@ -6,8 +6,9 @@ namespace igRewrite7
 		Texture? albedo;
 		public PrimitiveType drawType;
 		public uint numUsing = 0;
-		private igCommandStreamDecoder? decoder;
+		//private igCommandStreamDecoder? decoder;
 		private igCommandStream? stateStream;
+		private igGraphicsMaterial? graphicsMaterial;
 
 		Dictionary<string, int> uniforms = new Dictionary<string, int>();
 
@@ -23,6 +24,7 @@ namespace igRewrite7
 			this.programId = handle;
 			this.drawType = PrimitiveType.Triangles;
 			this.stateStream = material._commonState;
+			this.graphicsMaterial = material;
 
 			if(material._graphicsObjects._objects.Any(x => x is igGraphicsTexture))
 			{
@@ -34,17 +36,14 @@ namespace igRewrite7
 				this.albedo = null;
 			}
 
-			if(stateStream != null) decoder = new igCommandStreamDecoder();
+			if(stateStream != null) stateStream.Decode();
 		}
 
 		public void Use()
 		{
 			SimpleUse();
-			SetFloat4("tint", Vector4.One);
-			if(decoder != null && stateStream != null)
-			{
-				decoder.Decode(stateStream);
-			}
+			SetFloat4("ig_color_value", Vector4.One);
+			ProcessStates();
 			if(albedo != null)
 			{
 				albedo.Use();
@@ -54,6 +53,22 @@ namespace igRewrite7
 			else
 			{
 				SetBool("useTexture", false);
+			}
+		}
+		public void ProcessStates()
+		{
+			if(stateStream == null) return;
+			for(int i = 0; i < stateStream._commands.Count; i++)
+			{
+				switch(stateStream._commands[i]._id)
+				{
+					case igCommandId.kSetConstantVec4f:
+						igCommandSetConstantVec4fParameters params31 = (igCommandSetConstantVec4fParameters)stateStream._commands[i]._parameters;
+						Vector4 data = Utils.ToOpenTKVector4(params31._value);
+						igGraphicsShaderConstant? constant = graphicsMaterial._graphicsObjects._objects[(int)params31._resource] as igGraphicsShaderConstant;
+						SetFloat4(constant._name, data);
+						break;
+				}
 			}
 		}
 		public void SimpleUse()

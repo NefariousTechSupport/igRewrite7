@@ -9,6 +9,18 @@ namespace igLibrary.Core
 		public ushort _ordinal;
 		public IG_CORE_PLATFORM[] _overrides;
 
+		public static T CreateMetaField<T>(uint version, ushort ordinal, ushort offset32, ushort offset64, string name, IG_CORE_PLATFORM[] overrides) where T : igMetaField, new()
+		{
+			T field = new T();
+			field._version = version;
+			field._ordinal = ordinal;
+			field._offset32 = offset32;
+			field._offset64 = offset64;
+			field._name = name;
+			field._overrides = overrides;
+			return field;
+		}
+
 		public virtual ushort Size(bool is64Bit) => 0;
 		public virtual Type OutputType() => null;
 		public virtual object? ReadRawMemory(igIGZ igz, bool is64Bit) => null;

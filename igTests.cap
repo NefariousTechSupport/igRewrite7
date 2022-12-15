@@ -1,0 +1,27 @@
+{
+    "rdocCaptureSettings": 1,
+    "settings": {
+        "autoStart": false,
+        "commandLine": "\"F:/GAMES/BLES02172-[Skylanders SuperChargers]/PS3_GAME/USRDIR\" \"intro1.pak\" \"packages:/generated/maps/Intro1/Intro1_pkg.igz\"",
+        "environment": [
+        ],
+        "executable": "C:\\Users\\jaska\\Documents\\Modding\\Skylanders\\Projects\\igRewrite7\\igTests\\bin\\Debug\\net6.0\\igTests.exe",
+        "inject": false,
+        "numQueuedFrames": 0,
+        "options": {
+            "allowFullscreen": true,
+            "allowVSync": true,
+            "apiValidation": false,
+            "captureAllCmdLists": false,
+            "captureCallstacks": false,
+            "captureCallstacksOnlyDraws": false,
+            "debugOutputMute": true,
+            "delayForDebugger": 0,
+            "hookIntoChildren": false,
+            "refAllResources": false,
+            "verifyBufferAccess": false
+        },
+        "queuedFrameCap": 0,
+        "workingDir": ""
+    }
+}
