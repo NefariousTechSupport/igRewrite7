@@ -4,16 +4,7 @@ namespace igLibrary.Core
 	{
 		public List<string> _stringList = new List<string>();
 		public List<Type> _vtableList = new List<Type>();
-		public List<ulong> _runtimeVtableList = new List<ulong>();
-		public List<ulong> _runtimeOffsetList = new List<ulong>();
 		public Dictionary<ulong, igObject> _offsetObjectList = new Dictionary<ulong, igObject>();
-		public List<ulong> _runtimeObjectListList = new List<ulong>();
-		public List<ulong> _runtimeHandleList = new List<ulong>();
-		public List<ulong> _runtimeExternals = new List<ulong>();
-		public List<ulong> _runtimePID = new List<ulong>();
-		public List<ulong> _runtimeNamedExternals = new List<ulong>();
-		public List<ulong> _runtimeStringTables = new List<ulong>();
-		public List<ulong> _runtimeStringRefs = new List<ulong>();
 		public List<ushort> _metaSizes = new List<ushort>();
 		public List<string> _vtableNameList = new List<string>();
 		public List<igHandle> _externalList = new List<igHandle>();
@@ -21,6 +12,7 @@ namespace igLibrary.Core
 		public List<igHandle> _unresolvedNames = new List<igHandle>();
 		public igObjectList _namedExternalList = new igObjectList();
 		public List<igMemory> _thumbnails = new List<igMemory>();
+		public igRuntimeFields _runtimeFields = new igRuntimeFields();
 		public uint _version;
 		public uint _typeHash;
 		public IG_CORE_PLATFORM _platform;
@@ -290,32 +282,32 @@ namespace igLibrary.Core
 						dir._nameList = nameList;
 						break;
 					case 0x42545652:							//RVTB
-						UnpackCompressedInts(_runtimeVtableList, _stream.ReadBytes(length - start), count);
+						UnpackCompressedInts(_runtimeFields._vtables, _stream.ReadBytes(length - start), count);
 						InstantiateAndAppendObjects();
 						break;
 					case 0x544F4F52:							//ROOT
-						UnpackCompressedInts(_runtimeObjectListList, _stream.ReadBytes(length - start), count);
+						UnpackCompressedInts(_runtimeFields._objectLists, _stream.ReadBytes(length - start), count);
 						break;
 					case 0x444E4852:							//RHND
-						UnpackCompressedInts(_runtimeHandleList, _stream.ReadBytes(length - start), count);
+						UnpackCompressedInts(_runtimeFields._handles, _stream.ReadBytes(length - start), count);
 						break;
 					case 0x54584552:							//REXT
-						UnpackCompressedInts(_runtimeExternals, _stream.ReadBytes(length - start), count);
+						UnpackCompressedInts(_runtimeFields._externals, _stream.ReadBytes(length - start), count);
 						break;
 					case 0x53464F52:							//ROFS
-						UnpackCompressedInts(_runtimeOffsetList, _stream.ReadBytes(length - start), count);
+						UnpackCompressedInts(_runtimeFields._offsets, _stream.ReadBytes(length - start), count);
 						break;
 					case 0x44495052:							//RPID
-						UnpackCompressedInts(_runtimePID, _stream.ReadBytes(length - start), count);
+						UnpackCompressedInts(_runtimeFields._PIDs, _stream.ReadBytes(length - start), count);
 						break;
 					case 0x58454E52:							//RNEX
-						UnpackCompressedInts(_runtimeNamedExternals, _stream.ReadBytes(length - start), count);
+						UnpackCompressedInts(_runtimeFields._namedExternals, _stream.ReadBytes(length - start), count);
 						break;
 					case 0x54545352:							//RSTT
-						UnpackCompressedInts(_runtimeStringTables, _stream.ReadBytes(length - start), count);
+						UnpackCompressedInts(_runtimeFields._stringTables, _stream.ReadBytes(length - start), count);
 						break;
 					case 0x52545352:							//RSTR
-						UnpackCompressedInts(_runtimeStringRefs, _stream.ReadBytes(length - start), count);
+						UnpackCompressedInts(_runtimeFields._stringRefs, _stream.ReadBytes(length - start), count);
 						break;
 				}
 
@@ -390,17 +382,17 @@ namespace igLibrary.Core
 
 		public void InstantiateAndAppendObjects()
 		{
-			for(int i = 0; i < _runtimeVtableList.Count; i++)
+			for(int i = 0; i < _runtimeFields._vtables.Count; i++)
 			{
-				_offsetObjectList.Add(_runtimeVtableList[i], InstantiateObject(_runtimeVtableList[i]));
+				_offsetObjectList.Add(_runtimeFields._vtables[i], InstantiateObject(_runtimeFields._vtables[i]));
 			}
 		}
 		public void ProcessObjectList(igObjectDirectory objDir)
 		{
-			for(int i = 0; i < _runtimeObjectListList.Count; i++)
+			for(int i = 0; i < _runtimeFields._objectLists.Count; i++)
 			{
-				igObjectList objList = (igObjectList)_offsetObjectList[_runtimeObjectListList[i]];
-				_stream.Seek(_runtimeObjectListList[i]);
+				igObjectList objList = (igObjectList)_offsetObjectList[_runtimeFields._objectLists[i]];
+				_stream.Seek(_runtimeFields._objectLists[i]);
 				objList.ReadFields(this);
 				for(int j = 0; j < objList._count; j++)
 				{

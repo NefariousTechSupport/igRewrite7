@@ -5,10 +5,9 @@ namespace igLibrary.Core
 		public override Type OutputType() => typeof(T);
 		public override object ReadRawMemory(igIGZ igz, bool is64Bit)
 		{
-			bool isExid = igz._runtimeExternals.Any(x => x == (ulong)igz._stream.BaseStream.Position);
-			bool isOffset = igz._runtimeOffsetList.Any(x => x == (ulong)igz._stream.BaseStream.Position);
-			//bool isPID = igz._runtimePID.Any(x => x == (ulong)igz._stream.BaseStream.Position);
-			bool isNamedExternal = igz._runtimeNamedExternals.Any(x => x == (ulong)igz._stream.BaseStream.Position);
+			bool isExid = igz._runtimeFields._externals.Any(x => x == (ulong)igz._stream.BaseStream.Position);
+			bool isOffset = igz._runtimeFields._offsets.Any(x => x == (ulong)igz._stream.BaseStream.Position);
+			bool isNamedExternal = igz._runtimeFields._namedExternals.Any(x => x == (ulong)igz._stream.BaseStream.Position);
 			ulong raw = igz.ReadRawOffset();
 			igObject? ret = null;
 			if(raw == 0) return null;

@@ -28,10 +28,10 @@ namespace igCauldron
 
 			offsetObjList = _igz._offsetObjectList.ToArray();
 
-			HighlightRuntime(_igz._runtimeVtableList,   0xFFFF00);
-			HighlightRuntime(_igz._runtimeOffsetList,   0x00FFFF);
-			HighlightRuntime(_igz._runtimeStringRefs,   0xFF00FF);
-			HighlightRuntime(_igz._runtimeStringTables, 0xFF00FF);
+			HighlightRuntime(_igz._runtimeFields._vtables,   0xFFFF00);
+			HighlightRuntime(_igz._runtimeFields._offsets,   0x00FFFF);
+			HighlightRuntime(_igz._runtimeFields._stringRefs,   0xFF00FF);
+			HighlightRuntime(_igz._runtimeFields._stringTables, 0xFF00FF);
 			//HighlightRuntime(_igz._runtimePID, 0x00FF00);
 
 			PopulateObjectTree();
@@ -91,16 +91,16 @@ namespace igCauldron
 
 		private void HexEditorCursorMoved(object sender, EventArgs e)
 		{
-			if(_igz._runtimeVtableList.Any(x => x == (ulong)_hexEditor.SelectionStart))
+			if(_igz._runtimeFields._vtables.Any(x => x == (ulong)_hexEditor.SelectionStart))
 			{
-				ulong vtableOffset = _igz._runtimeVtableList.First(x => x == (ulong)_hexEditor.SelectionStart);
+				ulong vtableOffset = _igz._runtimeFields._vtables.First(x => x == (ulong)_hexEditor.SelectionStart);
 				int vtableIndex = (int)_igz._stream.ReadUInt32((uint)vtableOffset);
 				Console.WriteLine($"Selected object of type {_igz._vtableNameList[vtableIndex]} at {vtableOffset.ToString("X08")}");
 				_inspectorTypeDropDown.SelectedIndex = vtableIndex;
 			}
-			if(_igz._runtimeStringRefs.Any(x => x == (ulong)_hexEditor.SelectionStart))
+			if(_igz._runtimeFields._stringRefs.Any(x => x == (ulong)_hexEditor.SelectionStart))
 			{
-				ulong stringRefOffset = _igz._runtimeStringRefs.First(x => x == (ulong)_hexEditor.SelectionStart);
+				ulong stringRefOffset = _igz._runtimeFields._stringRefs.First(x => x == (ulong)_hexEditor.SelectionStart);
 				ulong stringOffset = _igz.DeserializeOffset(_igz._stream.ReadUInt32((uint)stringRefOffset));
 				_inspectorStringTextBox.Text = _igz._stream.ReadString((uint)stringOffset);
 			}
