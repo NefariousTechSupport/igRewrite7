@@ -125,20 +125,19 @@ namespace igRewrite7
 		public void DrawEntityWindow()
 		{
 			ImGui.Begin("Maps");
-			for(int i = 0; i < EntityManager.Singleton.loadedEntities.Count; i++)
+			for(int i = 0; i < EntityManager.Singleton.groups.Count; i++)
 			{
-				KeyValuePair<string, List<Entity>> map = EntityManager.Singleton.loadedEntities.ElementAt(i);
-				if(map.Value.Count == 0) continue;
-				if(ImGui.CollapsingHeader(map.Key))
+				EntityGroup group = EntityManager.Singleton.groups[i];
+				if(ImGui.CollapsingHeader(group._directory._name._string))
 				{
-					for(int j = 0; j < map.Value.Count; j++)
+					for(int j = 0; j < group._entities.Count; j++)
 					{
 						ImGui.PushID($"{i}:{j}");
 
-						if(ImGui.Button(map.Value[j].name))
+						if(ImGui.Button(group._entities[j].name))
 						{
-							Camera.transform.Position = map.Value[j].transform.Position;
-							selectedEntity = map.Value[j];
+							Camera.transform.Position = group._entities[j].transform.Position;
+							selectedEntity = group._entities[j];
 						}
 
 						ImGui.PopID();

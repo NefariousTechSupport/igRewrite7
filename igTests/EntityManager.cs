@@ -10,9 +10,15 @@ namespace igRewrite7
 
 		private Dictionary<string, igObjectDirectory> loadedDirs = new Dictionary<string, igObjectDirectory>();
 		public Dictionary<string, List<Entity>> loadedEntities = new Dictionary<string, List<Entity>>();
+		public List<EntityGroup> groups = new List<EntityGroup>();
 		public uint loadedMap = 0;
 
 		public bool ignoreDraw = false;
+
+		public void AddMapFile(igObjectDirectory dir)
+		{
+			LoadEntities(dir, null);
+		}
 
 		public void Load(igObjectDirectory dir)
 		{
@@ -72,6 +78,8 @@ namespace igRewrite7
 			//Parallel.For(0, stringRefs._count, (i, p) => LoadDirectory(stringRefs[(int)i], quad));
 			for(int i = 1; i < stringRefs._count; i += 2)
 			{
+				if(stringRefs[i-1] != "igx_entities")
+
 				try
 				{
 					igObjectDirectory mapDir = igObjectStreamManager.Singleton.Load(stringRefs[i]);
@@ -87,45 +95,8 @@ namespace igRewrite7
 
 		private void LoadEntities(igObjectDirectory dir, IDrawableCommon nullModel)
 		{
-			if(loadedEntities.ContainsKey(dir._path)) return;
-			loadedEntities.Add(dir._path, new List<Entity>());
-			List<igObject> objs = dir._objectList.ToCSList();
-			for(int i = 0; i < objs.Count; i++)
-			{
-				if(objs[i] is igEntity ent)
-				{
-					Entity e = new Entity(objs[i] as igEntity);
-					if(e.drawable == null) e.drawable = nullModel;
-					e.name = dir._nameList[i]._string;
-					entities.Add(e);
-					loadedEntities[dir._path].Add(e);
-					/*if(ent._entityData != null)
-					{
-						if(ent._entityData._componentData != null)
-						{
-							igComponentData[] cds = ent._entityData._componentData.internalHashTable.Values.ToArray();
-							for(int j = 0; j < ent._entityData._componentData._hashItemCount; j++)
-							{
-								if(cds[j] is igPrefabComponentData pcd)
-								{
-									if(pcd._prefabEntities != null)
-									{
-										LoadEntities(pcd._prefabEntities.ToCSList().Cast<igObject>().ToList(), nullModel);
-									}
-								}
-							}
-						}
-					}*/
-				}
-				if(objs[i] is CStaticEntity cse)
-				{
-					Entity e = new Entity(cse);
-					if(e.drawable == null) e.drawable = nullModel;
-					e.name = dir._nameList[i]._string;
-					entities.Add(e);					
-					loadedEntities[dir._path].Add(e);
-				}
-			}
+			if(groups.Any(x => x._directory == dir)) return;
+			groups.Add(new EntityGroup(dir, nullModel));
 		}
 
 		private void ReallocEntities()
@@ -134,17 +105,14 @@ namespace igRewrite7
 
 		public void Render()
 		{
-			Entity.drawCalls = 0;
-			for(int i = 0; i < entities.Count; i++)
+			for(int j = 0; j < groups.Count; j++)
 			{
-				entities[i].Draw();
+				RenderMap(j);
 			}
-			//Console.WriteLine(Entity.drawCalls);
-			/*KeyValuePair<string, List<Entity>> map = EntityManager.Singleton.loadedEntities.ElementAt((int)loadedMap);
-			for(int j = 0; j < map.Value.Count; j++)
-			{
-				map.Value[j].Draw();
-			}*/
+		}
+		public void RenderMap(int mapIndex)
+		{
+			groups[mapIndex].Render();
 		}
 	}
 }
