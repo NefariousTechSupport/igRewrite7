@@ -5,12 +5,19 @@ namespace igRewrite7
 		static Lazy<AssetManager> lazy = new Lazy<AssetManager>(() => new AssetManager());
 		public static AssetManager Singleton => lazy.Value;
 
-		//igObjectDirectory name hash or file offset -> asset
-		public Dictionary<uint, IDrawableCommon> drawables = new Dictionary<uint, IDrawableCommon>();
+		public List<AssetPackage> packages = new List<AssetPackage>();
 
-		// (igHandleName._ns._hash << 32) | (igHandleName._name._hash) -> asset
-		public Dictionary<ulong, Texture> textures = new Dictionary<ulong, Texture>();
-		public Dictionary<ulong, Material> materials = new Dictionary<ulong, Material>();
+		public AssetPackage AddPackage(string packagePath)
+		{
+			return AddPackage(igObjectStreamManager.Singleton.Load(packagePath));
+		}
+		public AssetPackage AddPackage(igObjectDirectory packageDir)
+		{
+			AssetPackage pkg = new AssetPackage();
+			packages.Add(pkg);
+			pkg.LoadAssets(packageDir);
+			return pkg;
+		}
 
 		public IDrawableCommon LoadDrawable(string path, bool isActor)
 		{
@@ -18,73 +25,47 @@ namespace igRewrite7
 
 			string internalPath = $"{(isActor ? "actors" : "models")}:/{path}.igz";
 			igObjectDirectory meshDir = igObjectStreamManager.Singleton.Load(internalPath);
-			if(drawables.ContainsKey(meshDir._name._hash)) return drawables[meshDir._name._hash];
-			IDrawableCommon drawable;
-			if(meshDir._objectList[0] is igModelInfo mi) drawable = new CDrawableList(mi);
-			else if(meshDir._objectList[1] is CGraphicsSkinInfo gsi) drawable = new CDrawableList(gsi);
-			else throw new NotImplementedException($"mesh type at {internalPath} not implemented");
-			drawables.Add(meshDir._name._hash, drawable);
-			return drawable;
+
+			for(int i = 0; i < packages.Count; i++)
+			{
+				if(packages[i].drawables.ContainsKey(meshDir._name._hash)) return packages[i].drawables[meshDir._name._hash];
+			}
+
+			throw new KeyNotFoundException($"{(isActor ? "Actor" : "Model")} not loaded");
 		}
 		public Texture? LoadTexture(igHandle handle)
 		{
 			if(handle._handleName._ns._hash == 0 || handle._handleName._name._hash == 0) return null;
 
-			ulong key = (handle._handleName._ns._hash << 32) | handle._handleName._name._hash;
+			ulong key = GenerateKeyFromHandle(handle);
 
-			if(textures.ContainsKey(key)) return textures[key];
+			if(key == 0) return null;
 
-			igImage2? image = handle.GetObject<igImage2>();
-			Texture tex;
-			if(image != null && image._format != null)
+			for(int i = 0; i < packages.Count; i++)
 			{
-				tex = new Texture(image);
+				if(packages[i].textures.ContainsKey(key)) return packages[i].textures[key];
 			}
-			else
-			{
-				if(image == null) Console.WriteLine($"Failed to load igImage2 from ns {handle._handleName._ns._string}");
-				else if(image._format == null) Console.WriteLine($"Failed to load format for igImage2 from ns {handle._handleName._ns._string}");
-				tex = null;
-			}
-			textures.Add(key, tex);
-			return tex;
+
+			throw new KeyNotFoundException("Texture not loaded");
 		}
 		public Material LoadMaterial(igHandle handle)
 		{
-			ulong key = (handle._handleName._ns._hash << 32) | handle._handleName._name._hash;
+			ulong key = GenerateKeyFromHandle(handle);
 
-			if(materials.ContainsKey(key)) return materials[key];
+			if(key == 0) return null;
 
-			igGraphicsMaterial? graphicsMaterial = handle.GetObject<igGraphicsMaterial>();
-
-			Material glMaterial;
-
-			if(graphicsMaterial == null)
+			for(int i = 0; i < packages.Count; i++)
 			{
-				glMaterial = new Material(MaterialManager.materials["stdv;ulitf"], null, PrimitiveType.Triangles);
-			}
-			else
-			{
-				glMaterial = new Material(MaterialManager.materials["stdv;ulitf"], graphicsMaterial);
+				if(packages[i].materials.ContainsKey(key)) return packages[i].materials[key];
 			}
 
-			materials.Add(key, glMaterial);
-
-			return glMaterial;
+			return new Material(MaterialManager.materials["stdv;ulitf"], null, PrimitiveType.Triangles);
+			throw new KeyNotFoundException("Material not loaded");
 		}
-		public void ConsolidateDrawables()
+
+		public static ulong GenerateKeyFromHandle(igHandle handle)
 		{
-			foreach(KeyValuePair<uint, IDrawableCommon> drawable in drawables)
-			{
-				drawable.Value.ConsolidateDrawCalls();
-			}
-		}
-		public void Render()
-		{
-			foreach(KeyValuePair<uint, IDrawableCommon> drawable in drawables)
-			{
-				drawable.Value.Draw();
-			}
+			return ((ulong)handle._handleName._ns._hash << 32) | handle._handleName._name._hash;
 		}
 	}
 }

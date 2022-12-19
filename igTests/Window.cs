@@ -99,7 +99,14 @@ namespace igRewrite7
 
 			igObjectStreamManager o = igObjectStreamManager.Singleton;
 
-			EntityManager.Singleton.Load(rootDir);
+			AssetManager.Singleton.AddPackage("packages:/generated/UI/domains/juicedomain_permanent_pkg.igz");
+			AssetManager.Singleton.AddPackage($"packages:/generated/packageXmls/permanent_{igCore.GetPlatformString(igCore.platform)}_pkg.igz");
+			AssetManager.Singleton.AddPackage("packages:/generated/packageXmls/permanent_pkg.igz");
+			AssetManager.Singleton.AddPackage("packages:/generated/packageXmls/permanent_2015_pkg.igz");
+			AssetManager.Singleton.AddPackage("packages:/generated/packageXmls/permanentdeveloper_pkg.igz");
+			AssetManager.Singleton.AddPackage(rootDir);
+
+			//EntityManager.Singleton.Load(rootDir);
 			//e.drawable = quad;
 			//CEntity centity = EntityManager.Singleton.entities[0].instance as CEntity;
 			//BoxCull firstEntity = EntityManager.Singleton.entities[0].cull as BoxCull;

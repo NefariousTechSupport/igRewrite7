@@ -64,6 +64,7 @@ namespace igLibrary.Core
 				if(File.Exists($"{_root}/archives/permanent_{platformName}.pak"))
 				{
 					igArchiveManager.Singleton.AddArchiveToPool("permanent.pak");
+					igArchiveManager.Singleton.AddArchiveToPool("permanent_2015.pak");
 					igArchiveManager.Singleton.AddArchiveToPool("permanentdeveloper.pak");
 					igArchiveManager.Singleton.AddArchiveToPool($"permanent_{platformName}.pak");
 					igArchiveManager.Singleton.AddArchiveToPool($"shaders_{platformName}.pak");
@@ -76,6 +77,7 @@ namespace igLibrary.Core
 					igArchiveManager.Singleton.AddArchiveToPool($"TrophyBlueprints.pak");
 					igArchiveManager.Singleton.AddArchiveToPool($"soundbankdata.pak");
 					igArchiveManager.Singleton.AddArchiveToPool($"zoneinfos.pak");
+					igArchiveManager.Singleton.AddArchiveToPool($"juicedomain_permanent.pak");
 					igArchiveManager.Singleton.AddArchiveToPool($"juicedomain_story.pak");
 					igArchiveManager.Singleton.AddArchiveToPool($"QuestIcons.pak");
 					igArchiveManager.Singleton.AddArchiveToPool($"PortalMasterPerkIcons.pak");
