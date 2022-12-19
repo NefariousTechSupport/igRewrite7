@@ -173,18 +173,10 @@ namespace igRewrite7
 				else            GL.Disable(EnableCap.CullFace);
 				Console.Write($"Cull Face set to {cullEnabled}");
 			}
-			if(KeyboardState.IsKeyPressed(Keys.Right))
+
+			if(KeyboardState.IsKeyDown(Keys.LeftControl) && KeyboardState.IsKeyDown(Keys.S))
 			{
-				while(true)
-				{
-					EntityManager.Singleton.loadedMap++;
-					if(EntityManager.Singleton.loadedEntities.Count == EntityManager.Singleton.loadedMap)
-					{
-						EntityManager.Singleton.loadedMap = 0;
-					}
-					if(EntityManager.Singleton.loadedEntities.ElementAt((int)EntityManager.Singleton.loadedMap).Value.Count != 0) break;
-				}
-				Console.WriteLine($"Displaying {EntityManager.Singleton.loadedEntities.ElementAt((int)EntityManager.Singleton.loadedMap).Key}");
+				Console.WriteLine("Attempting to save positions");
 			}
 
 			CursorGrabbed = MouseState.IsButtonDown(MouseButton.Right);

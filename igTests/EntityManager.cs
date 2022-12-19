@@ -78,14 +78,15 @@ namespace igRewrite7
 			//Parallel.For(0, stringRefs._count, (i, p) => LoadDirectory(stringRefs[(int)i], quad));
 			for(int i = 1; i < stringRefs._count; i += 2)
 			{
-				if(stringRefs[i-1] != "igx_entities")
+				if(stringRefs[i-1] != "igx_entities") continue;
 
 				try
 				{
 					igObjectDirectory mapDir = igObjectStreamManager.Singleton.Load(stringRefs[i]);
 					if(mapDir != null)
 					{
-						LoadEntities(mapDir, quad);
+						AddMapFile(mapDir);
+						groups.Last().LoadEntities(quad);
 					}
 				}
 				catch(FileNotFoundException){}
